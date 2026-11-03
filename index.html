@@ -561,7 +561,7 @@ function render(){
  maxY=b.y}
  cars.forEach(c=>{});for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const sp of s.sp){const sx=a.x+a.sc*sp.o*roadW*160;deco(sp,sx,a.y,a.sc)}if(fk()&&MP&&forkRoute>=0&&s.i>=N-FORK+14){const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1,bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;deco({t:'X'},bx0,a.y,a.sc)}
+  for(const sp of s.sp){const sx=a.x+a.sc*sp.o*roadW*160;deco(sp,sx,a.y,a.sc)}if(fk()&&MP&&forkRoute>=0&&s.i>=N-FORK+8&&s.i%3===0){const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1,bo=blocked*(.5+.9*ff);for(const off of[-.30,0,.30]){const bx0=a.x+a.sc*(bo+off)*roadW*160;deco({t:'X'},bx0,a.y,a.sc)}}
   for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct);drawObj(c,cxs,sy,sc*roadW*160*c.w*(c.shr>0?.6:1))}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur

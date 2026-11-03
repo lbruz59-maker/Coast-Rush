@@ -784,13 +784,11 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   // OutRun-style: a short brake tap initiates the slide; throttle sustains it.
   const driftStart=state=='play'&&braking&&!brakeWasDown&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
   brakeWasDown=braking?1:0;
-  if(driftStart){driftHold=1.15;driftSide=Math.sign(st)}
-  if(driftHold>0){
-   if(accelerating&&Math.abs(st)>.08)driftHold=Math.min(2.4,driftHold+dt*1.15);
-   else driftHold=Math.max(0,driftHold-dt*(accelerating?.12:1.0));
-  }
+  if(driftStart){driftHold=.82;driftSide=Math.sign(st)}
+  // Le drift reste bref : accélérer le prolonge légèrement, sans le verrouiller.
+  if(driftHold>0)driftHold=Math.max(0,driftHold-dt*(accelerating?1.05:1.8));
   const driftTarget=driftHold>0&&state=='play'?1:0;
-  drift+=(driftTarget-drift)*Math.min(1,dt*(driftTarget?7.0:1.35));
+  drift+=(driftTarget-drift)*Math.min(1,dt*(driftTarget?7.0:2.5));
   drift=Math.max(0,Math.min(1,drift));
   if(drift<.025){driftSide=0;driftMarkClock=0}
   if(ac&&window.__driftSqueal){const squeal=drift>.12?Math.min(.15,.012+drift*.115):0;window.__driftSqueal.gain.setTargetAtTime(squeal,ac.currentTime,.09)}

@@ -44,7 +44,7 @@ canvas{width:min(100vw,calc(100vh*10/7));aspect-ratio:10/7;background:#000;box-s
 <div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
 <div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
 <div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v31</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v33</div><div id="hs" style="font-size:12px;opacity:.9"></div>
 <div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
@@ -300,9 +300,9 @@ function startEscape(c){state='escape';escT=0;escCar={vt:c.vt|0,c:c.c};sayF("Il 
 const FT='"Arial Black",Impact,sans-serif';
 function drawBrief(t){ctx.fillStyle=LG(0,H,'#06122a','#0b2a52');ctx.fillRect(0,0,W,H);ctx.fillStyle='#ffffff0a';for(let y=0;y<H;y+=3)ctx.fillRect(0,y,W,1);ctx.save();ctx.translate((W-320)/2,0);
  rrp(14,22,150,150,8);ctx.fillStyle='#0d1c38';ctx.fill();ctx.strokeStyle='#3d8bff';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=LG(30,170,'#1d3a6a','#0a1830');ctx.fillRect(18,26,142,142);
- ctx.fillStyle='#2a1a12';ctx.beginPath();ctx.ellipse(89,88,34,40,0,0,7);ctx.fill();ctx.fillStyle=LG(128,170,'#243d69','#101d38');rrp(44,128,90,42,14);ctx.fill();ctx.fillStyle='#f4f4f8';ctx.fillRect(84,128,10,40);
+ ctx.fillStyle='#172947';ctx.beginPath();ctx.ellipse(89,88,34,40,0,0,7);ctx.fill();ctx.fillStyle=LG(128,170,'#183f78','#101d38');rrp(44,128,90,42,14);ctx.fill();ctx.fillStyle='#f4f4f8';ctx.fillRect(84,128,10,40);ctx.fillStyle='#ffd45a';ctx.fillRect(105,139,9,10);ctx.strokeStyle='#ffd45a';ctx.lineWidth=1.5;ctx.strokeRect(105,139,9,10);
  const fg2=ctx.createRadialGradient(84,84,4,89,90,30);fg2.addColorStop(0,'#ffe3c8');fg2.addColorStop(1,'#e0aa86');ctx.fillStyle=fg2;ctx.beginPath();ctx.ellipse(89,90,26,31,0,0,7);ctx.fill();
- ctx.fillStyle='#3a2216';ctx.beginPath();ctx.ellipse(89,66,29,18,0,Math.PI,0);ctx.fill();ctx.fillRect(60,66,8,30);ctx.fillRect(110,66,8,30);ctx.fillStyle='#172947';ctx.fillRect(62,54,54,8);ctx.fillRect(70,48,38,8);ctx.fillStyle='#ffd45a';ctx.fillRect(110,136,7,9);
+ ctx.fillStyle='#172947';ctx.beginPath();ctx.ellipse(89,66,29,18,0,Math.PI,0);ctx.fill();ctx.fillRect(60,66,8,30);ctx.fillRect(110,66,8,30);ctx.fillStyle='#1d4e8a';ctx.fillRect(58,55,62,10);ctx.fillStyle='#ffd45a';ctx.fillRect(84,55,10,5);ctx.fillRect(110,136,7,9);
  ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(79,88,5,3.4,0,0,7);ctx.ellipse(99,88,5,3.4,0,0,7);ctx.fill();ctx.fillStyle='#2a3a5a';ctx.beginPath();ctx.arc(79,88,2,0,7);ctx.arc(99,88,2,0,7);ctx.fill();
  const tk=t<8&&Math.floor(t*9)%2;ctx.fillStyle='#b83a4a';ctx.beginPath();ctx.ellipse(89,106,tk?6:5,tk?4:1.6,0,0,7);ctx.fill();
  ctx.strokeStyle='#cfd6e6';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(89,86,31,Math.PI*1.05,Math.PI*1.95);ctx.stroke();ctx.fillStyle='#222';ctx.fillRect(108,100,16,4);ctx.beginPath();ctx.arc(126,102,3,0,7);ctx.fill();
@@ -374,7 +374,7 @@ let wx='clear',FM=1,gripF=1,curSky=['#2b6cff','#9fe0ff'],curG=['#e8c47a','#dcb66
 function mixc(a,b,t){const p=x=>[parseInt(x.slice(1,3),16),parseInt(x.slice(3,5),16),parseInt(x.slice(5,7),16)],A=p(a),B=p(b);return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
 function setupWeather(id){const RW=rng(id*131+7+wxSalt),hot=['DESERT','LE CAIRE','DUBAÏ','RIO','ISLAND','CANYON'].includes(th.n);
  const pool=th.n=='LONDRES'?['cloud','rain','rain','fog','clear']:th.snowy?['snow','snow','snow','cloud','fog']:hot?['clear','clear','clear','cloud','fog']:['clear','clear','clear','cloud','cloud','rain','snow','fog'];
- wx=pool[RW()*pool.length|0];FM={clear:1,cloud:1.1,rain:1.5,snow:1.8,fog:2.6}[wx];gripF={clear:1,cloud:1,rain:.92,snow:1,fog:1}[wx];
+ wx=pool[RW()*pool.length|0];FM={clear:1,cloud:1.1,rain:1.5,snow:1.8,fog:2.6}[wx];gripF={clear:1,cloud:1,rain:.92,snow:1.22,fog:1}[wx];
  const M={clear:0,cloud:.35,rain:.6,snow:.4,fog:.55}[wx];curSky=wx=='clear'?th.sky:[mixc(th.sky[0],'#7a828e',M),mixc(th.sky[1],wx=='snow'?'#e8eef4':'#aab2bc',M)];
  curG=th.g.map(c=>(wx=='snow'||th.snowy)?mixc(c,'#f4f8ff',.75):wx=='rain'?mixc(c,'#20242a',.25):c);
  const RS=rng(id*31+3+wxSalt),kinds=(wx=='rain'||wx=='snow'||wx=='fog')?['bird','bird']:['bird','bird','bird','plane','heli','drone','blimp','balloon','balloon'];skyObjs=[];

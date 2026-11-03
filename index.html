@@ -898,12 +898,12 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   else speed-=MAX*(.09+(state!='play'?.3:0))*dt;
   const st=steer(),accelerating=!!(inp.g||gpad.g||autoGas),braking=!!(inp.b||gpad.b);
   carTurn+=(st-carTurn)*Math.min(1,dt*8);
-  // OutRun-style: a short brake tap initiates the slide; throttle sustains it.
-  const driftStart=state=='play'&&braking&&!brakeWasDown&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
+  // OutRun-style tactile drift: freiner et tourner, dans n'importe quel ordre.
+  // Tant que frein + direction sont maintenus, le drift reste engagé.
+  const driftStart=state=='play'&&braking&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
   brakeWasDown=braking?1:0;
   if(driftStart){driftHold=.82;driftSide=Math.sign(st)}
-  // Le drift reste bref : accélérer le prolonge légèrement, sans le verrouiller.
-  if(driftHold>0)driftHold=Math.max(0,driftHold-dt*(accelerating?1.05:1.8));
+  else if(driftHold>0)driftHold=Math.max(0,driftHold-dt*(accelerating?1.05:1.8));
   const driftTarget=driftHold>0&&state=='play'?1:0;
   drift+=(driftTarget-drift)*Math.min(1,dt*(driftTarget?7.0:2.5));
   drift=Math.max(0,Math.min(1,drift));

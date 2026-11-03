@@ -403,6 +403,24 @@ function drawMuskCraft(x,y,w,t){
  ctx.restore();
 }
 
+// Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
+function drawVehPose(x,y,w,c,v,pose,ph){
+ if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
+ const side=pose===1||pose===3?-1:1,drifting=pose>=3;
+ const u=w/16;
+ ctx.save();ctx.translate(x,y);
+ // Vue trois-quarts : la silhouette est deformee, sans incliner la voiture.
+ ctx.transform(1,0,side*(drifting?.39:.20),1,0,0);
+ drawVeh(0,0,w,c,v,0,ph);
+ // Roues laterales et flanc visible, specifiques aux cinq vues.
+ ctx.fillStyle='#11151c';
+ const edge=side*(7.4*u);
+ ctx.beginPath();ctx.ellipse(edge-side*(drifting?1.9:1.1)*u,-2.4*u,1.7*u,2.7*u,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle=shade(c,-.33);
+ ctx.beginPath();ctx.moveTo(side*7.3*u,-7.3*u);ctx.lineTo(side*(drifting?9.8:8.8)*u,-6.2*u);
+ ctx.lineTo(side*(drifting?10.6:9.2)*u,-3.5*u);ctx.lineTo(side*7.2*u,-3.5*u);ctx.closePath();ctx.fill();
+ ctx.restore();
+}
 function drawVeh(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
@@ -557,7 +575,7 @@ function render(){
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));
   if(musk>0)drawMuskCraft(cxp+slide,cyp-bump-38,sw,flash);
-  else drawVeh(cxp+slide,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,0,Math.floor(pos/70)%2)}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
+  else drawVehPose(cxp+slide,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,drift>.15?(driftSide<0?3:4):(carTurn<-.18?1:carTurn>.18?2:0),Math.floor(pos/70)%2)}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
  for(const p of driftTrail){ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();

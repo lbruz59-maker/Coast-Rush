@@ -180,7 +180,7 @@ $('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;
 $('sf').addEventListener('click',()=>{vm^=1;if(vm&&window.speechSynthesis)speechSynthesis.cancel();$('sf').style.opacity=vm?.4:1;if(master)master.gain.value=vm?0:.9});
 document.querySelectorAll('.st[data-t]').forEach(b=>b.onclick=()=>{tr=+b.dataset.t;document.querySelectorAll('.st[data-t]').forEach(x=>x.classList.toggle('sel',x==b))});
 $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').onclick=()=>{inputMode='controller';applyInputMode()};$('ui-touch').onclick=()=>{inputMode='touch';applyInputMode()};applyInputMode();
-function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;speed=0;gear=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(!NET()&&MODE==3)MODE=MODE0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[]}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now()}else{if(MODE==2)startBrief();else{state='count';cd=3.9}}}
+function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;speed=0;gear=0;drift=0;driftSide=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(!NET()&&MODE==3)MODE=MODE0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[]}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now()}else{if(MODE==2)startBrief();else{state='count';cd=3.9}}}
 $('go').onclick=startGame;
 // ---- AUDIO (compositions originales)
 const TR=[{bpm:140,q:'mMMMmMMM',r:[45,41,48,43,45,41,43,40],L:[[69,8],[72,4],[76,4],[77,6],[76,2],[72,8],[67,4],[72,4],[76,4],[79,4],[74,8],[71,4],[67,4],[69,4],[72,4],[76,4],[81,4],[79,6],[77,2],[72,8],[71,4],[74,4],[79,4],[77,4],[76,12],[0,4]]},
@@ -550,9 +550,9 @@ function render(){
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
- const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;if(musk>0)drawMuskCraft(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump-38,sw,flash);else drawVeh(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,steer(),Math.floor(pos/70)%2);if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
+ const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;if(musk>0)drawMuskCraft(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump-38,sw,flash);else drawVeh(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,Math.max(-1,Math.min(1,steer()+driftSide*drift*.32)),Math.floor(pos/70)%2);if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
- for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
+ for(const p of driftTrail){ctx.globalAlpha=.42*(1-p.t/1.25);ctx.fillStyle='#17151a';ctx.fillRect(p.x-2,p.y+p.t*8,4,9)}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();
  {const vg=ctx.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.62);vg.addColorStop(0,'#0000');vg.addColorStop(1,'#0007');ctx.fillStyle=vg;ctx.fillRect(0,0,W,H)}
  if(ps.tun){ctx.fillStyle='#0008';ctx.fillRect(0,0,W,H)}
@@ -643,7 +643,7 @@ function useItem(){if(!useItems||state!='play'||!item||crash>0)return;const I=it
  else if(I==3){let t=null;for(const c of cars)if(c.z>p&&!(c.hit>0)&&(!t||c.z<t.z))t=c;if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}else{star=6;boostSfx();say('Invincible!',1.5,1.1)}}
 
-const DF=[{n:'FACILE',t:120,k:28,b:45,s:65},{n:'NORMAL',t:90,k:40,b:60,s:55},{n:'DIFFICILE',t:65,k:56,b:80,s:45}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[];
+const DF=[{n:'FACILE',t:120,k:28,b:45,s:65},{n:'NORMAL',t:90,k:40,b:60,s:55},{n:'DIFFICILE',t:65,k:56,b:80,s:45}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftTrail=[];
 const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 const steer=()=>Math.max(-1,Math.min(1,(inp.l?-1:0)+(inp.r?1:0)+padAx+tiltAx+tapAx));
 function toggleGear(){gear^=1;if(ac){nz(.22,.5,1800,'highpass');tone(gear?392:262,ac.currentTime,.1,'sawtooth',.06)}}
@@ -756,6 +756,7 @@ setInterval(()=>{refreshPeers();if(state=='menu'&&NET()){netSend({cid:-1,n:myNam
 function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N],sp=speed/MAX;
  flash+=dt;msgT-=dt;shake=Math.max(0,shake-dt);boost-=dt;star-=dt;slip-=dt;musk=Math.max(0,musk-dt);mini-=dt;if(gun>0&&state=='play'&&crash<=0){gun-=dt;gunT-=dt;if(gunT<=0){gunT=.09;gunSide^=1;objs.push({k:'g',z:pos+playerZ+segL*2,o:px+(gunSide?.1:-.1),w:.05,sp:MAX*3,tt:flash});gunSfx()}}if(autoG&&state=='play'){const q2=speed/MAX;if(!gear&&q2>.58)gear=1;else if(gear&&q2<.42)gear=0}if(slip>0&&Math.random()<.5)smoke.push({x:W/2+(Math.random()<.5?-20:20),y:H-8,t:0,vx:(Math.random()-.5)*24});
  for(let i=smoke.length-1;i>=0;i--){const p=smoke[i];p.t+=dt;p.y-=18*dt;p.x+=p.vx*dt;if(p.t>.7)smoke.splice(i,1)}
+ for(let i=driftTrail.length-1;i>=0;i--){driftTrail[i].t+=dt;if(driftTrail[i].t>1.25)driftTrail.splice(i,1)}
  if((state=='over'||state=='win')&&!saved){saved=1;saveScore()}
  if(state=='win'||state=='over')winT+=dt;
  if(state=='brief'){briefT+=dt;if(briefT>BL){state=MODE==2?'play':'count';if(MODE!=2)cd=3.9;else{speed=MAX*.35;msg='POURSUITE !';msgT=2}}}
@@ -772,11 +773,15 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  else{const gm=gear?1:.62,ac=gear?.2:.36;
   if(state=='play'&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm)speed+=MAX*ac*(1-sp*.55)*dt;else speed-=MAX*.15*dt}
   else speed-=MAX*(.09+(state!='play'?.3:0))*dt;
-  if(inp.b||gpad.b)speed-=MAX*.9*(.5+.5*gripF)*dt;
+  const driftInput=state=='play'&&(inp.g||gpad.g||autoGas)&&(inp.b||gpad.b)&&Math.abs(steer())>.22&&speed>MAX*.32;
+  drift+=((driftInput?1:0)-drift*(driftInput?1.8:2.8))*dt;drift=Math.max(0,Math.min(1,drift));if(driftInput)driftSide=Math.sign(steer());
+  if(inp.b||gpad.b)speed-=MAX*(driftInput?.24:.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1)),speed));
-  const sp2=speed/MAX,d=dt*2.1*sp2;
-  if(state=='play')if(gripF<.8)px+=Math.sin(flash*2.3)*dt*.12*(1-gripF)*sp2;px+=steer()*d*(slip>0?.65:1)*(.85+.15*gripF)+(slip>0?Math.sin(flash*11)*dt*.55:0);if(slip>0)speed-=MAX*.06*dt;if(tapT>0){tapT-=dt;if(tapT<=0)tapAx=0}
+  const sp2=speed/MAX,d=dt*2.1*sp2,st=steer();
+  if(state=='play')if(gripF<.8)px+=Math.sin(flash*2.3)*dt*.12*(1-gripF)*sp2;px+=st*d*(slip>0?.65:1)*(.85+.15*gripF)+(slip>0?Math.sin(flash*11)*dt*.55:0);
+  if(drift>.04){px+=driftSide*dt*(.34+sp2*.34)*drift;speed=Math.max(speed,MAX*.42);if(Math.random()<dt*30){const tx=W/2-driftSide*16+(Math.random()-.5)*5,ty=H-18;driftTrail.push({x:tx,y:ty,t:0,side:driftSide});smoke.push({x:tx,y:ty-4,t:0,vx:(Math.random()-.5)*18})}}
+  if(slip>0)speed-=MAX*.06*dt;if(tapT>0){tapT-=dt;if(tapT<=0)tapAx=0}
   px-=ps.loop?0:d*sp2*ps.curve*.38/gripF;px=Math.max(-2.4,Math.min(2.4,px))}
  const old=pos;pos+=speed*dt;score+=speed*dt/segL*5;
  skyOff+=ps.curve*speed*dt*.0003*60*.1;if(Math.floor((pos+playerZ)/segL)>=N-4&&state=='play')endCourse();

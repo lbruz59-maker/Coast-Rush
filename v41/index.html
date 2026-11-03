@@ -416,7 +416,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  const R=(px,py,pw,ph,rad,fill)=>{rrp(x+px*u,y+py*u,pw*u,ph*u,rad*u);ctx.fillStyle=fill;ctx.fill()};
  ctx.save();
  const sx=d*(drift?1.6:1.05);
- ctx.translate(sx*u,0);
+ ctx.translate(x+sx*u,y);ctx.scale(d,1);ctx.translate(-x,-y);
  ctx.globalAlpha=.28;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(x,y-u*.1,w*.72,u*1.65,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
  // pneus visibles sur le flanc et a l'arriere
  const wheel=(wx,wy,scale=1)=>{

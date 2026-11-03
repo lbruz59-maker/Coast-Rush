@@ -405,28 +405,41 @@ function drawMuskCraft(x,y,w,t){
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
 function drawVehPose(x,y,w,c,v,pose,ph){
- // V41 final : poses de conduite distinctes par modèle, dessinées depuis chaque carrosserie d'origine.
- // 0 arrière, 1 gauche, 2 droite, 3 drift gauche, 4 drift droite.
  if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
  const left=(pose===1||pose===3),drift=(pose===3||pose===4),dir=left?-1:1;
- const profiles={
-  "-1":{turn:.34,drift:.58,depth:.91,shear:.20,slide:.052}, // police
-  "1": {turn:.30,drift:.52,depth:.96,shear:.17,slide:.044}, // Coccinelle
-  "2": {turn:.36,drift:.62,depth:.89,shear:.22,slide:.055}, // muscle car
-  "3": {turn:.40,drift:.68,depth:.86,shear:.25,slide:.060}, // sportive
-  "4": {turn:.28,drift:.48,depth:.97,shear:.15,slide:.040}, // pick-up
-  "5": {turn:.25,drift:.43,depth:.99,shear:.13,slide:.034}  // fourgon
+ const u=w/16, k=String(v), profiles={
+ "-1":{body:[[-8,0],[-8,-5],[-6.7,-8],[-4.8,-9.3],[4.8,-9.3],[6.7,-8],[8,-5],[8,0]],roof:[[-4.8,-8.5],[-3.8,-13],[3.8,-13],[4.8,-8.5]],side:"#aeb9c9",glass:"#19334b",wheel:1.25,roofH:4.5},
+ "1":{body:[[-7.8,0],[-8,-4.8],[-6.8,-8.7],[-4.8,-10.3],[4.8,-10.3],[6.8,-8.7],[8,-4.8],[7.8,0]],roof:[[-5,-9],[-4.5,-13.8],[4.5,-13.8],[5,-9]],side:"#d6b58a",glass:"#24435a",wheel:1.15,roofH:4.8},
+ "2":{body:[[-8.5,0],[-8.5,-4.2],[-7.4,-7.8],[-5.8,-8.6],[5.8,-8.6],[7.4,-7.8],[8.5,-4.2],[8.5,0]],roof:[[-4.8,-7.8],[-3.8,-11.4],[3.8,-11.4],[4.8,-7.8]],side:"#b8c0ca",glass:"#172b42",wheel:1.35,roofH:3.6},
+ "3":{body:[[-8.4,0],[-8.1,-4.5],[-7,-7.3],[-5.8,-8.5],[5.8,-8.5],[7,-7.3],[8.1,-4.5],[8.4,0]],roof:[[-5.1,-7.8],[-3.9,-11.8],[3.9,-11.8],[5.1,-7.8]],side:"#d6e0ea",glass:"#10283f",wheel:1.2,roofH:4},
+ "4":{body:[[-8.2,0],[-8.2,-4.2],[-7,-7.4],[-5.4,-8.2],[5.4,-8.2],[7,-7.4],[8.2,-4.2],[8.2,0]],roof:[[-4.7,-7.6],[-4.2,-12.8],[4.2,-12.8],[4.7,-7.6]],side:"#b8a27c",glass:"#20384a",wheel:1.35,roofH:5.2},
+ "5":{body:[[-8.5,0],[-8.5,-5],[-8,-14],[-6.8,-15],[6.8,-15],[8,-14],[8.5,-5],[8.5,0]],roof:[[-6.6,-13.8],[-6.4,-18],[6.4,-18],[6.6,-13.8]],side:"#b9c4d2",glass:"#1b3449",wheel:1.4,roofH:4.2}
  };
- const p=profiles[String(v)]||{turn:.32,drift:.55,depth:.94,shear:.18,slide:.046};
- const angle=dir*(drift?p.drift:p.turn),pivotY=y-w*.46;
- const slide=dir*w*(drift?p.slide:.014);
- ctx.save();
- ctx.translate(x+slide,pivotY);
- // Le cisaillement et l'écrasement varient selon la géométrie du véhicule.
- ctx.transform(1,0,dir*(drift?p.shear:p.shear*.58),drift?p.depth*.96:p.depth,0,0);
- ctx.rotate(angle);
- ctx.translate(-x,-pivotY);
- drawVeh(x,y,w,c,v,0,ph,0);
+ const p=profiles[k]||profiles["-1"], mirror=left?-1:1;
+ const X=(a)=>x+a*u*mirror, Y=(a)=>y+a*u;
+ const poly=(pts,fill,stroke)=>{ctx.beginPath();pts.forEach((a,i)=>i?ctx.lineTo(X(a[0]),Y(a[1])):ctx.moveTo(X(a[0]),Y(a[1])));ctx.closePath();ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=Math.max(.45,u*.22);ctx.stroke()}};
+ ctx.save();ctx.translate(dir*w*(drift?.12:.035),0);
+ // Ombre et pneus visibles sur le côté extérieur : formes dessinées en perspective, pas de rotation du sprite arrière.
+ ctx.globalAlpha=.35;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(x+dir*w*.08,y-u*1.0,w*.62,u*1.5,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+ const side=dir===1?p.side:shade(p.side,-.22),dark=shade(c,-.38),light=shade(c,.24);
+ // flanc et volume arrière, proportions propres à chaque carrosserie
+ poly([[-7.8,-3.1],[-7.1,-7.3],[-5.2,-8.5],[5.5,-8.5],[7.8,-5.4],[8.2,-1.2],[6.8,-.1],[-6.8,-.1]],side,"#111a28");
+ poly([[-7.8,-3.1],[-7.1,-7.3],[-5.2,-8.5],[5.5,-8.5],[7.8,-5.4],[8.2,-1.2],[6.8,-.1],[-6.8,-.1]],LG(y-9*u,y,light,dark));
+ // toit et vitrage distincts selon le modèle
+ poly(p.roof,shade(c,.18),"#101827");
+ const rw=p.roofH;
+ poly([[-4.25,-8.5],[-3.35,-8.5],[-2.7,-8.5-rw],[2.9,-8.5-rw],[4.2,-8.5]],p.glass,"#7895aa");
+ // grande vitre latérale et montant
+ poly([[-5.1,-8.3],[-4.2,-8.5],[-3.35,-8.5-rw],[1.7,-8.5-rw],[2.1,-8.5]],"#18344b","#9bb8ca");
+ // silhouette du capot/coffre et arêtes lumineuses
+ poly([[-7.8,-3.1],[-6.7,-5.3],[-4.9,-5.8],[5.8,-5.8],[7.8,-3.7],[6.8,-.3],[-6.8,-.3]],side);
+ ctx.strokeStyle="#ffffff70";ctx.lineWidth=Math.max(.5,u*.22);ctx.beginPath();ctx.moveTo(X(-6.8),Y(-5.5));ctx.lineTo(X(5.8),Y(-5.5));ctx.stroke();
+ // roues latérales : deux volumes visibles, placés suivant l'empattement du véhicule
+ for(const a of [-5.7,5.4]){ctx.fillStyle="#080b10";ctx.beginPath();ctx.ellipse(X(a),Y(-1.7),u*p.wheel,u*2.15,.08*dir,0,Math.PI*2);ctx.fill();ctx.fillStyle="#68717b";ctx.beginPath();ctx.ellipse(X(a),Y(-1.8),u*.62,u*1.25,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#c4cbd2";ctx.fillRect(X(a)-u*.16,Y(-2.4),u*.32,u*1.2)}
+ // feux arrière et plaque
+ ctx.fillStyle="#ff3949";ctx.fillRect(X(-6.9),Y(-4.1),u*1.5,u*1.4);ctx.fillRect(X(5.4),Y(-4.1),u*1.5,u*1.4);
+ ctx.fillStyle="#f2f0df";ctx.fillRect(x-u*1.8,y-u*3.8,u*3.6,u*.9);
+ if(drift){ctx.globalAlpha=.55;ctx.strokeStyle="#dce9f5";ctx.lineWidth=u*.7;for(const a of [-1,1]){ctx.beginPath();ctx.moveTo(x+a*u*7,y-u*1.2);ctx.lineTo(x+a*u*10,y+u*2.2);ctx.stroke()}ctx.globalAlpha=1}
  ctx.restore();
 }
 function drawVeh(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}

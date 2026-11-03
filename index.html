@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V40</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V41</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover,maximum-scale=1,user-scalable=no">
 <style>
 :root{box-sizing:border-box}
@@ -44,6 +44,26 @@ html.tv #sun{top:12%;width:min(34vh,300px)}
 html.tv #grid{height:18%}
 html.tv canvas{max-width:none;max-height:none;box-shadow:none}
 
+
+/* COAST RUSH V41 — modern mobile visual pass */
+html,body{background:#050b1b}
+#menu{background:radial-gradient(ellipse at 50% 17%,#273e70 0%,#111b39 38%,#070d20 76%,#050914 100%);backdrop-filter:saturate(1.2)}
+#sun{top:14%;width:min(48vmin,300px);background:radial-gradient(circle at 35% 30%,#fff7c8 0%,#ffd36c 18%,#ff6b72 53%,#a52d8a 78%);box-shadow:0 0 55px #ff7a9b66,0 0 130px #5b70ff44}
+#grid{height:25%;opacity:.55;background:linear-gradient(transparent,#0b1434),repeating-linear-gradient(90deg,#6ce6ff33 0 1px,transparent 1px 42px),repeating-linear-gradient(#6ce6ff33 0 1px,transparent 1px 24px)}
+#mc{max-width:760px;padding:clamp(12px,3vh,28px) 14px 28px;gap:10px}
+#sub{color:#9cecff;letter-spacing:.28em;text-shadow:0 0 14px #55dfff88}
+#menu h1{font-family:system-ui,Arial,sans-serif;font-weight:1000;letter-spacing:-.045em;font-style:italic;background:linear-gradient(180deg,#fff 4%,#d9f6ff 30%,#7ce9ff 55%,#ff9dba 82%,#fff 100%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 3px 0 #111b43) drop-shadow(0 0 20px #57caff66)}
+.row{background:linear-gradient(135deg,#142448d9,#0b1530e8);border:1px solid #8adfff3d;border-radius:16px;padding:10px;box-shadow:0 8px 26px #0005,inset 0 1px #ffffff12;backdrop-filter:blur(12px)}
+.row b{color:#9cecff;font-family:system-ui,Arial,sans-serif;font-size:12px}
+.st{background:linear-gradient(180deg,#263b63,#142344);border:1px solid #78dfff88;border-radius:12px;color:#f4fbff;font-family:system-ui,Arial,sans-serif;font-weight:800;letter-spacing:.015em;box-shadow:0 3px 10px #0004,inset 0 1px #ffffff20;transition:transform .12s,filter .12s}
+.st:active{transform:scale(.97);filter:brightness(1.25)}
+.st.sel{background:linear-gradient(135deg,#ff6e8c,#a73f9d);border-color:#ffd4e4;box-shadow:0 0 18px #ff609766}
+#go{background:linear-gradient(135deg,#ff8b61,#ff477e 55%,#a83db2);border:1px solid #ffd4df;color:white;border-radius:16px;box-shadow:0 8px 28px #ff4b8266,inset 0 1px #ffffff88;font-size:clamp(22px,6vmin,30px);letter-spacing:.06em}
+#hs{color:#d9f5ff}
+#mc>div:last-child{color:#c5d6f5!important}
+canvas{image-rendering:auto;filter:contrast(1.035) saturate(1.12);box-shadow:0 0 60px #4aaaff22}
+@media(max-width:600px){#mc{gap:8px;padding:12px 10px 24px}.row{gap:7px;padding:9px}.row b{width:100%;text-align:center}.st{font-size:12px;padding:9px 11px}#go{width:min(92%,380px)}}
+@media(prefers-reduced-motion:reduce){#grid{animation:none}#go{animation:none}}
 </style></head><body>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
@@ -59,7 +79,7 @@ html.tv canvas{max-width:none;max-height:none;box-shadow:none}
 <div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
 <div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
 <div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v40</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v41</div><div id="hs" style="font-size:12px;opacity:.9"></div>
 <div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
@@ -798,9 +818,9 @@ function sizeCanvas(){
  H=224;W=Math.max(300,Math.min(560,Math.round(H*iw/ih)));
  const sc=Math.min(iw/W,ih/H);
  cv.style.width=Math.max(1,Math.floor(W*sc))+'px';cv.style.height=Math.max(1,Math.floor(H*sc))+'px';
- let k=qMode==1?2:qMode==2?3:qMode==3?4:Math.round(sc*Math.min(d,2));
+ let k=qMode==1?2:qMode==2?3:qMode==3?6:Math.round(sc*Math.min(d,3));
  // Fire TV: native 1x canvas avoids rendering four times as many pixels.
- k=isTV?1:Math.max(1,Math.min(4,mob&&qMode==0?2:4,k||2));RS=k;
+ k=isTV?1:Math.max(1,Math.min(6,mob&&qMode==0?3:6,k||3));RS=k;
  if(cv.width!==W*k||cv.height!==H*k){cv.width=W*k;cv.height=H*k}
  if(ctx&&ctx.setTransform)ctx.setTransform(RS,0,0,RS,0,0);
 }

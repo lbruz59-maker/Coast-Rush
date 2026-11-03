@@ -420,6 +420,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  const path=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(X(p[0],p[1]),Y(p[1])):ctx.moveTo(X(p[0],p[1]),Y(p[1])));ctx.closePath()};
  const shape=(pts,fill,stroke="#151922",lw=Math.max(.45,u*.22))=>{path(pts);ctx.fillStyle=fill;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=lw;ctx.stroke()}};
  const stroke=(pts,color,lw)=>{ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(X(p[0],p[1]),Y(p[1])):ctx.moveTo(X(p[0],p[1]),Y(p[1])));ctx.strokeStyle=color;ctx.lineWidth=lw;ctx.lineCap="round";ctx.lineJoin="round";ctx.stroke()};
+ const rr=(xx,yy,ww,hh,r,fill)=>{rrp(X(xx,yy),Y(yy),ww*u,hh*u,r*u);ctx.fillStyle=fill;ctx.fill()};
  const grad=(y1,y2,stops)=>{const g=ctx.createLinearGradient(0,Y(y1),0,Y(y2));stops.forEach(z=>g.addColorStop(z[0],z[1]));return g};
  ctx.save();
  // Ombre portée, un peu étirée pendant le drift

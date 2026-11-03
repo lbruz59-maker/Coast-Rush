@@ -803,7 +803,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   px+=st*d*(slip>0?.65:1)*(.85+.15*gripF)*(1-drift*.48)+(slip>0?Math.sin(flash*11)*dt*.55:0);
   if(drift>.025){
    const counter=Math.max(-1,Math.min(1,st*driftSide));
-   px+=driftSide*dt*(.16+sp2*.34)*drift*(.72-.42*counter);
+   px+=driftSide*dt*(.16+sp2*.34)*drift*(.72+.28*counter);
    if(accelerating)speed=Math.min(MAX*1.10,speed+MAX*.055*drift*dt);
    driftMarkClock+=dt;if(driftMarkClock>.055){driftMarkClock=0;const tx=W/2+driftSide*drift*12,ty=H-16;for(const wheel of [-1,1])driftTrail.push({x:tx+wheel*8,y:ty,t:0,side:driftSide});if(Math.random()<dt*9)smoke.push({x:tx+driftSide*13,y:ty-8,t:0,vx:(Math.random()-.5)*22})}
   }

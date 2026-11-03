@@ -404,33 +404,98 @@ function drawMuskCraft(x,y,w,t){
 }
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
+// Sprites dédiés : chaque pose est redessinée en perspective arrière,
+// avec le nez orienté dans le bon sens et l'arrière qui part à l'opposé en drift.
 function drawVehPose(x,y,w,c,v,pose,ph){
- if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
- const side=pose===1||pose===3?-1:1,drifting=pose>=3,u=w/16;
- ctx.save();ctx.translate(x,y);
- // Chaque pose possède une silhouette dédiée : angle de caisse et décalage de l'essieu arrière.
- const shear=side*(drifting?.48:.27);
- ctx.transform(1,0,shear,1,0,0);
- const rearShift=drifting?-side*2.1*u:0;
- drawVeh(rearShift,0,w,c,v,0,ph);
- // Flanc visible et roue extérieure : ces éléments changent selon le côté du virage.
- ctx.fillStyle='#080d15';
- ctx.beginPath();ctx.ellipse(side*(7.1+(drifting?1.2:0))*u,-2.65*u,1.65*u,2.75*u,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle='#697887';
- ctx.beginPath();ctx.ellipse(side*(7.1+(drifting?1.2:0))*u,-2.65*u,.78*u,1.55*u,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=shade(c,drifting?-.48:-.28);
- ctx.beginPath();
- ctx.moveTo(side*6.8*u,-7.4*u);
- ctx.lineTo(side*(drifting?10.4:9.1)*u,-6.3*u);
- ctx.lineTo(side*(drifting?11.1:9.6)*u,-3.1*u);
- ctx.lineTo(side*6.9*u,-3.2*u);
- ctx.closePath();ctx.fill();
- ctx.strokeStyle='#ffffff55';ctx.lineWidth=Math.max(.35,u*.16);
- ctx.beginPath();ctx.moveTo(side*7.2*u,-6.8*u);ctx.lineTo(side*(drifting?10:8.9)*u,-5.9*u);ctx.stroke();
+ const u=w/16, turn=(pose===1||pose===3)?-1:(pose===2||pose===4)?1:0;
+ const drifting=pose===3||pose===4;
+ const front=turn* (drifting?3.15:2.0)*u;
+ const rear=turn* (drifting?-3.0:-1.05)*u;
+ const mid=(front+rear)*.5;
+ const police=v<0, beetle=v===1, pickup=v===4, van=v===5;
+ const sport=!police&&!beetle&&!pickup&&!van;
+ const bodyW=beetle?7.6:van?8.0:pickup?8.0:8.0;
+ const topY=beetle?-13.8:van?-14.8:pickup?-13.0:-13.5;
+ const bottomY=-2.1;
+ const cxAt=(yy)=>front+(rear-front)*((yy-topY)/(bottomY-topY));
+ const P=(pts)=>{ctx.beginPath();pts.forEach((p,i)=>{const xx=p[0],yy=p[1];if(i===0)ctx.moveTo(x+cxAt(yy)+xx*u,y+yy*u);else ctx.lineTo(x+cxAt(yy)+xx*u,y+yy*u)});ctx.closePath()};
+ const fillPoly=(pts,col)=>{P(pts);ctx.fillStyle=col;ctx.fill()};
+ // Ombre et roues : les roues restent verticales, sans roulis.
+ ctx.save();
+ ctx.globalAlpha*=.34;ctx.fillStyle="#000";ctx.beginPath();
+ ctx.ellipse(x+mid,y-.2*u,w*.57,1.35*u,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ const wheelY=[-5.0,-10.0];
+ for(let i=0;i<2;i++){
+  const yy=wheelY[i],cc=cxAt(yy);
+  for(const side of [-1,1]){
+   const wx=x+cc+side*(bodyW-.15)*u;
+   ctx.fillStyle="#080b10";rrp(wx-1.05*u,y+(yy-1.6)*u,2.1*u,3.3*u,.65*u);ctx.fill();
+   ctx.fillStyle="#68727d";rrp(wx-.48*u,y+(yy-1.15)*u,.96*u,2.35*u,.35*u);ctx.fill();
+   ctx.fillStyle="#b8c3ce";ctx.fillRect(wx-.12*u,y+(yy-.9)*u,.24*u,1.8*u);
+  }
+ }
+ // Châssis principal, dessiné en cinq silhouettes et non par cisaillement.
+ const hull=beetle?
+  [[-6.8,-3.0],[-7.5,-6.5],[-6.7,-10.5],[-4.5,-13.7],[4.5,-13.7],[6.7,-10.5],[7.5,-6.5],[6.8,-3.0]]:
+  van?
+  [[-7.7,-2.8],[-8,-5],[-7.7,-14.7],[7.7,-14.7],[8,-5],[7.7,-2.8]]:
+  pickup?
+  [[-7.6,-2.8],[-8,-5.2],[-7.4,-8.0],[-5.5,-13.0],[5.5,-13.0],[7.4,-8.0],[8,-5.2],[7.6,-2.8]]:
+  [[-7.7,-2.8],[-8,-5.5],[-7.5,-9.2],[-6.1,-13.5],[6.1,-13.5],[7.5,-9.2],[8,-5.5],[7.7,-2.8]];
+ fillPoly(hull,LG(y+topY*u,y+bottomY*u,shade(c,.34),shade(c,-.38)));
+ // Pare-chocs et bas de caisse arrière
+ fillPoly([[-7.7,-3.0],[-7.1,-2.0],[7.1,-2.0],[7.7,-3.0],[6.8,-3.8],[-6.8,-3.8]],"#252a32");
+ ctx.strokeStyle="#ffffff65";ctx.lineWidth=Math.max(.45,.22*u);
+ P([[-6.5,-4.0],[-6.8,-8.5],[-5.6,topY+.35],[5.6,topY+.35],[6.8,-8.5],[6.5,-4.0]]);ctx.stroke();
+ // Vitres arrière spécifiques à chaque carrosserie
+ if(van){
+  fillPoly([[-6.3,-10.1],[-6.1,-13.7],[6.1,-13.7],[6.3,-10.1]],"#15283c");
+  ctx.strokeStyle="#8eb5d1";ctx.lineWidth=Math.max(.4,.18*u);P([[-6.3,-10.1],[-6.1,-13.7],[6.1,-13.7],[6.3,-10.1]]);ctx.stroke();
+  ctx.strokeStyle="#8da0b0";ctx.beginPath();ctx.moveTo(x+cxAt(-12)*1,y-12*u);ctx.lineTo(x+cxAt(-12)*1,y-5*u);ctx.stroke();
+ }else if(pickup){
+  fillPoly([[-5.0,-9.4],[-4.7,-12.5],[4.7,-12.5],[5.0,-9.4]],"#15283c");
+  fillPoly([[-7.1,-8.1],[-6.8,-8.7],[6.8,-8.7],[7.1,-8.1],[6.5,-4.5],[-6.5,-4.5]],shade(c,-.2));
+  ctx.strokeStyle="#e1e6ec88";ctx.lineWidth=Math.max(.4,.18*u);P([[-6.5,-4.6],[6.5,-4.6],[7.1,-8.1],[-7.1,-8.1]]);ctx.stroke();
+ }else{
+  const winTop=beetle?-13.0:-12.7,winBot=beetle?-9.2:-9.0,ww=beetle?4.6:5.2;
+  fillPoly([[-ww,winBot],[-ww*.82,winTop],[ww*.82,winTop],[ww,winBot]],"#14283d");
+  fillPoly([[-ww*.72,winTop+.35],[-1.1,winTop+.35],[-2.3,winBot-.3],[-ww*.85,winBot-.3]],"#9bc9e6aa");
+ }
+ // Détails arrière, feux et signature du modèle
+ if(beetle){
+  ctx.strokeStyle="#f1d7a0";ctx.lineWidth=Math.max(.5,.28*u);
+  ctx.beginPath();ctx.arc(x+cxAt(-6.2*u),y-6.2*u,1.15*u,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.arc(x+cxAt(-6.2*u)+4.1*u,y-6.2*u,1.15*u,0,Math.PI*2);ctx.stroke();
+ }else{
+  for(const side of [-1,1]){
+   const yy=pickup?-5.5:-6.0,xx=x+cxAt(yy)+side*(pickup?6.5:6.35)*u;
+   rrp(xx-1.0*u,y+(yy-1.0)*u,2*u,1.9*u,.35*u);
+   ctx.fillStyle=police?"#ff3434":(van?"#e6323d":"#d92d38");ctx.fill();
+   if(!police){ctx.fillStyle="#ff9b9b";ctx.fillRect(xx-.65*u,y+(yy-.8)*u,1.3*u,.35*u)}
+  }
+ }
+ rrp(x+mid-1.55*u,y-4.5*u,3.1*u,.9*u,.2*u);ctx.fillStyle="#e5e9ee";ctx.fill();
+ ctx.fillStyle="#171a20";ctx.fillRect(x+mid-1.15*u,y-4.3*u,2.3*u,.35*u);
+ // Spoiler / toit / gyrophare
+ if(police){
+  rrp(x+cxAt(-13.6*u)-4.8*u,y-15.1*u,9.6*u,1.15*u,.35*u);
+  ctx.fillStyle="#f32936";rrp(x+cxAt(-13.6*u)-4.6*u,y-15.0*u,4.3*u,.9*u,.25*u);ctx.fill();
+  ctx.fillStyle="#267dff";rrp(x+cxAt(-13.6*u)+.3*u,y-15.0*u,4.3*u,.9*u,.25*u);ctx.fill();
+ }else if(sport){
+  ctx.fillStyle=shade(c,-.48);rrp(x+mid-6.2*u,y-14.0*u,12.4*u,.65*u,.25*u);ctx.fill();
+ }
+ // Flanc visible, dessiné du bon côté selon le virage
+ if(turn!==0){
+  const visible=-turn,yy=-7.0,cc=cxAt(yy);
+  ctx.fillStyle=shade(c,drifting?-.5:-.28);
+  P([[visible*6.5,yy+2.8],[visible*7.8,yy+2.1],[visible*7.4,yy-2.2],[visible*6.1,yy-2.8]]);ctx.fill();
+  ctx.strokeStyle="#ffffff88";ctx.lineWidth=Math.max(.4,.2*u);
+  P([[visible*6.7,yy+1.9],[visible*7.25,yy-1.8]]);ctx.stroke();
+ }
+ // Traces visuelles de glisse discrètes, sans déplacer le véhicule ni changer sa physique
  if(drifting){
-  // Le train arrière part à l'opposé du nez, sans roulis ni soulèvement.
-  ctx.strokeStyle='#d9e7f288';ctx.lineWidth=Math.max(.7,u*.28);
-  ctx.beginPath();ctx.moveTo(-side*5*u,-1.4*u);ctx.lineTo(-side*10*u,1.2*u);ctx.stroke();
+  ctx.strokeStyle="#d9e7f288";ctx.lineWidth=Math.max(.7,.3*u);
+  ctx.beginPath();ctx.moveTo(x+cxAt(-3)+turn*2*u,y-3*u);ctx.lineTo(x+cxAt(-3)+turn*5*u,y+1.2*u);ctx.stroke();
  }
  ctx.restore();
 }

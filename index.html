@@ -215,7 +215,7 @@ function initAudio(){
  eng=ac.createOscillator();eng.type='sawtooth';engB=ac.createOscillator();engB.type='sawtooth';engB.detune.value=9;eng2=ac.createOscillator();eng2.type='square';eng.connect(wsh);engB.connect(wsh);eng2.connect(wsh);wsh.connect(ef);ef.connect(eg);eg.connect(master);eng.start();engB.start();eng2.start();
  // Tire squeal: filtered procedural noise, smoothly gated by controlled drift.
  window.__driftSqueal=ac.createGain();window.__driftSqueal.gain.value=0;
- const dsf=ac.createBiquadFilter();dsf.type='bandpass';dsf.frequency.value=1850;dsf.Q.value=1.15;
+ const dsf=ac.createBiquadFilter();dsf.type='bandpass';dsf.frequency.value=2150;dsf.Q.value=1.35;
  const dss=ac.createBufferSource();dss.buffer=nb;dss.loop=true;dss.connect(dsf);dsf.connect(window.__driftSqueal);window.__driftSqueal.connect(master);dss.start();
  tb=ac.createOscillator();tb.type='sine';tbg=ac.createGain();tbg.gain.value=0;tb.connect(tbg);tbg.connect(master);tb.start();
  rev=ac.createConvolver();const ir=ac.createBuffer(2,ac.sampleRate*2.2|0,ac.sampleRate);for(let c2=0;c2<2;c2++){const d=ir.getChannelData(c2);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}rev.buffer=ir;const rsd=ac.createGain();rsd.gain.value=.28;mus.connect(rsd);rsd.connect(rev);rev.connect(master);PB=ac.createGain();PB.connect(mus);
@@ -586,8 +586,7 @@ function render(){
  const OXh=(W-320)/2;ctx.save();ctx.translate(OXh,0);
  const T=(t,xx,yy,c)=>{ctx.fillStyle='#000';ctx.fillText(t,xx+1,yy+1);ctx.fillStyle=c;ctx.fillText(t,xx,yy)};
  if(!NOHUD.includes(state)){
- if(state=='play'&&drift>.12){ctx.save();ctx.textAlign='center';ctx.font='bold 13px system-ui,Arial,sans-serif';ctx.fillStyle='#06101d';ctx.fillRect(W/2-35,H-76,70,19);ctx.strokeStyle='#66f4ff';ctx.lineWidth=1.5;ctx.strokeRect(W/2-35,H-76,70,19);ctx.fillStyle='#8ff8ff';ctx.shadowColor='#27dfff';ctx.shadowBlur=9;ctx.fillText('DRIFT',W/2,H-62);ctx.restore()}
- ctx.textAlign='left';ctx.font='bold 14px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';
+  ctx.textAlign='left';ctx.font='bold 14px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';
  T(MODE==2?'CHASE H.Q.':MP?'COURSE '+raceNo+'/'+NR():'TIME',8,16,'#ffd400');T(MODE==2?'POLICE':MP?fmt(raceT):String(Math.max(0,Math.ceil(time))).padStart(2,'0'),8,32,'#ff4d6d');
  T('SCORE',110,16,'#ffd400');T(String(Math.floor(score)).padStart(7,'0'),110,32,'#fff');T('STAGE '+stage,215,16,'#7fe0ff');if(MODE==2){const rank=1+remotes.filter(r=>r.presence&&(+r.presence.ch||0)>chaseHits).length;T('COUPS '+chaseHits+(MP?' · POS '+rank:'')+' · GRADE '+(chaseRank+1),8,48,'#ffd400');}T(th.n+' '+WXI[wx],215,64,'#ffd');if(NET()){let rk=1,tot=1;const me=stage*1e6+pos+playerZ;for(const r of remotes){const q=r.presence;if(q&&q.cid>=0&&q.stg){tot++;if(q.stg*1e6+q.pos>me)rk++}}T('POS '+rk+'/'+tot,110,48,'#7fe0ff')}
  if(NET()){const NS=MODE==1||MODE==3?15:MODE==4?10:5,fr=(st,p)=>Math.max(0,Math.min(1,((st-1)+Math.max(0,Math.min(1,p/trackLen)))/NS)),dot=(f,col,r,tag)=>{const xx=10+f*(300);ctx.fillStyle=col;ctx.beginPath();ctx.arc(xx,9,r,0,7);ctx.fill();ctx.fillStyle='#fff';ctx.font='6px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText(tag,xx,5)};
@@ -806,7 +805,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   drift+=(driftTarget-drift)*Math.min(1,dt*(driftTarget?7.0:2.5));
   drift=Math.max(0,Math.min(1,drift));
   if(drift<.025){driftSide=0;driftMarkClock=0}
-  if(ac&&window.__driftSqueal){const squeal=drift>.12?Math.min(.15,.012+drift*.115):0;window.__driftSqueal.gain.setTargetAtTime(squeal,ac.currentTime,.09)}
+  if(ac&&window.__driftSqueal){const squeal=drift>.12?Math.min(.28,.035+drift*.245):0;window.__driftSqueal.gain.setTargetAtTime(squeal,ac.currentTime,.09)}
   if(braking&&!driftStart)speed-=MAX*(drift>.15?.10:.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));

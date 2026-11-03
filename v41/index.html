@@ -474,6 +474,31 @@ function drawVehPose(x,y,w,c,v,pose,ph){
   for(const xx of [-6.4,6.4])rbox(xx-1.0,-4.6,2.0,1.35,"#ed3545");
   poly([[-7.3,-2.7],[-6.4,-1.9],[6.4,-1.9],[7.3,-2.7]],"#c2cbd3");
  }
+ // Habitacle et occupants : les deux personnages restent visibles dans les vues inclinées.
+ // Le cabriolet reprend explicitement les deux passagers du sprite original.
+ if(!van&&!pickup){
+  // Ouvrir visuellement la cabine sur le coupé/cabriolet d'origine.
+  if(!beetle){
+   poly([[-4.8,-9.7],[-4.2,-12.0],[-3.0,-12.7],[3.0,-12.7],[4.2,-12.0],[4.8,-9.7],[3.7,-9.0],[-3.7,-9.0]],"#101923","#080d13",Math.max(.45,u*.17));
+   // Tableau de bord et sièges arrière
+   poly([[-4.2,-9.8],[-3.2,-11.2],[3.2,-11.2],[4.2,-9.8]],"#253647","#71899c",Math.max(.4,u*.14));
+  }
+  // Passager gauche et conducteur droit, dessinés en perspective, jamais cachés par une vitre opaque.
+  const people=beetle?[[-2.0,-10.4],[2.1,-10.2]]:[[-2.25,-10.1],[2.0,-9.95]];
+  for(let pi=0;pi<2;pi++){
+   const q=people[pi],px=q[0],py=q[1],headY=py-2.15;
+   // siège / épaules
+   poly([[px-1.55,py+.65],[px-1.35,py-.65],[px-.85,py-1.0],[px+.85,py-1.0],[px+1.35,py-.65],[px+1.55,py+.65]],pi===0?"#e45a32":"#e8edf2","#222b35",Math.max(.35,u*.12));
+   // cou
+   poly([[px-.38,headY+.85],[px+.38,headY+.85],[px+.32,headY+1.35],[px-.32,headY+1.35]],"#d6a07d",null);
+   // tête et cheveux
+   ctx.fillStyle="#dca982";ctx.beginPath();ctx.ellipse(X(px,headY),Y(headY),.78*u,1.02*u,0,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle=pi===0?"#352016":"#59402c";ctx.beginPath();ctx.ellipse(X(px,headY-.42),Y(headY-.42),.82*u,.62*u,0,Math.PI,Math.PI*2);ctx.fill();
+   ctx.fillStyle="#f0c5a0";ctx.beginPath();ctx.arc(X(px-.68,headY),Y(headY),.18*u,0,Math.PI*2);ctx.fill();
+   // bras visibles au-dessus de la ceinture, comme dans le sprite original
+   line([[px+(pi===0?-.9:.9),py-.15],[px+(pi===0?-.35:.35),py-.85],[px+(pi===0?.25:-.25),py-.9]],"#d6a07d",Math.max(.8,u*.32));
+  }
+ }
  // Éléments communs de finition : plaque, reflets et traces de drift
  rbox(-1.55,-2.9,3.1,.85,"#e9edf0");
  ctx.fillStyle="#26313a";ctx.font="bold "+Math.max(2,u*.38)+"px Arial";ctx.textAlign="center";ctx.fillText("CR",X(0,-2.25),Y(-2.25));

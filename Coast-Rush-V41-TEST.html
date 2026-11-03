@@ -435,8 +435,8 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  ctx.globalAlpha=.35;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(x+dir*w*.08,y-u*1.0,w*.62,u*1.5,0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
  const side=dir===1?p.side:shade(p.side,-.22),dark=shade(c,-.38),light=shade(c,.24);
  // flanc et volume arrière, proportions propres à chaque carrosserie
- poly([[-7.8,-3.1],[-7.1,-7.3],[-5.2,-8.5],[5.5,-8.5],[7.8,-5.4],[8.2,-1.2],[6.8,-.1],[-6.8,-.1]],side,"#111a28");
- poly([[-7.8,-3.1],[-7.1,-7.3],[-5.2,-8.5],[5.5,-8.5],[7.8,-5.4],[8.2,-1.2],[6.8,-.1],[-6.8,-.1]],LG(y-9*u,y,light,dark));
+ poly(p.body,"#101722","#080d16");
+ poly(p.body,LG(y-9*u,y,light,dark));
  // toit et vitrage distincts selon le modèle
  poly(p.roof,shade(c,.18),"#101827");
  const rw=p.roofH;

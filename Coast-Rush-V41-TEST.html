@@ -158,7 +158,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   else {bnd.z=playerZ+segL*25;bnd.o=0;bnd.lane=0;bnd.cool=0;bnd.hit=0;bnd.vo=0;}
   cars.push(bnd);arrestT=0;
  }}
-let chaseCircuitsDone=0;let pos=0,px=0,pxVel=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,flash=0,msg='',msgT=0,tr=0;
+let chaseCircuitsDone=0;let pos=0,px=0,pxVel=0,carTurn=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,flash=0,msg='',msgT=0,tr=0;
 const inp={l:0,r:0,g:0,b:0};
 const K={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'g',w:'g',ArrowDown:'b',s:'b'};
 addEventListener('keydown',e=>{if(inputMode==='keyboard'&&K[e.key])inp[K[e.key]]=1;if(inputMode==='keyboard'&&e.code=='Space'&&state!='menu'){toggleGear();e.preventDefault()}if(inputMode==='keyboard'&&(e.key=='h'||e.key=='H'))horn();});
@@ -180,7 +180,7 @@ $('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;
 $('sf').addEventListener('click',()=>{vm^=1;if(vm&&window.speechSynthesis)speechSynthesis.cancel();$('sf').style.opacity=vm?.4:1;if(master)master.gain.value=vm?0:.9});
 document.querySelectorAll('.st[data-t]').forEach(b=>b.onclick=()=>{tr=+b.dataset.t;document.querySelectorAll('.st[data-t]').forEach(x=>x.classList.toggle('sel',x==b))});
 $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').onclick=()=>{inputMode='controller';applyInputMode()};$('ui-touch').onclick=()=>{inputMode='touch';applyInputMode()};applyInputMode();
-function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(!NET()&&MODE==3)MODE=MODE0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[]}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now()}else{if(MODE==2)startBrief();else{state='count';cd=3.9}}}
+function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(!NET()&&MODE==3)MODE=MODE0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[]}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now()}else{if(MODE==2)startBrief();else{state='count';cd=3.9}}}
 $('go').onclick=startGame;
 // ---- AUDIO (compositions originales)
 const TR=[{bpm:140,q:'mMMMmMMM',r:[45,41,48,43,45,41,43,40],L:[[69,8],[72,4],[76,4],[77,6],[76,2],[72,8],[67,4],[72,4],[76,4],[79,4],[74,8],[71,4],[67,4],[69,4],[72,4],[76,4],[81,4],[79,6],[77,2],[72,8],[71,4],[74,4],[79,4],[77,4],[76,12],[0,4]]},
@@ -555,8 +555,10 @@ function render(){
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
- if(musk>0)drawMuskCraft(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump-38,sw,flash);
- else{const yaw=drift*.42*driftSide+steer()*.025;ctx.save();ctx.translate(cxp+driftSide*drift*17,cyp-bump);ctx.rotate(yaw);ctx.translate(-cxp,-(cyp-bump));drawVeh(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,Math.max(-1,Math.min(1,steer()+driftSide*drift*.55)),Math.floor(pos/70)%2);ctx.restore()}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
+ {const yaw=carTurn*.17+drift*.34*driftSide;ctx.save();ctx.translate(cxp+driftSide*drift*17,cyp-bump);ctx.rotate(yaw);ctx.translate(-cxp,-(cyp-bump));
+  if(musk>0)drawMuskCraft(cxp+(carTurn)*2,cyp-bump-38,sw,flash);
+  else drawVeh(cxp+(carTurn)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,Math.max(-1,Math.min(1,carTurn+driftSide*drift*.55)),Math.floor(pos/70)%2);
+  ctx.restore()}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
  for(const p of driftTrail){ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();
@@ -781,6 +783,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(state=='play'&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm)speed+=MAX*accelRate*(1-sp*.55)*dt;else speed-=MAX*.15*dt}
   else speed-=MAX*(.09+(state!='play'?.3:0))*dt;
   const st=steer(),accelerating=!!(inp.g||gpad.g||autoGas),braking=!!(inp.b||gpad.b);
+  carTurn+=(st-carTurn)*Math.min(1,dt*8);
   // OutRun-style: a short brake tap initiates the slide; throttle sustains it.
   const driftStart=state=='play'&&braking&&!brakeWasDown&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
   brakeWasDown=braking?1:0;

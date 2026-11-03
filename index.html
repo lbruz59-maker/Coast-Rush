@@ -898,12 +898,12 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   else speed-=MAX*(.09+(state!='play'?.3:0))*dt;
   const st=steer(),accelerating=!!(inp.g||gpad.g||autoGas),braking=!!(inp.b||gpad.b);
   carTurn+=(st-carTurn)*Math.min(1,dt*8);
-  // OutRun-style tactile drift: freiner et tourner, dans n'importe quel ordre.
-  // Tant que frein + direction sont maintenus, le drift reste engagé.
-  const driftStart=state=='play'&&braking&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
+  // OutRun 2 SP : un appui sur le frein en virage à haute vitesse déclenche le drift.
+  // Une fois lancé, le drift continue brièvement après le relâchement du frein.
+  const driftStart=state=='play'&&braking&&!brakeWasDown&&Math.abs(st)>.12&&speed>MAX*.38&&crash<=0;
   brakeWasDown=braking?1:0;
-  if(driftStart){driftHold=.82;driftSide=Math.sign(st)}
-  else if(driftHold>0)driftHold=Math.max(0,driftHold-dt*(accelerating?1.05:1.8));
+  if(driftStart){driftHold=1.05;driftSide=Math.sign(st)}
+  else if(driftHold>0)driftHold=Math.max(0,driftHold-dt*(accelerating?.72:1.55));
   const driftTarget=driftHold>0&&state=='play'?1:0;
   drift+=(driftTarget-drift)*Math.min(1,dt*(driftTarget?7.0:2.5));
   drift=Math.max(0,Math.min(1,drift));
@@ -915,8 +915,8 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1)),speed));
   const sp2=speed/MAX,d=dt*2.1*sp2;
   // Direction progressive : la voiture prend de l'appui au lieu de se téléporter latéralement.
-  const steerGain=(slip>0?.65:1)*(.85+.15*gripF)*(1+drift*.22);
-  const curvePull=ps.loop?0:-2.1*sp2*sp2*ps.curve*.38/gripF*(1-drift*.62);
+  const steerGain=(slip>0?.65:1)*(.85+.15*gripF)*(1+drift*.30);
+  const curvePull=ps.loop?0:-2.1*sp2*sp2*ps.curve*.38/gripF*(1-drift*.72);
   const lateralTarget=st*2.1*sp2*steerGain+curvePull+(slip>0?Math.sin(flash*11)*.55:0);
   pxVel+=(lateralTarget-pxVel)*Math.min(1,dt*(drift>.08?7.5:9));
   if(state=='play'&&gripF<.8)pxVel+=Math.sin(flash*2.3)*.12*(1-gripF)*sp2*dt*4;

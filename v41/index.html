@@ -405,28 +405,26 @@ function drawMuskCraft(x,y,w,t){
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
 function drawVehPose(x,y,w,c,v,pose,ph){
- // V41 : vues inclinées propres à chaque modèle, sans remplacer ses détails d'origine.
- // pose : 0 face arrière, 1 virage gauche, 2 virage droite, 3 drift gauche, 4 drift droite.
+ // V41 final : poses de conduite distinctes par modèle, dessinées depuis chaque carrosserie d'origine.
+ // 0 arrière, 1 gauche, 2 droite, 3 drift gauche, 4 drift droite.
  if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
  const left=(pose===1||pose===3),drift=(pose===3||pose===4),dir=left?-1:1;
- // Chaque véhicule conserve sa silhouette, mais possède son propre angle et son propre aplatissement.
  const profiles={
-  "-1":{turn:.30,drift:.52,squash:.94,slide:.045}, // voiture de police
-  "1": {turn:.27,drift:.46,squash:.98,slide:.038}, // Coccinelle
-  "2": {turn:.31,drift:.54,squash:.93,slide:.048}, // muscle car
-  "3": {turn:.34,drift:.58,squash:.91,slide:.052}, // sportive
-  "4": {turn:.25,drift:.44,squash:.97,slide:.036}, // pick-up
-  "5": {turn:.22,drift:.39,squash:.99,slide:.030}  // fourgon
+  "-1":{turn:.34,drift:.58,depth:.91,shear:.20,slide:.052}, // police
+  "1": {turn:.30,drift:.52,depth:.96,shear:.17,slide:.044}, // Coccinelle
+  "2": {turn:.36,drift:.62,depth:.89,shear:.22,slide:.055}, // muscle car
+  "3": {turn:.40,drift:.68,depth:.86,shear:.25,slide:.060}, // sportive
+  "4": {turn:.28,drift:.48,depth:.97,shear:.15,slide:.040}, // pick-up
+  "5": {turn:.25,drift:.43,depth:.99,shear:.13,slide:.034}  // fourgon
  };
- const p=profiles[String(v)]||{turn:.29,drift:.49,squash:.95,slide:.04};
- const angle=dir*(drift?p.drift:p.turn);
- const pivotY=y-w*.46;
- const slide=drift?dir*w*p.slide:dir*w*.012;
+ const p=profiles[String(v)]||{turn:.32,drift:.55,depth:.94,shear:.18,slide:.046};
+ const angle=dir*(drift?p.drift:p.turn),pivotY=y-w*.46;
+ const slide=dir*w*(drift?p.slide:.014);
  ctx.save();
  ctx.translate(x+slide,pivotY);
+ // Le cisaillement et l'écrasement varient selon la géométrie du véhicule.
+ ctx.transform(1,0,dir*(drift?p.shear:p.shear*.58),drift?p.depth*.96:p.depth,0,0);
  ctx.rotate(angle);
- // Légère variation de profondeur suivant le modèle, sans effacer phares, vitres ou carrosserie.
- ctx.scale(p.squash,1);
  ctx.translate(-x,-pivotY);
  drawVeh(x,y,w,c,v,0,ph,0);
  ctx.restore();

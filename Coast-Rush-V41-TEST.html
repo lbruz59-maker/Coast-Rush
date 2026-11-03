@@ -552,7 +552,7 @@ function render(){
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  if(musk>0)drawMuskCraft(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump-38,sw,flash);
- else{const yaw=drift*.20*driftSide+steer()*.035;ctx.save();ctx.translate(cxp,cyp-bump);ctx.rotate(yaw);ctx.translate(-cxp,-(cyp-bump));drawVeh(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,Math.max(-1,Math.min(1,steer()+driftSide*drift*.32)),Math.floor(pos/70)%2);ctx.restore()}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
+ else{const yaw=drift*.48*driftSide+steer()*.035;ctx.save();ctx.translate(cxp,cyp-bump);ctx.rotate(yaw);ctx.translate(-cxp,-(cyp-bump));drawVeh(cxp+(inp.l?-1:inp.r?1:0)*2,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,Math.max(-1,Math.min(1,steer()+driftSide*drift*.32)),Math.floor(pos/70)%2);ctx.restore()}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(const dx of[-13,13]){const ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
  for(const p of driftTrail){ctx.globalAlpha=.42*(1-p.t/1.25);ctx.fillStyle='#17151a';ctx.fillRect(p.x-2,p.y+p.t*8,4,9)}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();
@@ -778,23 +778,23 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   const st=steer(),accelerating=!!(inp.g||gpad.g||autoGas),braking=!!(inp.b||gpad.b);
   // OutRun 2015-style controlled drift: enter with throttle + brake + steering,
   // then maintain a smooth, counter-steerable slide without changing normal grip.
-  const driftInput=state=='play'&&accelerating&&braking&&Math.abs(st)>.2&&speed>MAX*.30&&crash<=0;
+  const driftInput=state=='play'&&braking&&Math.abs(st)>.12&&speed>MAX*.22&&crash<=0;
   const driftTarget=driftInput?1:0;
-  drift+=(driftTarget-drift)*Math.min(1,dt*(driftInput?5.5:3.0));
+  drift+=(driftTarget-drift)*Math.min(1,dt*(driftInput?8.0:2.2));
   drift=Math.max(0,Math.min(1,drift));
-  if(driftInput)driftSide=Math.sign(st);else if(drift<.12)driftSide=0;
-  if(braking)speed-=MAX*(driftInput?.22:.9)*(.5+.5*gripF)*dt;
+  if(driftInput)driftSide=Math.sign(st);else if(drift<.08)driftSide=0;
+  if(braking)speed-=MAX*(driftInput?(accelerating?.10:.18):.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));
   speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1)),speed));
   const sp2=speed/MAX,d=dt*2.1*sp2;
   if(state=='play'&&gripF<.8)px+=Math.sin(flash*2.3)*dt*.12*(1-gripF)*sp2;
-  px+=st*d*(slip>0?.65:1)*(.85+.15*gripF)*(1-drift*.28)+(slip>0?Math.sin(flash*11)*dt*.55:0);
-  if(drift>.035){
+  px+=st*d*(slip>0?.65:1)*(.85+.15*gripF)*(1-drift*.48)+(slip>0?Math.sin(flash*11)*dt*.55:0);
+  if(drift>.025){
    const counter=Math.max(-1,Math.min(1,st*driftSide));
-   px+=driftSide*dt*(.10+sp2*.20)*drift*(.72+.28*counter);
-   if(accelerating)speed=Math.min(MAX*1.08,speed+MAX*.035*drift*dt);
-   if(Math.random()<dt*24){const tx=W/2-driftSide*17+(Math.random()-.5)*4,ty=H-18;driftTrail.push({x:tx,y:ty,t:0,side:driftSide});smoke.push({x:tx,y:ty-4,t:0,vx:(Math.random()-.5)*18})}
+   px+=driftSide*dt*(.42+sp2*.58)*drift*(.78+.22*counter);
+   if(accelerating)speed=Math.min(MAX*1.10,speed+MAX*.055*drift*dt);
+   if(Math.random()<dt*48){const tx=W/2-driftSide*24+(Math.random()-.5)*7,ty=H-18;driftTrail.push({x:tx,y:ty,t:0,side:driftSide});smoke.push({x:tx,y:ty-4,t:0,vx:(Math.random()-.5)*28})}
   }
   if(slip>0)speed-=MAX*.06*dt;if(tapT>0){tapT-=dt;if(tapT<=0)tapAx=0}
   px-=ps.loop?0:d*sp2*ps.curve*.38/gripF;px=Math.max(-2.4,Math.min(2.4,px))}

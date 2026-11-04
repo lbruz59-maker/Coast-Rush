@@ -685,7 +685,7 @@ let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
 /* Sprite sheet partagé : un rendu par variante visuelle unique, jamais par occurrence.
    Une seule page 2048² (16 Mo RGBA max), cellules 128², sans purge globale.
    Les objets identiques réutilisent exactement la même zone via drawImage(source rect). */
-const __crSheetSize=2048,__crCell=128,__crSheetCols=__crSheetSize/__crCell;
+const __crSheetSize=3072,__crCell=256,__crSheetCols=__crSheetSize/__crCell;
 const __crSpriteSheet=document.createElement('canvas');
 __crSpriteSheet.width=__crSpriteSheet.height=__crSheetSize;
 const __crSheetCtx=__crSpriteSheet.getContext('2d');
@@ -694,7 +694,7 @@ let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.85)return;
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7){decoRaster(sp,x,y,sc);return;}
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<10){decoRaster(sp,x,y,sc);return;}
  // Ne mettre dans la clé que les attributs qui changent réellement le dessin.
  // Les coordonnées, la distance et les données de placement ne doivent jamais créer
  // une variante de sprite : elles sont appliquées au moment du drawImage.
@@ -713,7 +713,7 @@ function deco(sp,x,y,sc){
   // Sprite maître rasterisé une seule fois à une taille commune, puis réutilisé à toutes distances.
   if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
   const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
-  const qsc=20/(1600*H),radius=57,size=116;
+  const qsc=40/(1600*H),radius=120,size=244;
   const liveCtx=ctx;
   try{
    __crSheetCtx.setTransform(1,0,0,1,0,0);

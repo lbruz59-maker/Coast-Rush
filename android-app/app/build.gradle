@@ -1,0 +1,21 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'fr.lbruz.coastrush'
+    compileSdk 35
+    defaultConfig {
+        applicationId 'fr.lbruz.coastrush'
+        minSdk 23
+        targetSdk 28
+        versionCode 42
+        versionName '42.0'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}

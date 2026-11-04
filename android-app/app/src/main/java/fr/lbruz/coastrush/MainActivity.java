@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
             return true;
         }
         if (down && key.equals("Enter")) {
-            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(m&&getComputedStyle(m).display!=='none'){var a=document.activeElement;if(!a||!m.contains(a)||typeof a.click!=='function')a=document.getElementById('go');if(a)a.click();return;}var e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(m&&getComputedStyle(m).display!=='none'){var a=document.activeElement;if(!a||!m.contains(a)||typeof a.click!=='function')a=document.getElementById('go');if(a&&a.id==='go'&&typeof startGame==='function'){try{startGame()}catch(err){var b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#900;color:white;z-index:9999;padding:8px;font:14px monospace';document.body.appendChild(b)}b.textContent='Erreur démarrage : '+(err&&err.stack||err)}}else if(a)a.click();return;}var e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
             return true;
         }
         if (!down) {

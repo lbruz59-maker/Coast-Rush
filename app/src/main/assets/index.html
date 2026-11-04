@@ -1141,7 +1141,6 @@ function loop(t){
  if(paused){last=t;crLastRaf=0;crRafSum=0;crRafCount=0;crRafMax=0;if(crHud)crHud.style.display='none';return}
  if(state==='play'){
   if(crHud)crHud.style.display=window.__CR_PERF_VISIBLE__?'block':'none';
-  if(crLastRaf>0){const gap=t-crLastRaf;if(gap>0&&gap<1000){crRafSum+=gap;crRafCount++;if(gap>crRafMax)crRafMax=gap;crFrameSamples[crFrameSampleWrite]=gap;crFrameSampleWrite=(crFrameSampleWrite+1)%180;if(crFrameSampleCount<180)crFrameSampleCount++;if(gap>33.4)crLongFrames++;}}crLastRaf=t;
    if(window.__CR_PERF_VISIBLE__){if(crLastRaf>0){const gap=t-crLastRaf;if(gap>0&&gap<1000){crRafSum+=gap;crRafCount++;if(gap>crRafMax)crRafMax=gap;crFrameSamples[crFrameSampleWrite]=gap;crFrameSampleWrite=(crFrameSampleWrite+1)%180;if(crFrameSampleCount<180)crFrameSampleCount++;if(gap>33.4)crLongFrames++;}}crLastRaf=t;if(!crWindowStart)crWindowStart=t;crFrames++;}else{crLastRaf=0;crWindowStart=0;crFrames=0;}
  }else{if(crHud)crHud.style.display='none';crLastRaf=0;crWindowStart=0;crFrames=0;crRafSum=0;crRafCount=0;crRafMax=0;crFrameSampleCount=0;crFrameSampleWrite=0;crWorkSampleCount=0;crWorkSampleWrite=0;crLongFrames=0}
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
@@ -1150,8 +1149,6 @@ function loop(t){
  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));/* Décor complet conservé : pas de réduction adaptative du nombre d'objets. */__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));/* Décor complet conservé : déjà au maximum de visibilité. */__crLoadGood=0;__crLoadBad=0}}}
  try{
    if(window.__CR_PERF_VISIBLE__){const p0=performance.now();pollPad();crPollMs=performance.now()-p0;const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;}else{pollPad();if(state!='menu')update(dt);if(state!=='menu')render();}
-  const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
-  const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;
   if(window.__CR_PERF_VISIBLE__&&state==='play'&&t-crWindowStart>=1000){
    const span=t-crWindowStart,rafAvg=crRafCount?crRafSum/crRafCount:0,rafMax=crRafMax;
    crFps=crFrames>1?(crFrames-1)*1000/span:0;

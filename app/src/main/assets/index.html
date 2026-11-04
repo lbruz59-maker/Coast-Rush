@@ -842,9 +842,7 @@ function render(){
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  if(s.__crDecorVisible)for(let dj=0;dj<s.sp.length;dj++){
-   const sp=s.sp[dj];
-   deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc*farScale);
+   deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc);
   }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
    const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;

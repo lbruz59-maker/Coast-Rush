@@ -8,6 +8,9 @@ on:
       - 'gradle.properties'
       - '.github/workflows/android-apk.yml'
   workflow_dispatch:
+concurrency:
+  group: coast-rush-android-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
   actions: read

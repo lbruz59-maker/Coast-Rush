@@ -695,8 +695,14 @@ function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.85)return;
  if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7){decoRaster(sp,x,y,sc);return;}
- let params;
- try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
+ // Ne mettre dans la clé que les attributs qui changent réellement le dessin.
+ // Les coordonnées, la distance et les données de placement ne doivent jamais créer
+ // une variante de sprite : elles sont appliquées au moment du drawImage.
+ let params='';
+ if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
+ else if(t==='B')params=[sp.c||'',sp.txt||''].join('|');
+ else if(t==='bs'||t==='gs'||t==='py'||t==='cl'||t==='p'||t==='c'||t==='t'||t==='l'||t==='r')params='';
+ else {decoRaster(sp,x,y,sc);return}
  const key=t+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
  let entry=__crSheetEntries.get(key);
  if(!entry){

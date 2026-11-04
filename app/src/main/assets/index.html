@@ -162,7 +162,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  loopS=-1;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
- const tl=140;let tS=-1;if(R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
+ const tl=Math.min(140,Math.floor(N*.25));let tS=-1;if(tl>=24&&R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1;if(tS>=0&&tS+tl>N*.25)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
  segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
@@ -173,7 +173,8 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(Math.abs(s.curve)>3.5&&i%5==0)s.sp.push({t:'S',o:-Math.sign(s.curve)*1.3,txt:s.curve>0?'▶':'◀',bg:'#ffd400'});
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
- segs.forEach(s=>{if(s.tun&&(s.i===s.tS||s.i===s.tS+tl-1)){s.sp=[{t:'T',o:0,port:1,k:s.i}]}});
+ // Le tunnel n'a plus de portail-sprite : ses murs et ses éclairages sont dessinés dans le rendu routier.
+
  [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.tun&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
  segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  // Convertit les végétaux en points 3D statiques : type, position monde, profondeur,
@@ -189,7 +190,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
     sp.t==='l'||sp.t==='r'||sp.t==='a'||sp.t==='n'||sp.t==='sk'||
     sp.t==='B'||sp.t==='u'||sp.t==='W'||sp.t==='py'||sp.t==='cl'||
     sp.t==='sm'||sp.t==='ap'||sp.t==='sc'||sp.t==='bs'||sp.t==='gs'||
-    sp.t==='rt'||sp.t==='cf'||sp.t==='ht'||sp.t==='A';
+    sp.t==='rt'||sp.t==='cf'||sp.t==='ht'||sp.t==='A'||sp.t==='S';
    if(staticWorldType){
     const side=sp.o<0?0:1;
     if(!groups[side])groups[side]={seg:si,z:si*segL,x:side===0?-1:1,y:0,items:[]};
@@ -648,11 +649,7 @@ const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.
  else if(t=='F'){const h=sc*1700*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx.fillStyle='#223';ctx.fillRect(x-h*.07,y-h*.45,h*.14,h*.45);ctx.fillStyle='#e8e8e8';ctx.fillRect(x-h*.09,y-h*.8,h*.18,h*.36);ctx.fillStyle='#f1c19a';ctx.beginPath();ctx.arc(x,y-h*.88,h*.075,0,7);ctx.fill();
   const q=x+h*.1,pt=y-h*1.5;ctx.strokeStyle='#999';ctx.lineWidth=Math.max(1,h*.02);ctx.beginPath();ctx.moveTo(x+h*.09,y-h*.7);ctx.lineTo(q+wv*h*.08,pt);ctx.stroke();
   for(let i=0;i<4;i++)for(let j=0;j<3;j++){ctx.fillStyle=(i+j)%2?'#000':'#fff';ctx.fillRect(q+wv*h*.08+i*h*.12+Math.sin(flash*8+i)*h*.03,pt+j*h*.1,h*.12,h*.1)}}
- else if(t=='T'){ctx.globalAlpha=1;const roadHalf=sc*roadW*160,img=getMountainTunnelSprite();
-  // L'ouverture transparente du sprite (270/320) correspond exactement à la largeur de chaussée.
-  const iw=roadHalf*2*320/270,ih=iw*img.height/img.width,top=y-ih*.86;
-  ctx.drawImage(img,x-iw/2,top,iw,ih);
-  if(sp.k%8===0){const lampY=top+ih*.39;ctx.fillStyle='#ffe8a8';ctx.globalAlpha=.82;ctx.fillRect(x-roadHalf*.72,lampY,roadHalf*.12,Math.max(1,roadHalf*.035));ctx.fillRect(x+roadHalf*.60,lampY,roadHalf*.12,Math.max(1,roadHalf*.035));ctx.globalAlpha=1;}}
+ else if(t=='T'){/* Ancien portail supprimé : le tunnel est désormais constitué de murs latéraux et de lampes intégrés au rendu de la route. */}
  else if(t=='A'){const w=sc*roadW*160*1.2,hh=w*.62,pw=w*.2,lh=w*.2,X0=x-w-pw,X1=x+w,sg=ctx.createLinearGradient(X0,0,x+w+pw,0);sg.addColorStop(0,'#e2d2ae');sg.addColorStop(.5,'#cdbb94');sg.addColorStop(1,'#a89468');
   ctx.fillStyle=sg;ctx.fillRect(X0,y-hh,pw,hh);ctx.fillRect(X1,y-hh,pw,hh);ctx.fillRect(X0-pw*.15,y-hh-lh,w*2+pw*2.3,lh);
   ctx.fillStyle='#00000040';ctx.fillRect(x-w,y-hh,w*2,lh*.25);ctx.strokeStyle='#8a7a5a99';ctx.lineWidth=Math.max(.3,w*.012);
@@ -884,6 +881,21 @@ function render(){
  for(let sideIndex=0;sideIndex<(fF?2:1);sideIndex++){const sd=fF?(sideIndex===0?-1:1):0,ax=a.x+a.w*sd*(.5+.9*fa),bx=b.x+b.w*sd*(.5+.9*fb),k2=fF?.5:1,aw=a.w*k2,bw=b.w*k2,r1=aw*.14,r2=bw*.14,rc=fg((s.i/2|0)%2?'#e8203a':'#fff',ft);
   __crPoly4(rc,ax-aw-r1,a.y,ax-aw,a.y,bx-bw,by,bx-bw-r2,by);__crPoly4(rc,ax+aw+r1,a.y,ax+aw,a.y,bx+bw,by,bx+bw+r2,by);
   __crPoly4(fg(s.loop?(d?'#2a6aff':'#2050d0'):wx=='snow'?(d?'#a9abb4':'#9fa1ab'):wx=='rain'?(d?'#4f525b':'#494c55'):d?'#6e6e72':'#65656a',ft),ax-aw,a.y,ax+aw,a.y,bx+bw,by,bx-bw,by);
+  if(s.tun&&!fF){
+   // Murs simples de tunnel, hors chaussée : la route, ses bordures et son tracé restent inchangés.
+   const wallTopA=a.y-aw*.78,wallTopB=by-bw*.78,outerA=aw*1.34,outerB=bw*1.34;
+   const wallCol=fg((s.i/6|0)%2?'#303b4b':'#394657',ft),wallEdge=fg('#77879a',ft);
+   __crPoly4(wallCol,ax-aw,a.y,ax-outerA,wallTopA,bx-outerB,wallTopB,bx-bw,by);
+   __crPoly4(wallCol,ax+aw,a.y,ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,by);
+   __crPoly4(wallEdge,ax-outerA,wallTopA,ax-aw,wallTopA+Math.max(1,aw*.035),bx-bw,wallTopB+Math.max(1,bw*.035),bx-outerB,wallTopB);
+   __crPoly4(wallEdge,ax+aw,wallTopA+Math.max(1,aw*.035),ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,wallTopB+Math.max(1,bw*.035));
+   if((s.i-s.tS)%8===0){
+    const lampA=aw*1.12,lampB=bw*1.12,lyA=wallTopA+aw*.12,lyB=wallTopB+bw*.12;
+    ctx.fillStyle=fg('#ffe7a8',ft);ctx.fillRect(ax-lampA,lyA,Math.max(1,aw*.10),Math.max(1,aw*.035));ctx.fillRect(ax+lampA-aw*.10,lyA,Math.max(1,aw*.10),Math.max(1,aw*.035));
+    // Faisceau lumineux doux sur l'asphalte : un trapèze par segment éclairé.
+    __crPoly4(fg('#ffe8a8',Math.min(.22,ft*.22)),ax-aw*.72,a.y,ax+aw*.72,a.y,bx+bw*.58,by,bx-bw*.58,by);
+   }
+  }
   if(n<drawN){
   // Détails routiers proches uniquement ; la chaussée et ses bordures restent dessinées jusqu'à l'horizon.
   ctx.fillStyle='#00000012';ctx.beginPath();
@@ -906,7 +918,7 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(!isTV||cw>=2.2)drawObj(c,cxs,sy,cw)}
+  for(const c of s.cars){const pct=(c.z%segL)/segL,pt=c.__crWorldPoint||(c.__crWorldPoint={x:0,y:0,z:0,sc:0,w:0}),sc=pt.sc=lerp(a.sc,b.sc,pct),cxs=pt.x=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=pt.y=lerp(a.y,b.y,pct),cw=pt.w=sc*roadW*160*c.w*(c.shr>0?.6:1);pt.z=c.z;if(!isTV||cw>=2.2)drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // Rendu des connecteurs 3D visibles uniquement, du plus lointain au plus proche.
  // La liste étant triée par profondeur à la génération, deux recherches binaires

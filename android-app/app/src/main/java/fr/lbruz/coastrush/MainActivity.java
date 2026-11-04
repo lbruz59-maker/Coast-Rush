@@ -213,7 +213,9 @@ public class MainActivity extends Activity {
             Choreographer.getInstance().postFrameCallback(this);
         }
 
-        @JavascriptInterface public void exitApp() { runOnUiThread(() -> finish()); }\n\n        @JavascriptInterface public synchronized String getStats() {
+        @JavascriptInterface public void exitApp() { runOnUiThread(() -> finish()); }
+
+        @JavascriptInterface public synchronized String getStats() {
             long now = System.nanoTime();
             long elapsed = Math.max(1L, now - windowStartNs);
             double fps = samples * 1_000_000_000.0 / elapsed;

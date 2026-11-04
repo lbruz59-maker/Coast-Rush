@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
     private WebViewAssetLoader assetLoader;
     private final NativeBridge bridge = new NativeBridge();
     private HandlerThread frameMetricsThread;
+    private volatile boolean perfMonitoringRequested = true;
+    private boolean frameMetricsRegistered = false;
     private final long[] frameTotalSamples = new long[180];
     private int frameTotalWrite = 0, frameTotalCount = 0;
     private long fmTotalSum = 0, fmTotalMax = 0, fmDrawSum = 0, fmDrawMax = 0, fmSyncSum = 0, fmCommandSum = 0, fmGpuSum = 0, fmCount = 0;
@@ -80,10 +82,27 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(webView);
-        if (Build.VERSION.SDK_INT >= 24) { frameMetricsThread=new HandlerThread("CoastRushFrameMetrics"); frameMetricsThread.start(); getWindow().addOnFrameMetricsAvailableListener(frameMetricsListener,new Handler(frameMetricsThread.getLooper())); }
+        if (Build.VERSION.SDK_INT >= 24) { frameMetricsThread=new HandlerThread("CoastRushFrameMetrics"); frameMetricsThread.start(); }
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
         webView.requestFocus();
-        bridge.start();
+        setPerfMonitoring(true);
+    }
+
+    private void setPerfMonitoring(boolean enabled) {
+        perfMonitoringRequested = enabled;
+        if (enabled) {
+            bridge.start();
+            if (Build.VERSION.SDK_INT >= 24 && frameMetricsThread != null && !frameMetricsRegistered) {
+                getWindow().addOnFrameMetricsAvailableListener(frameMetricsListener, new Handler(frameMetricsThread.getLooper()));
+                frameMetricsRegistered = true;
+            }
+        } else {
+            bridge.stop();
+            if (Build.VERSION.SDK_INT >= 24 && frameMetricsRegistered) {
+                getWindow().removeOnFrameMetricsAvailableListener(frameMetricsListener);
+                frameMetricsRegistered = false;
+            }
+        }
     }
 
     private void publishDisplayInfo() {
@@ -151,7 +170,6 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onPause() {
-        bridge.stop();
         if (webView != null) {
             webView.evaluateJavascript("window.__coastRushLifecycle && window.__coastRushLifecycle('pause')", null);
             webView.onPause();
@@ -167,7 +185,7 @@ public class MainActivity extends Activity {
             webView.evaluateJavascript("window.__coastRushLifecycle && window.__coastRushLifecycle('resume')", null);
             webView.post(this::publishDisplayInfo);
         }
-        bridge.start();
+        if (perfMonitoringRequested) setPerfMonitoring(true);
     }
 
     @Override public void onBackPressed() {
@@ -177,8 +195,7 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
-        bridge.stop();
-        if (Build.VERSION.SDK_INT >= 24) getWindow().removeOnFrameMetricsAvailableListener(frameMetricsListener);
+        setPerfMonitoring(false);
         if (frameMetricsThread != null) { frameMetricsThread.quitSafely(); frameMetricsThread = null; }
         if (webView != null) { webView.stopLoading(); webView.destroy(); webView = null; }
         super.onDestroy();
@@ -212,6 +229,7 @@ public class MainActivity extends Activity {
             }
             Choreographer.getInstance().postFrameCallback(this);
         }
+        @JavascriptInterface public void setMonitoring(boolean enabled) { runOnUiThread(() -> MainActivity.this.setPerfMonitoring(enabled)); }
         @JavascriptInterface public synchronized String getStats() {
             long now = System.nanoTime();
             double elapsed = Math.max(1L, now - startNs);

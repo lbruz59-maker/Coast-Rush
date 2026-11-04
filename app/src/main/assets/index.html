@@ -677,8 +677,8 @@ const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl']);
-const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','sk','n','a','u','W','R','A','B','T']);
+const __crDecoDynamic=new Set(['I','F','G','C','X','P','S']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
@@ -701,7 +701,10 @@ function deco(sp,x,y,sc){
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
  else if(t==='B')params=[sp.c||'',sp.txt||''].join('|');
- else if(t==='bs'||t==='gs'||t==='py'||t==='cl'||t==='p'||t==='c'||t==='t'||t==='l'||t==='r')params='';
+ else if(t==='u')params=[sp.c||'',th.d||''].join('|');
+ else if(t==='T')params=[sp.port?1:0,sp.k|0].join('|');
+ else if(t==='sk')params=[sp.hh||1,th.glow?1:0].join('|');
+ else if(t==='bs'||t==='gs'||t==='py'||t==='cl'||t==='p'||t==='c'||t==='t'||t==='l'||t==='r'||t==='sm'||t==='ap'||t==='sc'||t==='rt'||t==='cf'||t==='ht'||t==='n'||t==='a'||t==='W'||t==='R'||t==='A')params='';
  else {decoRaster(sp,x,y,sc);return}
  const key=t+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
  let entry=__crSheetEntries.get(key);

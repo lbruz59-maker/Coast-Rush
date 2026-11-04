@@ -155,8 +155,9 @@ public class MainActivity extends Activity {
     }
 
     @Override public void onBackPressed() {
-        if (webView != null) webView.evaluateJavascript("if(typeof toMenu==='function')toMenu()", null);
-        else super.onBackPressed();
+        if (webView != null) {
+            webView.evaluateJavascript("(function(){if(typeof state!=='undefined'&&state!=='menu'){if(typeof toMenu==='function')toMenu();}else if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();}})();", null);
+        } else super.onBackPressed();
     }
 
     @Override protected void onDestroy() {

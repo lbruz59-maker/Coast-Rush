@@ -57,3 +57,5 @@ jobs:
 # Retry Android build after clearing the previous queued runs.
 
 # Rebuild after shared sprite-sheet renderer update
+
+# Build with full scenery enabled

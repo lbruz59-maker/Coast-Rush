@@ -99,9 +99,9 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
-const roadDrawN=84;let drawN=14,decorDrawN=22;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+const roadDrawN=84;let drawN=14,decorDrawN=84;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
-if(isTV){drawN=13;decorDrawN=20;}
+if(isTV){drawN=13;decorDrawN=roadDrawN;}
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
  if(kind==='pause'){window.__coastRushNativePaused=true;try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -1056,7 +1056,7 @@ function loop(t){
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused){try{render()}catch(e){}return}
- if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));if(isTV)decorDrawN=Math.max(14,decorDrawN-3);__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));if(isTV)decorDrawN=Math.min(26,decorDrawN+1);__crLoadGood=0;__crLoadBad=0}}}
+ if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));/* Décor complet conservé : pas de réduction adaptative du nombre d'objets. */__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));/* Décor complet conservé : déjà au maximum de visibilité. */__crLoadGood=0;__crLoadBad=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;

@@ -31,9 +31,15 @@ jobs:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: |
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager"
+          SDKMANAGER="$(find "$ANDROID_HOME" -type f -name sdkmanager -print -quit)"
+          if [ -z "$SDKMANAGER" ]; then
+            echo "sdkmanager introuvable sous $ANDROID_HOME"
+            find "$ANDROID_HOME" -maxdepth 4 -type d | head -100
+            exit 1
+          fi
+          echo "SDK manager: $SDKMANAGER"
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
-          echo "$ANDROID_HOME/cmdline-tools/16.0/bin" >> "$GITHUB_PATH"
           yes | "$SDKMANAGER" --licenses >/dev/null
           "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
       - name: Build debug APK

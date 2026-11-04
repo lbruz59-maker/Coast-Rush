@@ -1120,6 +1120,21 @@ $('gy').onclick=async()=>{tiltMode=tiltMode==0?1:tiltMode==1?-1:0;if(!tiltMode)t
   setTimeout(()=>{if(!gyGot&&tiltMode)gyLabel('aucun capteur reçu (bloqué ici)')},2000)}};
 const navEls=()=>[...document.querySelectorAll('#menu button,#menu input')].filter(e=>e.offsetParent);
 function navFocus(d){const a=navEls();if(!a.length)return;const cur=a.indexOf(document.activeElement),i=cur<0?(d>0?0:a.length-1):(cur+d+a.length)%a.length;a[i].focus();try{a[i].scrollIntoView({block:'nearest'})}catch(e){}}
+/* Fire TV DPAD remote support: direct key events, independent of Gamepad API. */
+function crRemoteMenuKey(e){
+ if(!$('menu')||$('menu').style.display==='none'||state!=='menu')return;
+ const k=e.key,c=e.keyCode||e.which;
+ const down=k==='ArrowDown'||c===20,up=k==='ArrowUp'||c===19;
+ const right=k==='ArrowRight'||c===22,left=k==='ArrowLeft'||c===21;
+ const ok=k==='Enter'||k===' '||c===23||c===66;
+ const back=k==='Escape'||k==='Backspace'||c===4;
+ if(down||right){e.preventDefault();e.stopPropagation();navFocus(1)}
+ else if(up||left){e.preventDefault();e.stopPropagation();navFocus(-1)}
+ else if(ok){e.preventDefault();e.stopPropagation();const el=document.activeElement;if(el&&el!==document.body&&typeof el.click==='function')el.click();else $('go').click()}
+ else if(back){e.preventDefault();e.stopPropagation();$('go').focus()}
+}
+addEventListener('keydown',crRemoteMenuKey,true);
+
 function confirmAct(){if(state=='brief')briefT=99;else if(state=='podium')podT=99;else if(state=='mega'&&podT>3)toMenu();else if(state=='over'||state=='win')toMenu()}
 function pollPad(){if(inputMode!=='controller'){gpad.g=gpad.b=0;padAx=0;return}const getPads=navigator.getGamepads;if(!getPads){gpad.g=gpad.b=0;padAx=0;return}const gl=getPads.call(navigator);let gp=window.DUEL?(gl[window.DUEL-1]||null):null;if(!gp)for(const g of gl)if(g&&g.connected){gp=g;break}
  if(!gp){gpad.g=gpad.b=0;padAx=0;return}const B=i=>gp.buttons[i]&&gp.buttons[i].pressed,ax0=gp.axes[0]||0,ay0=gp.axes[1]||0;

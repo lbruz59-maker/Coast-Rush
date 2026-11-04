@@ -713,6 +713,42 @@ function deco(sp,x,y,sc){
  ctx.drawImage(__crSpriteSheet,entry.sx,entry.sy,entry.size,entry.size,
    x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
 }
+
+// V76 — composition statique par segment : les décors lointains d'un segment
+// sont rasterisés ensemble une fois, puis affichés avec un seul drawImage.
+// Les objets animés et les objets proches restent dessinés en direct.
+const __crSegmentDecorCache=new Map();
+const __crSegmentDecorLimit=32;
+function __crDrawSegmentDecor(seg,a){
+ const ratio=a.sc/(40/(1600*H));
+ const staticItems=[],dynamicItems=[];
+ for(let i=0;i<seg.sp.length;i++){
+  const sp=seg.sp[i];
+  if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))staticItems.push(sp);
+  else dynamicItems.push(sp);
+ }
+ if(staticItems.length&&ratio<=1.0001){
+  if(!seg.__crSegDecorKey)seg.__crSegDecorKey=[W,H,__crDecoThemeKey,th.d,JSON.stringify(staticItems)].join('|');
+  let entry=__crSegmentDecorCache.get(seg.__crSegDecorKey);
+  if(!entry){
+   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=256;
+   const liveCtx=ctx;ctx=canvas.getContext('2d');
+   try{
+    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,512,256);ctx.globalAlpha=1;
+    for(let i=0;i<staticItems.length;i++){
+     const sp=staticItems[i],sx=256+(40/(1600*H))*sp.o*roadW*160;
+     decoRaster(sp,sx,220,40/(1600*H));
+    }
+   }finally{ctx=liveCtx}
+   entry={canvas,anchorX:256,anchorY:220};__crSegmentDecorCache.set(seg.__crSegDecorKey,entry);
+   if(__crSegmentDecorCache.size>__crSegmentDecorLimit)__crSegmentDecorCache.delete(__crSegmentDecorCache.keys().next().value);
+  }else{__crSegmentDecorCache.delete(seg.__crSegDecorKey);__crSegmentDecorCache.set(seg.__crSegDecorKey,entry)}
+  ctx.drawImage(entry.canvas,a.x-entry.anchorX*ratio,a.y-entry.anchorY*ratio,512*ratio,256*ratio);
+ }else{
+  for(let i=0;i<staticItems.length;i++){const sp=staticItems[i];deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc)}
+ }
+ for(let i=0;i<dynamicItems.length;i++){const sp=dynamicItems[i];deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc)}
+}
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();
  poly('#8a5a2a',[x-s*.026,y,x+s*.026,y,x+s*.162,y-s,x+s*.138,y-s]);poly('#a8743a',[x-s*.004,y,x+s*.026,y,x+s*.162,y-s,x+s*.148,y-s]);
  const tx=x+s*.15,ty=y-s;for(let i=0;i<9;i++){const a=i/9*Math.PI*2,dx=Math.cos(a),L=s*(.34+.08*Math.abs(Math.sin(a*1.5))),ex=tx+dx*L,ey=ty+Math.abs(Math.sin(a))*L*.45+s*.12;
@@ -792,10 +828,7 @@ function render(){
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  if(s.__crDecorVisible)for(let dj=0;dj<s.sp.length;dj++){
-   const sp=s.sp[dj],tt=sp.t;
-   const sx=a.x+a.sc*sp.o*roadW*160;deco(sp,sx,a.y,a.sc);
-  }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
+  if(s.__crDecorVisible)__crDrawSegmentDecor(s,a);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
    const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;
    deco(__crForkBlockSprite,bx0,a.y,a.sc);

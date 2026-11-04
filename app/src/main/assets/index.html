@@ -661,10 +661,9 @@ function deco(sp,x,y,sc){
  if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7){decoRaster(sp,x,y,sc);return;}
  // Multi-scale sprite LOD: each static object is rasterized only at fixed size tiers.
  // Runtime chooses the nearest pre-rendered tier and scales that bitmap, never rebuilds its paths.
- const levels=[8,12,18,27,40,60,85];
+ const levels=[8,12,18,27,40,60,85,120];
  let bucket=levels[levels.length-1];
  for(let i=0;i<levels.length;i++){if(projected<=levels[i]*1.12){bucket=levels[i];break;}}
- if(projected>bucket*1.55){decoRaster(sp,x,y,sc);return;}
  let params;
  try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
  const key=t+'|'+bucket+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;

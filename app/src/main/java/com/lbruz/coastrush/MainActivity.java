@@ -47,9 +47,12 @@ public class MainActivity extends Activity {
             .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
             .build();
         webView = new WebView(this);
+        // Keep WebView on Android's hardware-accelerated composition path.
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        webView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         if (Build.VERSION.SDK_INT >= 26) webView.setRendererPriorityPolicy(WebView.RENDERER_PRIORITY_BOUND, true);
         webView.setBackgroundColor(0xFF050B1B);
+        webView.setWillNotDraw(false);
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
         WebSettings s = webView.getSettings();
@@ -85,7 +88,8 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 24) { frameMetricsThread=new HandlerThread("CoastRushFrameMetrics"); frameMetricsThread.start(); }
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
         webView.requestFocus();
-        setPerfMonitoring(true);
+        // Native frame tracing is opt-in: never spend CPU on diagnostics during normal play.
+        setPerfMonitoring(false);
     }
 
     private void stopPerfMonitoringRuntime() {

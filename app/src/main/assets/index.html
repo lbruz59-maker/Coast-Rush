@@ -194,7 +194,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
     const data={...sp};
     const vegetation=sp.t==='p'||sp.t==='c'||sp.t==='t';
     if(vegetation)data.v=R()*4|0;
-    __crWorldDecoPoints.push({seg:si,z:si*segL,x:sp.o,y:0,type:sp.t,scale:vegetation?.82+R()*.4:1,sp:data});
+    __crWorldDecoPoints.push({seg:si,z:si*segL,x:sp.o,y:0,type:sp.t,scale:vegetation ? (.82+R()*.4) : 1,sp:data});
    }else keep.push(sp);
   }
   seg.sp=keep;

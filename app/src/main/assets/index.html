@@ -99,8 +99,8 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true,willReadFrequently:false}),W=320,H=224;
-// Fire TV: render 48 segments instead of 64 (25% fewer projections and decor traversals).
-// Other devices retain 64. Track generation is unchanged; only the visible horizon is shorter.
+// Fire TV: adaptive render horizon starts at 40 segments and adjusts between 30 and 48.
+// Other devices retain 64. Track generation is unchanged; only visible rendering is culled.
 const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?40:64,drawN=14,decorDrawN=isTV?24:roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 if(isTV){drawN=13;}
@@ -844,9 +844,6 @@ function render(){
   // Leur position reste calculée depuis la projection originale du segment.
   if(s.__crDecorVisible)for(let dj=0;dj<s.sp.length;dj++){
    const sp=s.sp[dj];
-   // Keep foreground untouched; trim only distant scenery by a deterministic 5%.
-    deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc);
-   const farScale=n>=roadDrawN*.65?.95:1;
    deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc*farScale);
   }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;

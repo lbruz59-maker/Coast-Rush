@@ -783,11 +783,11 @@ function drawStarsCached(){
  if(!__crStarField||key!==__crStarFieldKey){
   __crStarField=document.createElement('canvas');__crStarField.width=Math.max(2,W*2);__crStarField.height=Math.ceil(H/2);
   const g=__crStarField.getContext('2d');g.fillStyle='#fff';
-  for(let i=0;i<90;i++){const x=(i*83)%W,y=(i*37)%(Math.max(1,H/2-14));g.fillRect(x,y,1,1);g.fillRect(x+W,y,1,1)}
+  for(let i=0;i<(isTV?24:45);i++){const x=(i*83)%W,y=(i*37)%(Math.max(1,H/2-14));g.fillRect(x,y,1,1);g.fillRect(x+W,y,1,1)}
   __crStarFieldKey=key;
  }
  const offset=((skyOff*.2)%W+W)%W;
- ctx.drawImage(__crStarField,-offset,0);ctx.drawImage(__crStarField,W*2-offset,0);
+ ctx.drawImage(__crStarField,-offset,0);
 }
 const __crSkyLayer=document.createElement('canvas');
 const __crSkyLayerCtx=__crSkyLayer.getContext('2d');

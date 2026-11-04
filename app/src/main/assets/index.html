@@ -473,7 +473,34 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  }
  ctx.restore();ctx.globalAlpha=1;
 }
-function drawVeh(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+const __crVehicleSpriteCanvas=document.createElement('canvas');
+__crVehicleSpriteCanvas.width=__crVehicleSpriteCanvas.height=192;
+const __crVehicleSpriteCtx=__crVehicleSpriteCanvas.getContext('2d');
+const __crVehicleSprites=new Map();
+function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+function drawVeh(x,y,w,c,v,ln,ph,em){
+ if(w<7||w>190){__crDrawVehRaster(x,y,w,c,v,ln,ph,em);return}
+ const phase=ph==null?0:(Math.round((ph%1)*4)&3);
+ const key=[v,c,Math.round((ln||0)*2)/2,phase,em?1:0,BRK?1:0,BOOSTF?1:0].join('|');
+ let entry=__crVehicleSprites.get(key);
+ if(!entry){
+  const live=ctx;
+  try{
+   ctx=__crVehicleSpriteCtx;
+   ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   __crDrawVehRaster(96,112,96,c,v,ln,phase/4,em);
+  }finally{ctx=live}
+  entry={canvas:__crVehicleSpriteCanvas};
+  // Copie persistante : le canvas de travail sera réutilisé pour la prochaine variante.
+  const copy=document.createElement('canvas');copy.width=copy.height=192;
+  copy.getContext('2d').drawImage(__crVehicleSpriteCanvas,0,0);
+  entry.canvas=copy;
+  __crVehicleSprites.set(key,entry);
+  if(__crVehicleSprites.size>72)__crVehicleSprites.delete(__crVehicleSprites.keys().next().value);
+ }
+ const d=w/96;
+ ctx.drawImage(entry.canvas,x-96*d,y-112*d,192*d,192*d);
+}
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
 function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function gridStart(){
@@ -711,14 +738,31 @@ window.__coastRushTrimCaches=function(){
   return true;
  }catch(e){return false}
 };
+const __crSkyLayer=document.createElement('canvas');
+const __crSkyLayerCtx=__crSkyLayer.getContext('2d');
+let __crSkyLayerKey='';
 function renderBackdrop(){
- const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
- {const sx=W*.72,sy=H/2-36,sr=th.night?9:15,sgk=W+'x'+H+'|'+(th.night?'n':'d');if(sgk!==__crSunGlowKey){__crSunGlowKey=sgk;__crSunGlow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);__crSunGlow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');__crSunGlow.addColorStop(1,'#fff0')}const gl=__crSunGlow;ctx.globalAlpha=wx=='clear'?1:wx=='cloud'?.45:0;ctx.fillStyle=gl;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
+ const skyKey=[W,H,curSky[0],curSky[1],th.night?1:0,wx].join('|');
+ if(skyKey!==__crSkyLayerKey){
+  __crSkyLayer.width=W;__crSkyLayer.height=Math.ceil(H/2)+1;
+  const live=ctx;
+  try{
+   ctx=__crSkyLayerCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,__crSkyLayer.height);
+   const g=ctx.createLinearGradient(0,0,0,H/2);g.addColorStop(0,curSky[0]);g.addColorStop(1,curSky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H/2+1);
+   const sx=W*.72,sy=H/2-36,sr=th.night?9:15;
+   const glow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);glow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');glow.addColorStop(1,'#fff0');
+   ctx.globalAlpha=wx==='clear'?1:wx==='cloud'?.45:0;ctx.fillStyle=glow;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);
+   ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
+  }finally{ctx=live}
+  __crSkyLayerKey=skyKey;
  }
- ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
+ ctx.drawImage(__crSkyLayer,0,0);
+ if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
+ ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);
+ if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
  for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=(isTV?8:4)){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(__crSin((x+o)*.025))-6*__crSin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
  if(th.bg)drawBgCached(th.bg);
- {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
+ const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34);
 }
 // Projection caméra : les enregistrements de projection sont réutilisés par segment.
 function __crProjectPoint(out,wx,wy,z,cx,cy){const sc=camD/z;out.x=W/2+sc*(wx-cx)*160;out.y=H/2-sc*(wy-cy)*H/2;out.w=sc*roadW*160;out.sc=sc;return out}

@@ -745,7 +745,7 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  if(s.__crDetailVisible)for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct);drawObj(c,cxs,sy,sc*roadW*160*c.w*(c.shr>0?.6:1))}
+  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct);drawObj(c,cxs,sy,sc*roadW*160*c.w*(c.shr>0?.6:1))}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
@@ -1354,7 +1354,7 @@ function sizeCanvas(){
  // Backing store is independent from CSS size and HDMI mode.
  // Fire TV Stick 4K Max can output up to 4K, but WebView controls its own render buffer.
  const dpr=Math.max(1,Math.min(isTV&&qMode===0?1:2,window.devicePixelRatio||1));
- const maxBackingH=(isTV&&qMode===0)?720:2160;
+ const maxBackingH=(isTV&&qMode===0)?540:2160;
  const wantedH=Math.round(cssH*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));
  let k=targetH/H;

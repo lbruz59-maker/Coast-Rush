@@ -281,7 +281,7 @@ function poly(c,a){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(a[0],a[1]);for(let
 function __crPoly4(c,x1,y1,x2,y2,x3,y3,x4,y4){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.lineTo(x4,y4);ctx.fill()}
 function __crPoly3(c,x1,y1,x2,y2,x3,y3){ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(x3,y3);ctx.fill()}
 const rrp=(x,y,w,h,r)=>{ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else ctx.rect(x,y,w,h)};
-const shc=new Map();function shade(c,f){const k=c+f;if(shc.has(k)){const v=shc.get(k);shc.delete(k);shc.set(k,v);return v}const n=parseInt(c.slice(1,7),16),m=f>0?255:0,a=Math.abs(f),ch=v=>Math.round(v+(m-v)*a),v='#'+[n>>16&255,n>>8&255,n&255].map(v=>ch(v).toString(16).padStart(2,'0')).join('');if(shc.size>=256)shc.delete(shc.keys().next().value);shc.set(k,v);return v}
+const shc=new Map();function shade(c,f){const k=c+f;if(shc.has(k))return shc.get(k)const n=parseInt(c.slice(1,7),16),m=f>0?255:0,a=Math.abs(f),ch=v=>Math.round(v+(m-v)*a),v='#'+[n>>16&255,n>>8&255,n&255].map(v=>ch(v).toString(16).padStart(2,'0')).join('');if(shc.size>=256)shc.delete(shc.keys().next().value);shc.set(k,v);return v}
 const __crGradientCache=new Map();
 let __crLensFlareGradient=null,__crLensFlareKey='';
 const __crFlareRings=[[.25,7,'#ffd080'],[.5,4,'#80d0ff'],[.8,10,'#ffa0c0'],[1.15,5,'#a0ffb0']];

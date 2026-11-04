@@ -577,7 +577,7 @@ function setupWeather(id){const RW=rng(id*131+7+wxSalt),hot=['DESERT','LE CAIRE'
  const pool=th.n=='LONDRES'?['cloud','rain','rain','fog','clear']:th.snowy?['snow','snow','snow','cloud','fog']:hot?['clear','clear','clear','cloud','fog']:['clear','clear','clear','cloud','cloud','rain','snow','fog'];
  wx=pool[RW()*pool.length|0];FM={clear:1,cloud:1.1,rain:1.5,snow:1.8,fog:2.6}[wx];gripF={clear:1,cloud:1,rain:.92,snow:.88,fog:1}[wx];
  const M={clear:0,cloud:.35,rain:.6,snow:.4,fog:.55}[wx];curSky=wx=='clear'?th.sky:[mixc(th.sky[0],'#7a828e',M),mixc(th.sky[1],wx=='snow'?'#e8eef4':'#aab2bc',M)];
- curG=th.g.map(c=>(wx=='snow'||th.snowy)?mixc(c,'#f4f8ff',.75):wx=='rain'?mixc(c,'#20242a',.25):c);__crDecoThemeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);
+ curG=th.g.map(c=>(wx=='snow'||th.snowy)?mixc(c,'#f4f8ff',.75):wx=='rain'?mixc(c,'#20242a',.25):c);const __crNextDecoThemeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);if(__crNextDecoThemeKey!==__crDecoThemeKey){__crDecoThemeKey=__crNextDecoThemeKey;__crSheetEntries.clear();__crSheetNext=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize)}
  const RS=rng(id*31+3+wxSalt),kinds=(wx=='rain'||wx=='snow'||wx=='fog')?['bird','bird']:['bird','bird','bird','plane','heli','drone','blimp','balloon','balloon'];skyObjs=[];
  const n=4+(RS()*4|0);for(let i=0;i<n;i++){const k=kinds[RS()*kinds.length|0];skyObjs.push({k,x:RS()*(W+160),y:k=='bird'?10+RS()*60:k=='plane'?8+RS()*20:12+RS()*46,v:{bird:26,plane:16,heli:9,drone:6,blimp:3,balloon:2}[k]*(.6+RS()*.8)*(RS()<.5?-1:1),ph:RS()*6,c:['#d8323a','#2a6aff','#ffc830','#2ecc40','#c03aff'][RS()*5|0]})}}
 function drawSkyObjs(){for(const o of skyObjs){const sp=W+160,x=(((o.x+flash*o.v)%sp)+sp)%sp-80,y=o.y+Math.sin(flash*.6+o.ph)*3;
@@ -708,7 +708,7 @@ let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
 /* Sprite sheet partagé : un rendu par variante visuelle unique, jamais par occurrence.
-   Une seule page 2048² (16 Mo RGBA max), cellules 128², sans purge globale.
+   Une seule page 2048² (16 Mo RGBA max), cellules 256², renouvelée au changement de thème.
    Les objets identiques réutilisent exactement la même zone via drawImage(source rect). */
 const __crSheetSize=2048,__crCell=256,__crSheetCols=__crSheetSize/__crCell;
 const __crSpriteSheet=document.createElement('canvas');
@@ -719,7 +719,7 @@ let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.35)return;
- // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 96 px (proche).
+ // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 128 px (proche).
  // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.
  if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
  const tier=projected<10?'far':projected<40?'mid':'near';

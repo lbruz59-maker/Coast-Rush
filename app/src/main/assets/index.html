@@ -770,12 +770,25 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crSheetEntries.clear();__crSheetNext=0;__crSheetHits=0;__crSheetMisses=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize);__crLensFlareKey='';fcache.clear();shc.clear();
-  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';
+  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';__crStarField=null;__crStarFieldKey='';
   return true;
  }catch(e){return false}
 };
+// Champ d'étoiles statique précalculé : déplacement conservé sans redessiner chaque étoile à chaque frame.
+let __crStarField=null,__crStarFieldKey='';
+function drawStarsCached(){
+ const key=W+'x'+H;
+ if(!__crStarField||key!==__crStarFieldKey){
+  __crStarField=document.createElement('canvas');__crStarField.width=Math.max(2,W*2);__crStarField.height=Math.ceil(H/2);
+  const g=__crStarField.getContext('2d');g.fillStyle='#fff';
+  for(let i=0;i<90;i++){const x=(i*83)%W,y=(i*37)%(Math.max(1,H/2-14));g.fillRect(x,y,1,1);g.fillRect(x+W,y,1,1)}
+  __crStarFieldKey=key;
+ }
+ const offset=((skyOff*.2)%W+W)%W;
+ ctx.drawImage(__crStarField,-offset,0);ctx.drawImage(__crStarField,W*2-offset,0);
+}
 const __crSkyLayer=document.createElement('canvas');
 const __crSkyLayerCtx=__crSkyLayer.getContext('2d');
 let __crSkyLayerKey='';
@@ -814,7 +827,7 @@ function renderBackdrop(){
   __crSkyLayerKey=skyKey;
  }
  ctx.drawImage(__crSkyLayer,0,0);
- if(th.night){ctx.fillStyle='#fff';for(let i=0;i<(isTV?24:45);i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
+ if(th.night)drawStarsCached();
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);
  if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<(isTV?9:18);i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
  // Relief lointain précalculé : les montagnes ne sont plus reconstruites en centaines
@@ -953,7 +966,7 @@ function render(){
    deco(item.sp,x,y,a.sc*item.scale);
   }
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

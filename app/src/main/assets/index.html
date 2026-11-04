@@ -330,6 +330,8 @@ function __crMakeCarGlow(color){
  g.fillStyle=r;g.fillRect(0,0,128,64);return c;
 }
 const __crCarGlowSprite=__crMakeCarGlow('#ff202033');
+const __crOilSlickSprite=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),r=g.createRadialGradient(64,64,0,64,64,64);r.addColorStop(0,'#0a0a10');r.addColorStop(.7,'#12121c');r.addColorStop(1,'#12121c00');g.fillStyle=r;g.fillRect(0,0,128,128);return c})();
+
 const __crBrakeGlowSprite=__crMakeCarGlow('#ff2020bb');
 function CRG(x0,y0,r0,x1,y1,r1,c0,c1){x0=Math.round(x0/4)*4;y0=Math.round(y0/4)*4;x1=Math.round(x1/4)*4;y1=Math.round(y1/4)*4;const key=[W,H,x0,y0,r0,x1,y1,r1,c0,c1].join('|');let g=__crRadialCache.get(key);if(g)return g;g=ctx.createRadialGradient(x0,y0,r0,x1,y1,r1);g.addColorStop(0,c0);g.addColorStop(1,c1);if(__crRadialCache.size>=96)__crRadialCache.delete(__crRadialCache.keys().next().value);__crRadialCache.set(key,g);return g}
 
@@ -388,7 +390,7 @@ function drawEnding(t){const g=ctx.createLinearGradient(0,0,0,130);g.addColorSto
  if(t>1.8){person(mx,208,'#4a2a12','#2b4a8a','#223',0,k*6);person(gx,208,'#ffe58a','#e04a6a','#f1c19a',1,-k*6)}
  if(t>3.9){ctx.textAlign='center';for(let i=0;i<6;i++){ctx.fillStyle='#ff2a5a';ctx.font='bold '+(10+i*2)+'px sans-serif';ctx.fillText('♥',mx+10+Math.sin(t*2+i)*22,150-((t-3.9)*30+i*20)%110)}}
  ctx.textAlign='center';ctx.font='bold 22px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';ctx.fillText('CONGRATULATIONS !',161,41);ctx.fillStyle='#fff';ctx.fillText('CONGRATULATIONS !',160,40);ctx.restore();drawFinishCelebration(t,'outrun')}
-function drawObj(c,x,y,w){if(c.k=='g'){const bw=Math.max(w,3);ctx.fillStyle='#fff3a0';ctx.fillRect(x-bw*.15,y-bw*.9,bw*.3,bw*.9)}else if(c.k=='x'){const q=Math.min(1,(flash-c.tt)/.5);ctx.save();ctx.globalAlpha*=1-q;ctx.fillStyle='#ffb020';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.6+q*1.4),0,7);ctx.fill();ctx.fillStyle='#fff6c0';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.3+q*.6),0,7);ctx.fill();ctx.restore()}else if(c.k=='o'){const ow=w*3,g=ctx.createRadialGradient(x,y-ow*.05,0,x,y-ow*.05,ow*.5);g.addColorStop(0,'#0a0a10');g.addColorStop(.7,'#12121c');g.addColorStop(1,'#12121c00');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y-ow*.03,ow*.5,ow*.14,0,0,7);ctx.fill();ctx.fillStyle='#6a4aff33';ctx.beginPath();ctx.ellipse(x-ow*.08,y-ow*.05,ow*.2,ow*.05,0,0,7);ctx.fill();ctx.fillStyle='#22d6aa33';ctx.beginPath();ctx.ellipse(x+ow*.1,y-ow*.02,ow*.14,ow*.04,0,0,7);ctx.fill()}
+function drawObj(c,x,y,w){if(c.k=='g'){const bw=Math.max(w,3);ctx.fillStyle='#fff3a0';ctx.fillRect(x-bw*.15,y-bw*.9,bw*.3,bw*.9)}else if(c.k=='x'){const q=Math.min(1,(flash-c.tt)/.5);ctx.save();ctx.globalAlpha*=1-q;ctx.fillStyle='#ffb020';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.6+q*1.4),0,7);ctx.fill();ctx.fillStyle='#fff6c0';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.3+q*.6),0,7);ctx.fill();ctx.restore()}else if(c.k=='o'){const ow=w*3;ctx.save();ctx.translate(x,y-ow*.03);ctx.scale(ow*.5,ow*.14);ctx.drawImage(__crOilSlickSprite,-1,-1,2,2);ctx.restore();ctx.fillStyle='#6a4aff33';ctx.beginPath();ctx.ellipse(x-ow*.08,y-ow*.05,ow*.2,ow*.05,0,0,7);ctx.fill();ctx.fillStyle='#22d6aa33';ctx.beginPath();ctx.ellipse(x+ow*.1,y-ow*.02,ow*.14,ow*.04,0,0,7);ctx.fill()}
  else if(c.k=='b'){ctx.strokeStyle='#ffd400';ctx.lineWidth=Math.max(1.2,w*.35);ctx.lineCap='round';ctx.beginPath();ctx.arc(x,y-w*.55,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.strokeStyle='#e0a800';ctx.lineWidth=Math.max(.6,w*.12);ctx.beginPath();ctx.arc(x,y-w*.5,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.lineCap='butt'}
  else if(c.k=='s'){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-w*.5,w*.55,0,7);ctx.fill();ctx.fillStyle='#2ecc40';ctx.beginPath();ctx.arc(x,y-w*.5,w*.38,0,7);ctx.fill()}
  else if(c.k=='r'){drawVeh(x,y,w,c.c,c.v|0,0,Math.floor(c.z/70)%2);if(w>12){ctx.fillStyle='#fff';ctx.font='8px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText(c.nm,x,y-w*.95)}}
@@ -700,15 +702,15 @@ const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','sk','n','a','u','W','R','A','B','T']);
-const __crDecoDynamic=new Set(['I','F','G','C','X','P','S','T']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','sk','n','a','u','W','R','A','B','S']);
+const __crDecoDynamic=new Set(['I','F','G','C','X','P']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
 /* Sprite sheet partagé : un rendu par variante visuelle unique, jamais par occurrence.
    Une seule page 2048² (16 Mo RGBA max), cellules 128², sans purge globale.
    Les objets identiques réutilisent exactement la même zone via drawImage(source rect). */
-const __crSheetSize=3072,__crCell=256,__crSheetCols=__crSheetSize/__crCell;
+const __crSheetSize=2048,__crCell=256,__crSheetCols=__crSheetSize/__crCell;
 const __crSpriteSheet=document.createElement('canvas');
 __crSpriteSheet.width=__crSpriteSheet.height=__crSheetSize;
 const __crSheetCtx=__crSpriteSheet.getContext('2d');
@@ -719,7 +721,7 @@ function deco(sp,x,y,sc){
  if(isTV&&projected<.35)return;
  // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 96 px (proche).
  // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>96){decoRaster(sp,x,y,sc);return;}
+ if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
  const tier=projected<10?'far':projected<40?'mid':'near';
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
@@ -728,6 +730,7 @@ function deco(sp,x,y,sc){
  else if(t==='T')params=[sp.port?1:0].join('|');
  else if(t==='sk')params=[sp.hh||1,th.glow?1:0].join('|');
  else if(t==='p')params=String(sp.v||0);
+ else if(t==='S')params=[sp.txt||'',sp.bg||''].join('|');
  else if(t==='bs'||t==='gs'||t==='py'||t==='cl'||t==='c'||t==='t'||t==='l'||t==='r'||t==='sm'||t==='ap'||t==='sc'||t==='rt'||t==='cf'||t==='ht'||t==='n'||t==='a'||t==='W'||t==='R'||t==='A')params='';
  else {decoRaster(sp,x,y,sc);return}
  const key=t+'|'+params+'|'+tier+'|'+W+'|'+H+'|'+__crDecoThemeKey;
@@ -736,7 +739,7 @@ function deco(sp,x,y,sc){
   __crSheetMisses++;
   if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
   const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
-  const qsc=(tier==='far'?10:tier==='mid'?40:96)/(1600*H),radius=120,size=244;
+  const qsc=(tier==='far'?10:tier==='mid'?40:128)/(1600*H),radius=120,size=244;
   const liveCtx=ctx;
   try{
    __crSheetCtx.setTransform(1,0,0,1,0,0);
@@ -768,7 +771,7 @@ const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
  try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
-  __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
+  __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crSheetEntries.clear();__crSheetNext=0;__crSheetHits=0;__crSheetMisses=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize);__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';
   return true;
  }catch(e){return false}

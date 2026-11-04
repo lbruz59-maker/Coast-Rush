@@ -159,12 +159,12 @@ const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc
 let cars=[];
 function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}segs.length=0;__crCarSegments.length=0;
  road(0,50,0,0,0);
- loopS=-1;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
+ loopS=-1;loopE=-1;loopA=0;inLoop=0;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
  const tl=Math.min(140,Math.floor(N*.25));let tS=-1;if(tl>=24&&R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
  segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
-  if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
+  if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:5)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
   else if(i%25==0&&!f&&!s.loop)s.sp.push({t:'B',o:(R()<.5?-1:1)*(1.8+R()*.3),c:cols[R()*7|0],txt:ADS[R()*7|0]});
@@ -962,7 +962,7 @@ function render(){
   ctx.globalAlpha=1-s.ft*.88;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  if(s.__crDecorVisible&&!s.tun)for(let dj=0;dj<s.sp.length;dj++){const sp=s.sp[dj];
+  if(s.__crDecorVisible&&!s.tun)for(let dj=0;dj<s.sp.length;dj++){const sp=s.sp[dj];if(sp.t==='R'&&!s.loop)continue;
    deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc);
   }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
@@ -1564,7 +1564,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(rel>MAX*.05&&ov>sum*.35){crash=c.T?1.4:1;ang=0;bang();voice();shake=.5;if(!c.rp){c.hit=1.3;c.vo=-dir*2.2;c.sp=Math.max(c.sp,speed*.5)}}
   else if(rel>0||ov>sum*.1){px+=dir*Math.min(ov,.06)+dir*dt*.8;if(rel>0)speed-=rel*.6;if(c.bt<=0){squeal();shake=.25;c.bt=.5}}}
  if(!crash&&state=='play'&&musk<=0&&speed>MAX*.08&&star<=0)for(const sp of ps.sp)if(sp.t!='I'&&sp.t!='R'&&sp.t!='G'&&sp.t!='F'&&sp.t!='C'&&sp.t!='T'&&sp.t!='A'&&sp.t!='u'&&sp.t!='W'&&sp.t!='P'&&sp.t!='sm'&&sp.t!='ap'&&sp.t!='sc'&&sp.t!='bs'&&sp.t!='gs'&&sp.t!='rt'&&sp.t!='cf'&&sp.t!='ht'&&Math.abs(px-sp.o)<(sp.t=='B'?.38:.22)){crash=1.1;bang();voice();shake=.5;break}
- const lp=ps.loop?((pos+playerZ)/segL-loopS)/(loopE-loopS):0;
+ const lp=ps.loop&&loopS>=0&&loopE>loopS?((pos+playerZ)/segL-loopS)/(loopE-loopS):0;
  if(ps.loop&&!inLoop&&state=='play'){inLoop=1;if(speed<MAX*.55&&star<=0&&boost<=0){crash=1.1;bang();voice();msg='TROP LENT !';msgT=1.5}else{msg='LOOPING !';msgT=1.5;say('Wow!',1.6,1.2)}}
  if(!ps.loop)inLoop=0;loopA=(inLoop&&crash<=0)?eIO(0,1,Math.max(0,Math.min(1,lp)))*Math.PI*2:0;
  if(state=='play'&&useItems)for(const sp of ps.sp)if(sp.t=='I'&&!(flash<sp.off)&&!item&&Math.abs(px-sp.o)<.22){sp.off=flash+5;item=sp.k||1+(Math.random()*7|0);pickup();say(sp.k?'Item!':'Mystery!',1.6,1.2)}

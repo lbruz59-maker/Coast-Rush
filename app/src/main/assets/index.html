@@ -918,8 +918,8 @@ function render(){
   const rockA=ta.y-twA*1.72,rockB=tb.y-twB*1.72;
   const band=(ts.i/7|0)%2;
   // Masse de montagne au-dessus et de chaque côté du tunnel : aucun ciel visible dans la galerie.
-  __crPoly4('#403c3b',0,0,ta.x-outerA,rockA,tb.x-outerB,rockB,0,0);
-  __crPoly4('#403c3b',ta.x+outerA,rockA,W,0,W,0,tb.x+outerB,rockB);
+  __crPoly4('#403c3b',0,0,ta.x-outerA,rockA,tb.x-outerB,rockB,0,H);
+  __crPoly4('#403c3b',ta.x+outerA,rockA,W,0,W,H,tb.x+outerB,rockB);
   __crPoly4('#51483f',0,0,W,0,tb.x+outerB,rockB,tb.x-outerB,rockB);
   // Épaisseur de roche visible autour de l'intrados (deux lèvres superposées).
   __crPoly4('#74604b',ta.x-innerA,roofTopA,ta.x-outerA,rockA,tb.x-outerB,rockB,tb.x-innerB,roofTopB);

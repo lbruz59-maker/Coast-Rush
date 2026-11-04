@@ -4,8 +4,11 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'CoastRush-Android-Project-Structured.zip'
+      - 'android-app/**'
       - '.github/workflows/android.yml'
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -25,17 +28,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Extract Android project
-        run: |
-          mkdir extracted
-          unzip -q CoastRush-Android-Project-Structured.zip -d extracted
-          cp -R extracted/CoastRush-Android-Project/. .
-
-      - name: Build APK
-        run: gradle assembleDebug
+      - name: Build Coast Rush APK
+        run: gradle -p android-app assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Coast-Rush-Android-APK
-          path: app/build/outputs/apk/debug/*.apk
+          name: Coast-Rush-FireTV-APK
+          path: android-app/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error

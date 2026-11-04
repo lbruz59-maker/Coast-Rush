@@ -678,13 +678,11 @@ const __crSheetEntries=new Map();
 let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
- if(isTV&&projected<.85)return;
- // Les objets proches sont toujours dessinés à leur taille réelle : pas d'agrandissement
- // d'une vignette pré-rendue. Les objets moyens/lointains réutilisent le sprite partagé.
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<10||projected>40){decoRaster(sp,x,y,sc);return;}
- // Ne mettre dans la clé que les attributs qui changent réellement le dessin.
- // Les coordonnées, la distance et les données de placement ne doivent jamais créer
- // une variante de sprite : elles sont appliquées au moment du drawImage.
+ if(isTV&&projected<.35)return;
+ // Trois niveaux : proche dessiné directement ; cache moyen 40 px ; cache lointain 10 px.
+ // Les sprites pré-rendus ne sont jamais agrandis : uniquement taille égale ou réduction.
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>40){decoRaster(sp,x,y,sc);return;}
+ const tier=projected<10?'far':'mid';
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
  else if(t==='B')params=[sp.c||'',sp.txt||''].join('|');
@@ -693,14 +691,13 @@ function deco(sp,x,y,sc){
  else if(t==='sk')params=[sp.hh||1,th.glow?1:0].join('|');
  else if(t==='bs'||t==='gs'||t==='py'||t==='cl'||t==='p'||t==='c'||t==='t'||t==='l'||t==='r'||t==='sm'||t==='ap'||t==='sc'||t==='rt'||t==='cf'||t==='ht'||t==='n'||t==='a'||t==='W'||t==='R'||t==='A')params='';
  else {decoRaster(sp,x,y,sc);return}
- const key=t+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
+ const key=t+'|'+params+'|'+tier+'|'+W+'|'+H+'|'+__crDecoThemeKey;
  let entry=__crSheetEntries.get(key);
  if(!entry){
   __crSheetMisses++;
-  // Sprite maître rasterisé une seule fois à une taille commune, puis réutilisé à toutes distances.
   if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
   const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
-  const qsc=40/(1600*H),radius=120,size=244;
+  const qsc=(tier==='far'?10:40)/(1600*H),radius=120,size=244;
   const liveCtx=ctx;
   try{
    __crSheetCtx.setTransform(1,0,0,1,0,0);

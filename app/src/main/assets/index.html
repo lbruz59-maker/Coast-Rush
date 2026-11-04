@@ -313,7 +313,7 @@ function drawCar(x,y,w,c,pl,ln,ph,po,vt){const u=w/16;
  ctx.strokeStyle='#ffffff66';ctx.lineWidth=Math.max(.3,u*.18);ctx.beginPath();ctx.moveTo(x-6.2*u,y-7.45*u);ctx.lineTo(x+6.2*u,y-7.45*u);ctx.stroke();
  rrp(x-7.2*u,y-6.2*u,14.4*u,2.3*u,u*.5);ctx.fillStyle='#14080a';ctx.fill();
  for(const sx of[-7,1.15])for(let i=0;i<4;i++){rrp(x+(sx+i*1.45)*u,y-6*u,1.25*u,1.9*u,u*.3);ctx.fillStyle=i%2?'#c4161c':'#ff3b3b';ctx.fill()}
- const glowSprite=BRK?__crBrakeGlowSprite:__crCarGlowSprite;ctx.drawImage(glowSprite,x-w*.7,y-w*5.5*u,w*1.4,w*.7);
+ const glowSprite=BRK?__crBrakeGlowSprite:__crCarGlowSprite;ctx.drawImage(glowSprite,x-w*.7,y-w*.5,w*1.4,w*.7);
  rrp(x-1.7*u,y-5.2*u,3.4*u,1.4*u,u*.25);ctx.fillStyle='#f4f4f0';ctx.fill();ctx.fillStyle='#223';ctx.fillRect(x-1.3*u,y-4.8*u,2.6*u,.35*u);
  for(const sx of[-5.4,5.4]){ctx.fillStyle=LG(y-3.4*u,y-2.2*u,'#e8e8f0','#6a6a74');ctx.beginPath();ctx.ellipse(x+sx*u,y-2.7*u,.9*u,.6*u,0,0,7);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.ellipse(x+sx*u,y-2.7*u,.5*u,.35*u,0,0,7);ctx.fill();if(BOOSTF){poly('#ffb020aa',[x+sx*u-.5*u,y-2.4*u,x+sx*u+.5*u,y-2.4*u,x+sx*u,y+(1.5+Math.random()*3)*u]);poly('#fff4b0cc',[x+sx*u-.25*u,y-2.4*u,x+sx*u+.25*u,y-2.4*u,x+sx*u,y+(.5+Math.random()*1.5)*u])}}
  const cx=x+(ln||0)*1.2*u;

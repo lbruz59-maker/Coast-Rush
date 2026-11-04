@@ -164,7 +164,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
  const tl=Math.min(140,Math.floor(N*.25));let tS=-1;if(tl>=24&&R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
  segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
-  if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
+  if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:5)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
   else if(i%25==0&&!f&&!s.loop)s.sp.push({t:'B',o:(R()<.5?-1:1)*(1.8+R()*.3),c:cols[R()*7|0],txt:ADS[R()*7|0]});
@@ -739,7 +739,7 @@ function deco(sp,x,y,sc){
   __crSheetMisses++;
   if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
   const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
-  const qsc=(tier==='far'?10:tier==='mid'?40:128)/(1600*H),radius=120,size=244;
+  const qsc=(tier==='far'?10:tier==='mid'?40:128)/(1600*H),radius=t==='p'?150:120,size=244;
   const liveCtx=ctx;
   try{
    __crSheetCtx.setTransform(1,0,0,1,0,0);
@@ -885,11 +885,11 @@ function render(){
  renderBackdrop();
  const __crPerfActive=window.__CR_PERF_VISIBLE__,__crRoadStart=__crPerfActive?performance.now():0;
  const bs=segs[Math.floor(pos/segL)%segs.length],bp=(pos%segL)/segL,ps=segs[Math.floor((pos+playerZ)/segL)%segs.length],pp=((pos+playerZ)%segL)/segL;
- const cy=camH+lerp(ps.y1,ps.y2,pp);let x=0,dx=-bs.curve*bp,maxY=H;const N=segs.length,vis=__crRenderVisible,forkActive=fk();vis.length=0;
+ const cy=camH+lerp(ps.y1,ps.y2,pp);let x=0,dx=-bs.curve*bp,maxY=H;const N=segs.length,vis=__crRenderVisible,forkActive=fk();let __crTunnelVisibleCount=0;vis.length=0;
  for(let n=0;n<roadDrawN&&bs.i+n<N;n++){const s=segs[bs.i+n],lz=0,z1=s.i*segL+lz-pos,z2=z1+segL,cx=px*roadW;
   const a=__crProjectPoint(s.__crA||(s.__crA={}),0,s.y1,z1,cx-x,cy),b=__crProjectPoint(s.__crB||(s.__crB={}),0,s.y2,z2,cx-x-dx,cy);x+=dx;dx+=s.curve;
   s.clip=maxY;s.v=0;if(z1<=camD||b.y>=a.y||b.y>=maxY)continue;
-  s.v=1;s.a=a;s.b=b;s.__crDetailVisible=n<drawN;s.__crDecorVisible=n<decorDrawN;fogC=s.tun?'#0a0a12':curSky[1];s.ft=Math.min(1,(n/roadDrawN)**1.65*FM+(s.tun?.4:0));vis.push(s);const ft=s.ft,by=b.y-.6;const d=(s.i/3|0)%2;
+  s.v=1;s.a=a;s.b=b;s.__crDetailVisible=n<drawN;s.__crDecorVisible=n<decorDrawN;fogC=s.tun?'#0a0a12':curSky[1];s.ft=Math.min(1,(n/roadDrawN)**1.65*FM+(s.tun?.4:0));if(s.tun)__crTunnelVisibleCount++;vis.push(s);const ft=s.ft,by=b.y-.6;const d=(s.i/3|0)%2;
  __crPoly4(fg(curG[d?0:1],ft),0,by,W,by,W,a.y,0,a.y);
  if(s.sea){const l1=a.x-a.w*1.8,l2=b.x-b.w*1.8;__crPoly4(fg(d?'#1f8fe0':'#2a9cef',ft),0,a.y,l1,a.y,l2,by,0,by);__crPoly4('#fff8',l1,a.y,l1+a.w*.12,a.y,l2+b.w*.12,by,l2,by)}
  const fF=forkActive&&s.i>=N-FORK,fa=fF?Math.min(1,(s.i-(N-FORK))/FORK):0,fb=fF?Math.min(1,(s.i+1-(N-FORK))/FORK):0,rl=!fF&&!s.tun&&((s.i/90|0)%3==1);
@@ -907,35 +907,53 @@ function render(){
   if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}}
  maxY=b.y}
- // Coque opaque du tunnel : passe arrière-avant, après la chaussée pour empêcher
- // les segments de route lointains de repeindre les parois. Le décor extérieur est masqué.
+ // Tunnel creusé dans la montagne : masse rocheuse extérieure + coque intérieure épaisse.
+ // Passe arrière-avant après la route : la roche masque le ciel et les décors hors tunnel.
  for(let ti=vis.length-1;ti>=0;ti--){
   const ts=vis[ti];if(!ts.tun)continue;
   const ta=ts.a,tb=ts.b,depth=ts.ft,twA=ta.w,twB=tb.w;
-  const topA=ta.y-twA*1.02,topB=tb.y-twB*1.02;
-  const outerA=twA*1.28,outerB=twB*1.28;
-  const band=(ts.i/8|0)%2;
-  // Faces latérales pleines et opaques.
+  const innerA=twA*1.28,innerB=twB*1.28;
+  const outerA=twA*1.78,outerB=twB*1.78;
+  const roofA=innerA,roofB=innerB,roofTopA=ta.y-twA*1.08,roofTopB=tb.y-twB*1.08;
+  const rockA=ta.y-twA*1.72,rockB=tb.y-twB*1.72;
+  const band=(ts.i/7|0)%2;
+  // Masse de montagne au-dessus et de chaque côté du tunnel : aucun ciel visible dans la galerie.
+  __crPoly4('#403c3b',0,0,ta.x-outerA,rockA,tb.x-outerB,rockB,0,0);
+  __crPoly4('#403c3b',ta.x+outerA,rockA,W,0,W,0,tb.x+outerB,rockB);
+  __crPoly4('#51483f',0,0,W,0,tb.x+outerB,rockB,tb.x-outerB,rockB);
+  // Épaisseur de roche visible autour de l'intrados (deux lèvres superposées).
+  __crPoly4('#74604b',ta.x-innerA,roofTopA,ta.x-outerA,rockA,tb.x-outerB,rockB,tb.x-innerB,roofTopB);
+  __crPoly4('#74604b',ta.x+innerA,roofTopA,ta.x+outerA,rockA,tb.x+outerB,rockB,tb.x+innerB,roofTopB);
+  __crPoly4('#594b40',ta.x-outerA,rockA,ta.x-outerA*.94,rockA+twA*.13,tb.x-outerB*.94,rockB+twB*.13,tb.x-outerB,rockB);
+  __crPoly4('#594b40',ta.x+outerA*.94,rockA+twA*.13,ta.x+outerA,rockA,tb.x+outerB,rockB,tb.x+outerB*.94,rockB+twB*.13);
+  // Parois intérieures épaisses, verticales, avec parement et joint de pierre.
   __crPoly4(band?'#303b4a':'#354252',
-   ta.x-twA,ta.y,ta.x-outerA,topA,tb.x-outerB,topB,tb.x-twB,tb.y);
+   ta.x-twA,ta.y,ta.x-innerA,roofTopA,tb.x-innerB,roofTopB,tb.x-twB,tb.y);
   __crPoly4(band?'#303b4a':'#354252',
-   ta.x+twA,ta.y,ta.x+outerA,topA,tb.x+outerB,topB,tb.x+twB,tb.y);
-  // Intrados continu : il ferme complètement le dessus du volume.
-  __crPoly4('#171e29',
-   ta.x-outerA,topA,ta.x+outerA,topA,tb.x+outerB,topB,tb.x-outerB,topB);
-  // Bande centrale du plafond et joints transversaux pour une perspective régulière.
-  __crPoly4('#263242',
-   ta.x-twA*.24,topA+twA*.10,ta.x+twA*.24,topA+twA*.10,
-   tb.x+twB*.24,topB+twB*.10,tb.x-twB*.24,topB+twB*.10);
+   ta.x+twA,ta.y,ta.x+innerA,roofTopA,tb.x+innerB,roofTopB,tb.x+twB,tb.y);
+  __crPoly4('#171e29',ta.x-innerA,roofTopA,ta.x+innerA,roofTopA,
+   tb.x+innerB,roofTopB,tb.x-innerB,roofTopB);
+  // Intrados avec une seconde peau et des nervures : le plafond paraît maçonné, pas plat.
+  __crPoly4('#263242',ta.x-innerA*.88,roofTopA+twA*.10,ta.x+innerA*.88,roofTopA+twA*.10,
+   tb.x+innerB*.88,roofTopB+twB*.10,tb.x-innerB*.88,roofTopB+twB*.10);
+  __crPoly4('#46515d',ta.x-innerA,roofTopA,ta.x+innerA,roofTopA+twA*.035,
+   tb.x+innerB,tb.y-tb.w*1.045,tb.x-innerB,roofTopB);
+  // Joints réguliers sur les deux murs.
+  if((ts.i-(ts.tS||0))%3===0){
+   const joint='#84909a66';
+   __crPoly4(joint,ta.x-innerA,roofTopA+twA*.30,ta.x-twA,ta.y-twA*.72,
+    tb.x-tb.w,tb.y-tb.w*.72,tb.x-innerB,roofTopB+twB*.30);
+   __crPoly4(joint,ta.x+twA,ta.y-twA*.72,ta.x+innerA,roofTopA+twA*.30,
+    tb.x+innerB,roofTopB+twB*.30,tb.x+tb.w,tb.y-tb.w*.72);
+  }
   if((ts.i-(ts.tS||0))%4===0){
-   const lampX=ta.x,lampY=topA+twA*.18,lampW=Math.max(1,twA*.16),lampH=Math.max(1,twA*.045);
+   const lampX=ta.x,lampY=roofTopA+twA*.19,lampW=Math.max(1,twA*.17),lampH=Math.max(1,twA*.05);
    ctx.fillStyle='#ffe7ad';ctx.fillRect(lampX-lampW/2,lampY,lampW,lampH);
    const glow=getTunnelLampSprite(),gs=Math.max(5,twA*.48);
-   ctx.globalAlpha=Math.min(.68,Math.max(.12,1-depth*.7));
+   ctx.globalAlpha=Math.min(.66,Math.max(.12,1-depth*.7));
    ctx.drawImage(glow,lampX-gs/2,lampY-gs*.34,gs,gs*.68);
    ctx.globalAlpha=1;
-   // Éclairage discret projeté sur l'asphalte, sans transparence dans les murs.
-   __crPoly4('#ffe8a826',ta.x-twA*.62,ta.y,ta.x+twA*.62,ta.y,
+   __crPoly4('#ffe8a820',ta.x-twA*.62,ta.y,ta.x+twA*.62,ta.y,
     tb.x+twB*.52,tb.y,tb.x-twB*.52,tb.y);
   }
  }
@@ -972,7 +990,7 @@ function render(){
    deco(item.sp,x,y,a.sc*item.scale);
   }
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:lo-firstPoint,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

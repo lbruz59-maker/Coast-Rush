@@ -100,7 +100,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
 const roadDrawN=105;let drawN=28;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
-if(isTV)drawN=28;
+if(isTV)drawN=24;
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
  if(kind==='pause'){window.__coastRushNativePaused=true;try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -700,7 +700,7 @@ function renderBackdrop(){
  {const sx=W*.72,sy=H/2-36,sr=th.night?9:15,sgk=W+'x'+H+'|'+(th.night?'n':'d');if(sgk!==__crSunGlowKey){__crSunGlowKey=sgk;__crSunGlow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);__crSunGlow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');__crSunGlow.addColorStop(1,'#fff0')}const gl=__crSunGlow;ctx.globalAlpha=wx=='clear'?1:wx=='cloud'?.45:0;ctx.fillStyle=gl;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
- for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+ for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=4){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
  if(th.bg)drawBgCached(th.bg);
  {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
 }
@@ -1036,7 +1036,7 @@ function loop(t){
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused){try{render()}catch(e){}return}
- if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?20:70,drawN-(isTV?4:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?36:170,drawN+(isTV?1:8));__crLoadGood=0;__crLoadBad=0}}}
+ if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?16:70,drawN-(isTV?4:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?30:170,drawN+(isTV?1:8));__crLoadGood=0;__crLoadBad=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
@@ -1354,7 +1354,7 @@ function sizeCanvas(){
  // Backing store is independent from CSS size and HDMI mode.
  // Fire TV Stick 4K Max can output up to 4K, but WebView controls its own render buffer.
  const dpr=Math.max(1,Math.min(isTV&&qMode===0?1:2,window.devicePixelRatio||1));
- const maxBackingH=(isTV&&qMode===0)?540:2160;
+ const maxBackingH=(isTV&&qMode===0)?480:2160;
  const wantedH=Math.round(cssH*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));
  let k=targetH/H;

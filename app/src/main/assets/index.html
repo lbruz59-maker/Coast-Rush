@@ -99,10 +99,11 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true,willReadFrequently:false}),W=320,H=224;
-// Render distance is intentionally capped at 64 segments; detail LOD remains adaptive.
-const roadDrawN=64;let drawN=14,decorDrawN=64;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+// Fire TV: render 48 segments instead of 64 (25% fewer projections and decor traversals).
+// Other devices retain 64. Track generation is unchanged; only the visible horizon is shorter.
+const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),roadDrawN=isTV?48:64;let drawN=14,decorDrawN=roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
-if(isTV){drawN=13;decorDrawN=roadDrawN;}
+if(isTV){drawN=13;}
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
  if(kind==='pause'){window.__coastRushNativePaused=true;try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}

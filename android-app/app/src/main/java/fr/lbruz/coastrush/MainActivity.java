@@ -104,12 +104,35 @@ public class MainActivity extends Activity {
         if (hasFocus) hideSystemUi();
     }
 
-    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (webView != null && keyCode == KeyEvent.KEYCODE_BACK) {
-            webView.evaluateJavascript("if(typeof state!=='undefined' && state!=='menu'){ if(typeof endDuel==='function' && duelW) endDuel(); else if(typeof toMenu==='function') toMenu(); }", null);
+    private boolean dispatchRemoteKey(KeyEvent event) {
+        if (webView == null) return false;
+        int code = event.getKeyCode();
+        String key;
+        switch (code) {
+            case KeyEvent.KEYCODE_DPAD_UP: key = "ArrowUp"; break;
+            case KeyEvent.KEYCODE_DPAD_DOWN: key = "ArrowDown"; break;
+            case KeyEvent.KEYCODE_DPAD_LEFT: key = "ArrowLeft"; break;
+            case KeyEvent.KEYCODE_DPAD_RIGHT: key = "ArrowRight"; break;
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+            case KeyEvent.KEYCODE_ENTER:
+            case KeyEvent.KEYCODE_NUMPAD_ENTER: key = "Enter"; break;
+            case KeyEvent.KEYCODE_BUTTON_A: key = " "; break;
+            default: return false;
+        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 0) return true;
+        String action = event.getAction() == KeyEvent.ACTION_UP ? "keyup" : "keydown";
+        String jsKey = JSONObject.quote(key);
+        webView.evaluateJavascript("(function(){var k=" + jsKey + ";var code=(k==='ArrowUp'?38:k==='ArrowDown'?40:k==='ArrowLeft'?37:k==='ArrowRight'?39:k==='Enter'?13:32);var e=new KeyboardEvent('" + action + "',{key:k,code:k,bubbles:true,cancelable:true});Object.defineProperty(e,'keyCode',{get:function(){return code;}});Object.defineProperty(e,'which',{get:function(){return code;}});window.dispatchEvent(e);document.dispatchEvent(e);})();", null);
+        return true;
+    }
+
+    @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (webView != null) webView.evaluateJavascript("if(typeof state!=='undefined' && state!=='menu'){ if(typeof endDuel==='function' && duelW) endDuel(); else if(typeof toMenu==='function') toMenu(); }", null);
             return true;
         }
-        return super.onKeyDown(keyCode, event);
+        if (dispatchRemoteKey(event)) return true;
+        return super.dispatchKeyEvent(event);
     }
 
     @Override protected void onPause() {

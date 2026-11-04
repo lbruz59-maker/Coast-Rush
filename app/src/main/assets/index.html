@@ -99,8 +99,8 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true,willReadFrequently:false}),W=320,H=224;
-// Fire TV: adaptive render horizon starts at 40 segments and adjusts between 30 and 48.
-// Other devices retain 64. Track generation is unchanged; only visible rendering is culled.
+// Fire TV: keep a 60-segment road horizon; adaptive quality now trims distant scenery, not the road.
+// Other devices retain 64. Track generation and vehicle physics are unchanged.
 const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?60:64,drawN=14,decorDrawN=isTV?36:roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 if(isTV){drawN=13;}

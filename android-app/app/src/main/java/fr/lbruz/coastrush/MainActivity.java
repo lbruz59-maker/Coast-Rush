@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     private WebView webView;
     private WebViewAssetLoader assetLoader;
     private final NativeFrameStats frameStats = new NativeFrameStats();
+    private int remoteFocusIndex = 0;
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,11 +126,12 @@ public class MainActivity extends Activity {
         if (down && event.getRepeatCount() > 0) return true;
         if (down && (key.equals("ArrowUp") || key.equals("ArrowDown") || key.equals("ArrowLeft") || key.equals("ArrowRight"))) {
             final int delta = (key.equals("ArrowDown") || key.equals("ArrowRight")) ? 1 : -1;
-            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(!m||getComputedStyle(m).display==='none')return;var a=[].slice.call(m.querySelectorAll('button,input')).filter(function(x){return x.getClientRects().length&& !x.disabled;});if(!a.length)return;var i=a.indexOf(document.activeElement);i=(i+(" + delta + ")+a.length)%a.length;a[i].focus();a[i].scrollIntoView({block:'nearest'});})();", null);
+            remoteFocusIndex += delta;
+            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(!m||getComputedStyle(m).display==='none')return;var a=[].slice.call(m.querySelectorAll('button,input')).filter(function(x){return x.getClientRects().length&&!x.disabled;});if(!a.length)return;var i=(" + remoteFocusIndex + "%a.length+a.length)%a.length;a[i].focus();a[i].scrollIntoView({block:'nearest'});})();", null);
             return true;
         }
         if (down && key.equals("Enter")) {
-            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(m&&getComputedStyle(m).display!=='none'){var a=document.activeElement;if(!a||!m.contains(a)||typeof a.click!=='function')a=document.getElementById('go');if(a&&a.id==='go'&&typeof startGame==='function'){try{startGame()}catch(err){var b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#900;color:white;z-index:9999;padding:8px;font:14px monospace';document.body.appendChild(b)}b.textContent='Erreur démarrage : '+(err&&err.stack||err)}}else if(a)a.click();return;}var e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(m&&getComputedStyle(m).display!=='none'){var a=[].slice.call(m.querySelectorAll('button,input')).filter(function(x){return x.getClientRects().length&&!x.disabled;});if(!a.length)return;var el=document.activeElement;if(!el||a.indexOf(el)<0){el=a[(" + remoteFocusIndex + "%a.length+a.length)%a.length];el.focus()}try{el.click();}catch(err){var b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#900;color:white;z-index:99999;padding:10px;font:14px monospace';document.body.appendChild(b)}b.textContent='Erreur bouton : '+(err&&err.message||err)}return;}window.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true}));})();", null);
             return true;
         }
         if (!down) {

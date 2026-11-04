@@ -655,76 +655,43 @@ const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S'])
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
-/* Atlas compact : les sprites pré-rendus sont regroupés dans quelques pages
-   plutôt que conservés dans des dizaines de petits Canvas indépendants. */
-const __crAtlasPages=[];const __crAtlasSize=1024,__crAtlasMaxPages=4;
-function __crAtlasAlloc(size){
- if(size>__crAtlasSize)return null;
- let p=__crAtlasPages[__crAtlasPages.length-1];
- const place=q=>{if(q.x+size>__crAtlasSize){q.x=0;q.y+=q.rowH;q.rowH=0}
-  if(q.y+size>__crAtlasSize)return false;
-  const a={page:q.canvas,x:q.x,y:q.y,size};q.x+=size;q.rowH=Math.max(q.rowH,size);return a};
- if(p){const a=place(p);if(a)return a}
- if(__crAtlasPages.length>=__crAtlasMaxPages){
-  __crDecoCache.clear();__crDecoCacheBytes=0;__crAtlasPages.length=0;
- }
- const canvas=document.createElement('canvas');canvas.width=canvas.height=__crAtlasSize;
- p={canvas,x:0,y:0,rowH:0};__crAtlasPages.push(p);return place(p);
-}
+/* Sprite sheet partagé : un rendu par variante visuelle unique, jamais par occurrence.
+   Une seule page 2048² (16 Mo RGBA max), cellules 128², sans purge globale.
+   Les objets identiques réutilisent exactement la même zone via drawImage(source rect). */
+const __crSheetSize=2048,__crCell=128,__crSheetCols=__crSheetSize/__crCell;
+const __crSpriteSheet=document.createElement('canvas');
+__crSpriteSheet.width=__crSpriteSheet.height=__crSheetSize;
+const __crSheetCtx=__crSpriteSheet.getContext('2d');
+const __crSheetEntries=new Map();
+let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.85)return;
  if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7){decoRaster(sp,x,y,sc);return;}
- // Multi-scale sprite LOD: each static object is rasterized only at fixed size tiers.
- // Runtime chooses the nearest pre-rendered tier and scales that bitmap, never rebuilds its paths.
- const levels=[8,12,18,27,40,60,85,120];
- let bucket=levels[levels.length-1];
- for(let i=0;i<levels.length;i++){if(projected<=levels[i]*1.12){bucket=levels[i];break;}}
  let params;
  try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
- const key=t+'|'+bucket+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
- let entry=__crDecoCache.get(key);
- if(entry){
-  __crDecoCache.delete(key);__crDecoCache.set(key,entry);
-  __crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;
-  const ratio=sc/entry.qsc;
-  if(entry.page)ctx.drawImage(entry.page,entry.sx,entry.sy,entry.size,entry.size,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
-  else ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
-  return;
- }
- __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
- const qsc=bucket/(1600*H),radius=Math.ceil(bucket*2.7)+3,size=radius*2+2;
- const canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
- const liveCtx=ctx,cacheCtx=canvas.getContext('2d');
- if(!cacheCtx){decoRaster(sp,x,y,sc);return;}
- try{ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);decoRaster(sp,radius+1,radius+1,qsc)}
- finally{ctx=liveCtx}
- const slot=__crAtlasAlloc(size);
- if(slot){slot.page.getContext('2d').drawImage(canvas,slot.x,slot.y);entry={page:slot.page,sx:slot.x,sy:slot.y,anchor:radius+1,size,qsc,bytes:0};}
- else entry={canvas,anchor:radius+1,size,qsc,bytes:size*size*4};
- __crDecoCache.set(key,entry);__crDecoCacheBytes+=entry.bytes;
- while(__crDecoCache.size>160||__crDecoCacheBytes>2*1024*1024){
-  const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);
-  __crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes||0;
- }
- const ratio=sc/qsc;
- if(entry.page)ctx.drawImage(entry.page,entry.sx,entry.sy,entry.size,entry.size,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
- else ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
-}
-// Préchauffage progressif des variantes LOD pendant les menus, jamais pendant la course.
-let __crWarmList=null,__crWarmIndex=0,__crWarmRouteCount=0;
-function __crPrewarmDecoStep(){
- if(!isTV||!segs.length)return;
- if(!__crWarmList||__crWarmRouteCount!==segs.length){
-  __crWarmList=[];__crWarmIndex=0;__crWarmRouteCount=segs.length;
-  for(let si=0;si<segs.length;si++){const a=segs[si].sp||[];for(let j=0;j<a.length;j++)if(__crDecoCacheable.has(a[j].t))__crWarmList.push(a[j]);}
- }
- const stop=Math.min(__crWarmIndex+2,__crWarmList.length),live=ctx;
- for(;__crWarmIndex<stop;__crWarmIndex++){
-  const sp=__crWarmList[__crWarmIndex];
-  for(const level of [18,40,85])deco(sp,-2000,-2000,level/(1600*H));
- }
- if(__crWarmIndex>=__crWarmList.length)__crWarmList=null;
+ const key=t+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
+ let entry=__crSheetEntries.get(key);
+ if(!entry){
+  __crSheetMisses++;
+  // Sprite maître rasterisé une seule fois à une taille commune, puis réutilisé à toutes distances.
+  if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
+  const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
+  const qsc=20/(1600*H),radius=57,size=116;
+  const liveCtx=ctx;
+  try{
+   __crSheetCtx.setTransform(1,0,0,1,0,0);
+   __crSheetCtx.clearRect(sx,sy,__crCell,__crCell);
+   ctx=__crSheetCtx;
+   ctx.setTransform(1,0,0,1,sx,sy);
+   decoRaster(sp,radius+1,radius+1,qsc);
+  }finally{ctx=liveCtx}
+  entry={sx,sy,size,anchor:radius+1,qsc};
+  __crSheetEntries.set(key,entry);
+ }else __crSheetHits++;
+ const ratio=sc/entry.qsc;
+ ctx.drawImage(__crSpriteSheet,entry.sx,entry.sy,entry.size,entry.size,
+   x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
 }
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();
  poly('#8a5a2a',[x-s*.026,y,x+s*.026,y,x+s*.162,y-s,x+s*.138,y-s]);poly('#a8743a',[x-s*.004,y,x+s*.026,y,x+s*.162,y-s,x+s*.148,y-s]);
@@ -758,7 +725,7 @@ function __crProjectPoint(out,wx,wy,z,cx,cy){const sc=camD/z;out.x=W/2+sc*(wx-cx
 const __crForkBlockSprite={t:'X'};
 function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
- if(state!=='play')__crPrewarmDecoStep();
+ /* Sprite sheet construit à la première rencontre de chaque variante, puis réutilisé. */
  renderBackdrop();
  const __crRoadStart=performance.now();
  const bs=segs[Math.floor(pos/segL)%segs.length],bp=(pos%segL)/segL,ps=segs[Math.floor((pos+playerZ)/segL)%segs.length],pp=((pos+playerZ)%segL)/segL;

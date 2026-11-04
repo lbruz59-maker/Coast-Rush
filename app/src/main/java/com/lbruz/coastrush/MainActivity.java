@@ -2,6 +2,10 @@ package com.lbruz.coastrush;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.view.FrameMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -22,6 +26,14 @@ public class MainActivity extends Activity {
     private WebView webView;
     private WebViewAssetLoader assetLoader;
     private final NativeBridge bridge = new NativeBridge();
+    private HandlerThread frameMetricsThread;
+    private final long[] frameTotalSamples = new long[180];
+    private int frameTotalWrite = 0, frameTotalCount = 0;
+    private long fmTotalSum = 0, fmTotalMax = 0, fmDrawSum = 0, fmDrawMax = 0, fmSyncSum = 0, fmCommandSum = 0, fmGpuSum = 0, fmCount = 0;
+    private final Window.OnFrameMetricsAvailableListener frameMetricsListener = (window, metrics, dropCount) -> {
+        long total=metrics.getMetric(FrameMetrics.TOTAL_DURATION), draw=metrics.getMetric(FrameMetrics.DRAW_DURATION), sync=metrics.getMetric(FrameMetrics.SYNC_DURATION), command=metrics.getMetric(FrameMetrics.COMMAND_ISSUE_DURATION);
+        synchronized (MainActivity.this) { fmTotalSum+=total; fmTotalMax=Math.max(fmTotalMax,total); fmDrawSum+=draw; fmDrawMax=Math.max(fmDrawMax,draw); fmSyncSum+=sync; fmCommandSum+=command; fmCount++; frameTotalSamples[frameTotalWrite]=total; frameTotalWrite=(frameTotalWrite+1)%frameTotalSamples.length; if(frameTotalCount<frameTotalSamples.length)frameTotalCount++; if(Build.VERSION.SDK_INT>=31)fmGpuSum+=metrics.getMetric(FrameMetrics.GPU_DURATION); }
+    };
 
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +44,8 @@ public class MainActivity extends Activity {
             .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
             .build();
         webView = new WebView(this);
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        if (Build.VERSION.SDK_INT >= 26) webView.setRendererPriorityPolicy(WebView.RENDERER_PRIORITY_BOUND, true);
         webView.setBackgroundColor(0xFF050B1B);
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
@@ -65,6 +79,7 @@ public class MainActivity extends Activity {
             }
         });
         setContentView(webView);
+        if (Build.VERSION.SDK_INT >= 24) { frameMetricsThread=new HandlerThread("CoastRushFrameMetrics"); frameMetricsThread.start(); getWindow().addOnFrameMetricsAvailableListener(frameMetricsListener,new Handler(frameMetricsThread.getLooper())); }
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
         webView.requestFocus();
         bridge.start();
@@ -162,6 +177,8 @@ public class MainActivity extends Activity {
 
     @Override protected void onDestroy() {
         bridge.stop();
+        if (Build.VERSION.SDK_INT >= 24) getWindow().removeOnFrameMetricsAvailableListener(frameMetricsListener);
+        if (frameMetricsThread != null) { frameMetricsThread.quitSafely(); frameMetricsThread = null; }
         if (webView != null) { webView.stopLoading(); webView.destroy(); webView = null; }
         super.onDestroy();
     }
@@ -210,6 +227,19 @@ public class MainActivity extends Activity {
                 out.put("nativeCallbacks", callbacks);
                 out.put("targetHz", getWindowManager().getDefaultDisplay().getRefreshRate());
                 out.put("lastCallbackAgeMs", previousNs == 0 ? -1 : Math.max(0, (now - previousNs) / 1000000L));
+                synchronized (MainActivity.this) {
+                    out.put("fmCount",fmCount);
+                    out.put("fmTotalAvgMs",fmCount==0?0:fmTotalSum/1000000.0/fmCount);
+                    out.put("fmTotalMaxMs",fmTotalMax/1000000.0);
+                    out.put("fmDrawAvgMs",fmCount==0?0:fmDrawSum/1000000.0/fmCount);
+                    out.put("fmDrawMaxMs",fmDrawMax/1000000.0);
+                    out.put("fmSyncAvgMs",fmCount==0?0:fmSyncSum/1000000.0/fmCount);
+                    out.put("fmCommandAvgMs",fmCount==0?0:fmCommandSum/1000000.0/fmCount);
+                    out.put("fmGpuAvgMs",Build.VERSION.SDK_INT>=31&&fmCount>0?fmGpuSum/1000000.0/fmCount:-1);
+                    long[] ordered=new long[frameTotalCount]; for(int i=0;i<frameTotalCount;i++)ordered[i]=frameTotalSamples[i]; java.util.Arrays.sort(ordered);
+                    out.put("fmTotalP95Ms",ordered.length==0?0:ordered[(int)Math.floor((ordered.length-1)*.95)]/1000000.0);
+                    fmTotalSum=fmTotalMax=fmDrawSum=fmDrawMax=fmSyncSum=fmCommandSum=fmGpuSum=fmCount=0;
+                }
             } catch (Exception ignored) { }
             startNs = now; totalNs = 0; maxNs = 0; samples = 0; delayed = 0;
             return out.toString();

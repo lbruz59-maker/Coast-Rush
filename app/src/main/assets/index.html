@@ -897,33 +897,7 @@ function render(){
  for(let sideIndex=0;sideIndex<(fF?2:1);sideIndex++){const sd=fF?(sideIndex===0?-1:1):0,ax=a.x+a.w*sd*(.5+.9*fa),bx=b.x+b.w*sd*(.5+.9*fb),k2=fF?.5:1,aw=a.w*k2,bw=b.w*k2,r1=aw*.14,r2=bw*.14,rc=fg((s.i/2|0)%2?'#e8203a':'#fff',ft);
   __crPoly4(rc,ax-aw-r1,a.y,ax-aw,a.y,bx-bw,by,bx-bw-r2,by);__crPoly4(rc,ax+aw+r1,a.y,ax+aw,a.y,bx+bw,by,bx+bw+r2,by);
   __crPoly4(fg(s.loop?(d?'#2a6aff':'#2050d0'):wx=='snow'?(d?'#a9abb4':'#9fa1ab'):wx=='rain'?(d?'#4f525b':'#494c55'):d?'#6e6e72':'#65656a',ft),ax-aw,a.y,ax+aw,a.y,bx+bw,by,bx-bw,by);
-  if(s.tun&&!fF){
-   // Murs simples de tunnel, hors chaussée : la route, ses bordures et son tracé restent inchangés.
-   const wallTopA=a.y-aw*.78,wallTopB=by-bw*.78,outerA=aw*1.34,outerB=bw*1.34;
-   const wallCol=fg((s.i/6|0)%2?'#303b4b':'#394657',ft),wallEdge=fg('#77879a',ft);
-   __crPoly4(wallCol,ax-aw,a.y,ax-outerA,wallTopA,bx-outerB,wallTopB,bx-bw,by);
-   __crPoly4(wallCol,ax+aw,a.y,ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,by);
-   // Plafond continu : il ferme le volume sans toucher à la géométrie de la chaussée.
-   const roofA=aw*1.34,roofB=bw*1.34,roofTopA=a.y-aw*1.62,roofTopB=by-bw*1.62;
-   __crPoly4(fg('#171f2d',ft),ax-roofA,roofTopA,ax+roofA,roofTopA,bx+roofB,roofTopB,bx-roofB,roofTopB);
-   __crPoly4(fg('#39485b',ft),ax-roofA,roofTopA,ax+roofA,roofTopA+Math.max(1,aw*.055),bx+roofB,roofTopB+Math.max(1,bw*.055),bx-roofB,roofTopB);
-   __crPoly4(wallEdge,ax-outerA,wallTopA,ax-aw,wallTopA+Math.max(1,aw*.035),bx-bw,wallTopB+Math.max(1,bw*.035),bx-outerB,wallTopB);
-   __crPoly4(wallEdge,ax+aw,wallTopA+Math.max(1,aw*.035),ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,wallTopB+Math.max(1,bw*.035));
-   if((s.i-s.tS)%4===0){
-    const lampA=aw*1.12,lampB=bw*1.12,lyA=wallTopA+aw*.12,lyB=wallTopB+bw*.12;
-    const lampW=Math.max(1,aw*.10),lampH=Math.max(1,aw*.035);
-    ctx.fillStyle=fg('#ffe7a8',ft);ctx.fillRect(ax-lampA,lyA,lampW,lampH);ctx.fillRect(ax+lampA-lampW,lyA,lampW,lampH);
-    // Trois halos précalculés : plafond et deux parois.
-    const glow=getTunnelLampSprite(),glowSize=Math.max(5,aw*.52);
-    ctx.globalAlpha=Math.min(.72,Math.max(.08,1-ft*.7));
-    ctx.drawImage(glow,ax-glowSize/2,roofTopA-aw*.08,glowSize,glowSize*.72);
-    ctx.drawImage(glow,ax-lampA-glowSize*.32,lyA-glowSize*.3,glowSize*.64,glowSize*.64);
-    ctx.drawImage(glow,ax+lampA-glowSize*.32,lyA-glowSize*.3,glowSize*.64,glowSize*.64);
-    ctx.globalAlpha=1;
-    // Faisceau lumineux doux sur l'asphalte : un trapèze par segment éclairé.
-    __crPoly4(fg('#ffe8a8',Math.min(.22,ft*.22)),ax-aw*.72,a.y,ax+aw*.72,a.y,bx+bw*.58,by,bx-bw*.58,by);
-   }
-  }
+  // Coque du tunnel dessinée dans une passe dédiée après toute la chaussée.
   if(n<drawN){
   // Détails routiers proches uniquement ; la chaussée et ses bordures restent dessinées jusqu'à l'horizon.
   ctx.fillStyle='#00000012';ctx.beginPath();
@@ -933,6 +907,38 @@ function render(){
   if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}}
  maxY=b.y}
+ // Coque opaque du tunnel : passe arrière-avant, après la chaussée pour empêcher
+ // les segments de route lointains de repeindre les parois. Le décor extérieur est masqué.
+ for(let ti=vis.length-1;ti>=0;ti--){
+  const ts=vis[ti];if(!ts.tun)continue;
+  const ta=ts.a,tb=ts.b,depth=ts.ft,twA=ta.w,twB=tb.w;
+  const topA=ta.y-twA*1.02,topB=tb.y-twB*1.02;
+  const outerA=twA*1.28,outerB=twB*1.28;
+  const band=(ts.i/8|0)%2;
+  // Faces latérales pleines et opaques.
+  __crPoly4(band?'#303b4a':'#354252',
+   ta.x-twA,ta.y,ta.x-outerA,topA,tb.x-outerB,topB,tb.x-twB,tb.y);
+  __crPoly4(band?'#303b4a':'#354252',
+   ta.x+twA,ta.y,ta.x+outerA,topA,tb.x+outerB,topB,tb.x+twB,tb.y);
+  // Intrados continu : il ferme complètement le dessus du volume.
+  __crPoly4('#171e29',
+   ta.x-outerA,topA,ta.x+outerA,topA,tb.x+outerB,topB,tb.x-outerB,topB);
+  // Bande centrale du plafond et joints transversaux pour une perspective régulière.
+  __crPoly4('#263242',
+   ta.x-twA*.24,topA+twA*.10,ta.x+twA*.24,topA+twA*.10,
+   tb.x+twB*.24,topB+twB*.10,tb.x-twB*.24,topB+twB*.10);
+  if((ts.i-(ts.tS||0))%4===0){
+   const lampX=ta.x,lampY=topA+twA*.18,lampW=Math.max(1,twA*.16),lampH=Math.max(1,twA*.045);
+   ctx.fillStyle='#ffe7ad';ctx.fillRect(lampX-lampW/2,lampY,lampW,lampH);
+   const glow=getTunnelLampSprite(),gs=Math.max(5,twA*.48);
+   ctx.globalAlpha=Math.min(.68,Math.max(.12,1-depth*.7));
+   ctx.drawImage(glow,lampX-gs/2,lampY-gs*.34,gs,gs*.68);
+   ctx.globalAlpha=1;
+   // Éclairage discret projeté sur l'asphalte, sans transparence dans les murs.
+   __crPoly4('#ffe8a826',ta.x-twA*.62,ta.y,ta.x+twA*.62,ta.y,
+    tb.x+twB*.52,tb.y,tb.x-twB*.52,tb.y);
+  }
+ }
  const __crRoadDrawMs=__crPerfActive?performance.now()-__crRoadStart:0,__crDecorStart=__crPerfActive?performance.now():0;
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.88;const clip=s.clip<H;
@@ -1509,6 +1515,12 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   pxVel+=(lateralTarget-pxVel)*Math.min(1,dt*(drift>.08?7.5:9));
   if(state=='play'&&gripF<.8)pxVel+=Math.sin(flash*2.3)*.12*(1-gripF)*sp2*dt*4;
   px+=pxVel*dt;
+  // Collision latérale dédiée au tunnel : la voiture ne peut plus traverser les parois.
+  if(ps.tun&&state=='play'){
+   const tunnelLimit=.88;
+   if(px>tunnelLimit){px=tunnelLimit;if(pxVel>0)pxVel=-Math.min(pxVel*.22,.9);speed=Math.max(speed,MAX*.28)}
+   else if(px< -tunnelLimit){px=-tunnelLimit;if(pxVel<0)pxVel=Math.min(-pxVel*.22,.9);speed=Math.max(speed,MAX*.28)}
+  }
   if(drift>.025){
    if(accelerating)speed=Math.min(MAX*1.10,speed+MAX*.025*drift*dt);
    driftMarkClock+=dt;if(driftMarkClock>.055){driftMarkClock=0;const tx=W/2+driftSide*drift*12,ty=H-16;for(const wheel of [-1,1])__crEmitDrift(tx+wheel*8,ty,driftSide);if(Math.random()<dt*9)__crEmitSmoke(tx+driftSide*13,ty-8,(Math.random()-.5)*22)}

@@ -760,10 +760,10 @@ function renderBackdrop(){
   __crSkyLayerKey=skyKey;
  }
  ctx.drawImage(__crSkyLayer,0,0);
- if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
+ if(th.night){ctx.fillStyle='#fff';for(let i=0;i<(isTV?24:45);i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);
- if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
- for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=(isTV?8:4)){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(__crSin((x+o)*.025))-6*__crSin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+ if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<(isTV?9:18);i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
+ for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=(isTV?16:4)){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(__crSin((x+o)*.025))-6*__crSin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
  if(th.bg)drawBgCached(th.bg);
  const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34);
 }

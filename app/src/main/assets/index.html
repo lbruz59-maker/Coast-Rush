@@ -180,23 +180,26 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
 // échelle et variante graphique sont stockés une seule fois à la génération du circuit.
  __crWorldDecoPoints.length=0;
  for(let si=0;si<segs.length;si++){
-  const seg=segs[si],keep=[];
+  const seg=segs[si],keep=[],groups=[null,null];
   for(let j=0;j<seg.sp.length;j++){
    const sp=seg.sp[j];
-   // Décors statiques latéraux : géométrie et paramètres figés à la génération.
-   // Les éléments de gameplay (items, tunnels, loop et obstacles de voie) restent sur leur segment.
+   // Décors statiques regroupés par segment et par côté : un seul connecteur 3D
+   // porte plusieurs éléments locaux. Les éléments de gameplay restent sur leur segment.
    const staticWorldType=sp.t==='p'||sp.t==='c'||sp.t==='t'||sp.t==='h'||
     sp.t==='l'||sp.t==='r'||sp.t==='a'||sp.t==='n'||sp.t==='sk'||
     sp.t==='B'||sp.t==='u'||sp.t==='W'||sp.t==='py'||sp.t==='cl'||
     sp.t==='sm'||sp.t==='ap'||sp.t==='sc'||sp.t==='bs'||sp.t==='gs'||
     sp.t==='rt'||sp.t==='cf'||sp.t==='ht'||sp.t==='A';
    if(staticWorldType){
-    const data={...sp};
-    const vegetation=sp.t==='p'||sp.t==='c'||sp.t==='t';
+    const side=sp.o<0?0:1;
+    if(!groups[side])groups[side]={seg:si,z:si*segL,x:side===0?-1:1,y:0,items:[]};
+    const data={...sp},vegetation=sp.t==='p'||sp.t==='c'||sp.t==='t';
     if(vegetation)data.v=R()*4|0;
-    __crWorldDecoPoints.push({seg:si,z:si*segL,x:sp.o,y:0,type:sp.t,scale:vegetation ? (.82+R()*.4) : 1,sp:data});
+    groups[side].items.push({offset:sp.o-(side===0?-1:1),scale:vegetation ? (.82+R()*.4) : 1,sp:data});
    }else keep.push(sp);
   }
+  if(groups[0])__crWorldDecoPoints.push(groups[0]);
+  if(groups[1])__crWorldDecoPoints.push(groups[1]);
   seg.sp=keep;
  }
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
@@ -916,8 +919,12 @@ function render(){
  for(let pi=lo-1;pi>=firstPoint;pi--){
   const p=__crWorldDecoPoints[pi],seg=segs[p.seg];
   if(!seg||!seg.v||!seg.__crDecorVisible)continue;
-  const a=seg.a,x=a.x+a.sc*p.x*roadW*160,y=a.y;
-  deco(p.sp,x,y,a.sc*p.scale);
+  const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
+  // Une projection pour le groupe ; chaque élément conserve son décalage latéral local.
+  for(let gi=0;gi<p.items.length;gi++){
+   const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;
+   deco(item.sp,x,y,a.sc*item.scale);
+  }
  }
  if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart};
  // joueur

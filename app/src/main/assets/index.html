@@ -272,7 +272,7 @@ function clap(t){for(let i=0;i<3;i++){const s2=ac.createBufferSource(),g=ac.crea
 function hat2(t,op,v){const s2=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s2.buffer=nb;f.type='highpass';f.frequency.value=8200;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+(op?.16:.04));s2.connect(f);f.connect(g);g.connect(mus);s2.start(t);s2.stop(t+.2)}
 function riser(t,d){const s2=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s2.buffer=nb;s2.loop=true;f.type='bandpass';f.Q.value=2;f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(9000,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.12,t+d);g.gain.linearRampToValueAtTime(.0001,t+d+.05);s2.connect(f);f.connect(g);g.connect(mus);s2.start(t);s2.stop(t+d+.1)}
 function pluck(n,t,v){const o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();o.type='square';o.frequency.value=mf(n);f.type='lowpass';f.frequency.setValueAtTime(4200,t);f.frequency.exponentialRampToValueAtTime(500,t+.16);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.connect(f);f.connect(g);g.connect(PB);if(dly)g.connect(dly);o.start(t);o.stop(t+.22)}
-function sched(){if(!ac||!PB||!musOn||document.hidden||ac.state!=='running')return;BUS=mus;try{while(nxt<ac.currentTime+.2){const T=TR[tr],S=STY[T.st]||STY.epic,s2=step%128,b=s2&15,bar=s2>>4,sd=60/T.bpm/4,r=T.r[bar],q=T.q[bar],iv=[0,q=='m'?3:4,7],sw=b%2?sd*.1:0;
+function sched(){if(!ac||!PB||!musOn||document.hidden||ac.state!=='running')return;BUS=mus;try{const now=ac.currentTime,T0=TR[tr],stepDur=60/T0.bpm/4;if(nxt<now-.25){const skip=Math.ceil((now-.05-nxt)/stepDur);nxt+=skip*stepDur;step+=skip;}while(nxt<now+.2){const T=TR[tr],S=STY[T.st]||STY.epic,s2=step%128,b=s2&15,bar=s2>>4,sd=60/T.bpm/4,r=T.r[bar],q=T.q[bar],iv=[0,q=='m'?3:4,7],sw=b%2?sd*.1:0;
  if(T.m[s2]){lead(T.m[s2][0],nxt,T.m[s2][1]*sd,S.tim);if(T.gen&&bar>=4)lead(T.m[s2][0]+12,nxt,T.m[s2][1]*sd,S.tim,.3)}
  if(b==0)pad(r,q,nxt,16*sd);
  if(S.bs.includes(b)){BUS=PB;tone(mf(r+(b%4==2?12:0)),nxt,sd*1.7,'sawtooth',.07);tone(mf(r),nxt,sd*1.7,'sine',.14);if(T.gen)tone(mf(r-12),nxt,sd*1.7,'sine',.09);BUS=mus}
@@ -1238,7 +1238,7 @@ function crRemoteMenuKey(e){
 addEventListener('keydown',crRemoteMenuKey,true);
 
 function confirmAct(){if(state=='brief')briefT=99;else if(state=='podium')podT=99;else if(state=='mega'&&podT>3)toMenu();else if(state=='over'||state=='win')toMenu()}
-function pollPad(){if(inputMode!=='controller'){gpad.g=gpad.b=0;padAx=0;pp[10]=B(10)||B(11);return}const getPads=navigator.getGamepads;if(!getPads){gpad.g=gpad.b=0;padAx=0;return}const gl=getPads.call(navigator);let gp=window.DUEL?(gl[window.DUEL-1]||null):null;if(!gp)for(const g of gl)if(g&&g.connected){gp=g;break}
+function pollPad(){if(inputMode!=='controller'){gpad.g=gpad.b=0;padAx=0;return}const getPads=navigator.getGamepads;if(!getPads){gpad.g=gpad.b=0;padAx=0;return}const gl=getPads.call(navigator);let gp=window.DUEL?(gl[window.DUEL-1]||null):null;if(!gp)for(const g of gl)if(g&&g.connected){gp=g;break}
  if(!gp){gpad.g=gpad.b=0;padAx=0;return}const B=i=>gp.buttons[i]&&gp.buttons[i].pressed,ax0=gp.axes[0]||0,ay0=gp.axes[1]||0;
  if(state=='menu'&&$('menu').style.display!='none'){const dn=B(13)||B(15)||ay0>.6||ax0>.6,up=B(12)||B(14)||ay0<-.6||ax0<-.6,ok=B(0);if(dn&&!pp[20])navFocus(1);if(up&&!pp[21])navFocus(-1);if(ok&&!pp[22]){const el=document.activeElement;if(el&&el!==document.body&&el.click)el.click()}pp[20]=dn;pp[21]=up;pp[22]=ok;gpad.g=gpad.b=0;padAx=0;return}
  gpad.g=B(0)||B(7)||B(12)?1:0;gpad.b=B(1)||B(6)||B(13)?1:0;const v=ax0+(B(15)?1:0)-(B(14)?1:0);padAx=Math.abs(v)>.15?Math.max(-1,Math.min(1,v)):0;
@@ -1286,7 +1286,7 @@ function mqtt(url,topic,onmsg,nf){let ws,up=0;const E=new TextEncoder(),D=new Te
  const pkt=(h,body)=>{const l=len(body.length),b=new Uint8Array(1+l.length+body.length);b[0]=h;b.set(l,1);b.set(body,1+l.length);return b};
  const conn=()=>{try{ws=new WebSocket(url,'mqtt')}catch(e){nf.st='bloqué : '+(e.message||e);return}ws.binaryType='arraybuffer';
   ws.onopen=()=>{nf.st='socket ouvert';ws.send(pkt(0x10,[...str('MQTT'),4,2,0,30,...str('cr'+rid()+rid())]))};ws.onerror=()=>{nf.st='erreur réseau / bloqué'};
-  ws.onmessage=e=>{const b=new Uint8Array(e.data);let i=0;while(i<b.length){const t=b[i]>>4;let n=0,mu=1,j=i+1,x;do{x=b[j++];n+=(x&127)*mu;mu*=128}while(x&128);
+  ws.onmessage=e=>{const b=new Uint8Array(e.data);let i=0;while(i<b.length){const t=b[i]>>4;let n=0,mu=1,j=i+1,x,rl=0;do{if(j>=b.length||rl++>=4)return;x=b[j++];n+=(x&127)*mu;mu*=128}while(x&128);if(j+n>b.length)return;
    if(t==2){nf.st='MQTT ok, abonnement…';ws.send(pkt(0x82,[0,1,...str(topic),0]))}else if(t==9){nf.st='abonné ✓';if(!up){up=1;sigOpen++}}else if(t==3){nf.rx++;const tl=(b[j]<<8)|b[j+1];onmsg(D.decode(b.subarray(j+2+tl,j+n)))}i=j+n}};
   ws.onclose=()=>{nf.st='fermé, nouvel essai';if(up){up=0;sigOpen--}setTimeout(conn,3000)}};
  conn();setInterval(()=>{if(ws&&ws.readyState==1)ws.send(new Uint8Array([0xC0,0]))},20000);

@@ -656,31 +656,41 @@ let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
  let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
 function deco(sp,x,y,sc){
- const t=sp&&sp.t;
- const projected=sc*3200*H/2;
- // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
+ const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.85)return;
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>38){decoRaster(sp,x,y,sc);return;}
- const qsc=Math.round(sc*128)/128;
-  const projectedQ=qsc*3200*H/2;
-  const radius=Math.ceil(projectedQ*2.7)+2;
-  if(radius>108||qsc<=0){decoRaster(sp,x,y,sc);return;}
-  let state=__crDecoSpriteKeys.get(sp),key;
-  if(state&&state.qsc===qsc&&state.theme===__crDecoThemeKey)key=state.key;
-  else{let params;try{params=state?state.params:JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}key=t+'|'+qsc+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;__crDecoSpriteKeys.set(sp,{qsc:qsc,theme:__crDecoThemeKey,key:key,params:params});}
-  const ratio=sc/qsc;
-  let entry=__crDecoCache.get(key);
-  if(entry){__crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);return;}
-  __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
- const size=radius*2+2,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7){decoRaster(sp,x,y,sc);return;}
+ // Multi-scale sprite LOD: each static object is rasterized only at fixed size tiers.
+ // Runtime chooses the nearest pre-rendered tier and scales that bitmap, never rebuilds its paths.
+ const levels=[8,12,18,27,40,60,85];
+ let bucket=levels[levels.length-1];
+ for(let i=0;i<levels.length;i++){if(projected<=levels[i]*1.12){bucket=levels[i];break;}}
+ if(projected>bucket*1.55){decoRaster(sp,x,y,sc);return;}
+ let params;
+ try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
+ const key=t+'|'+bucket+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;
+ let entry=__crDecoCache.get(key);
+ if(entry){
+  __crDecoCache.delete(key);__crDecoCache.set(key,entry);
+  __crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;
+  const ratio=sc/entry.qsc;
+  ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
+  return;
+ }
+ __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
+ const qsc=bucket/(1600*H),radius=Math.ceil(bucket*2.7)+3,size=radius*2+2;
+ const canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
  const liveCtx=ctx,cacheCtx=canvas.getContext('2d');
  if(!cacheCtx){decoRaster(sp,x,y,sc);return;}
  try{ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);decoRaster(sp,radius+1,radius+1,qsc)}
  finally{ctx=liveCtx}
- entry={canvas,anchor:radius+1,size,bytes:size*size*4};
+ entry={canvas,anchor:radius+1,size,qsc,bytes:size*size*4};
  __crDecoCache.set(key,entry);__crDecoCacheBytes+=entry.bytes;
- // Budget strict : 8 Mio, eviction LRU. Eviction never affects visible scene data.
- while(__crDecoCache.size>48||__crDecoCacheBytes>8*1024*1024){const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);__crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes}
+ // Small bounded LRU: preserve the most recently used multi-scale sprites.
+ while(__crDecoCache.size>96||__crDecoCacheBytes>10*1024*1024){
+  const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);
+  __crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes;
+ }
+ const ratio=sc/qsc;
  ctx.drawImage(canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
 }
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();

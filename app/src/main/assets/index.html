@@ -186,7 +186,7 @@ $('pauseBtn').addEventListener('click',crPauseGame);$('resumeBtn').addEventListe
 addEventListener('keydown',e=>{if((e.key==='p'||e.key==='P')&&state!=='menu'){e.preventDefault();crManualPaused?crResumeGame():crPauseGame()}else if(e.key==='Escape'&&crManualPaused){e.preventDefault();e.stopImmediatePropagation();crResumeGame()}},true);
 const inp={l:0,r:0,g:0,b:0};
 const K={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'g',w:'g',ArrowDown:'b',s:'b'};
-addEventListener('keydown',e=>{if(inputMode==='keyboard'&&K[e.key])inp[K[e.key]]=1;if(inputMode==='keyboard'&&e.code=='Space'&&state!='menu'){toggleGear();e.preventDefault()}if(inputMode==='keyboard'&&(e.key=='h'||e.key=='H'))horn();});
+addEventListener('keydown',e=>{if((inputMode==='keyboard'||inputMode==='controller')&&K[e.key])inp[K[e.key]]=1;if((inputMode==='keyboard'||inputMode==='controller')&&e.code=='Space'&&state!='menu'){toggleGear();e.preventDefault()}if((inputMode==='keyboard'||inputMode==='controller')&&(e.key=='h'||e.key=='H'))horn();});
 addEventListener('keyup',e=>{if(K[e.key])inp[K[e.key]]=0});
 
 addEventListener('blur',()=>{for(const k in inp)inp[k]=0;document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('on'))});

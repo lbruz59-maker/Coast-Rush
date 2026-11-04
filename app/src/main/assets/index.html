@@ -717,10 +717,10 @@ let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.35)return;
- // Trois niveaux : proche dessiné directement ; cache moyen 40 px ; cache lointain 10 px.
- // Les sprites pré-rendus ne sont jamais agrandis : uniquement taille égale ou réduction.
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>40){decoRaster(sp,x,y,sc);return;}
- const tier=projected<10?'far':'mid';
+ // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 96 px (proche).
+ // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>96){decoRaster(sp,x,y,sc);return;}
+ const tier=projected<10?'far':projected<40?'mid':'near';
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
  else if(t==='B')params=[sp.c||'',sp.txt||''].join('|');
@@ -736,7 +736,7 @@ function deco(sp,x,y,sc){
   __crSheetMisses++;
   if(__crSheetNext>=__crSheetCols*__crSheetCols){decoRaster(sp,x,y,sc);return;}
   const slot=__crSheetNext++,sx=(slot%__crSheetCols)*__crCell,sy=Math.floor(slot/__crSheetCols)*__crCell;
-  const qsc=(tier==='far'?10:40)/(1600*H),radius=120,size=244;
+  const qsc=(tier==='far'?10:tier==='mid'?40:96)/(1600*H),radius=120,size=244;
   const liveCtx=ctx;
   try{
    __crSheetCtx.setTransform(1,0,0,1,0,0);
@@ -769,13 +769,32 @@ const __crRenderVisible=[];
 window.__coastRushTrimCaches=function(){
  try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
-  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';
+  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';
   return true;
  }catch(e){return false}
 };
 const __crSkyLayer=document.createElement('canvas');
 const __crSkyLayerCtx=__crSkyLayer.getContext('2d');
 let __crSkyLayerKey='';
+let __crTerrainCanvas=null,__crTerrainKey='';
+function drawTerrainCached(){
+ if(th.bg)return;
+ const key=[W,H,th.m[0],th.m[1],curSky[1],isTV?1:0].join('|');
+ if(!__crTerrainCanvas)__crTerrainCanvas=document.createElement('canvas');
+ if(key!==__crTerrainKey){
+  __crTerrainCanvas.width=W;__crTerrainCanvas.height=Math.ceil(H/2)+1;
+  const g=__crTerrainCanvas.getContext('2d');
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,__crTerrainCanvas.height);
+  for(let L=0;L<2;L++){
+   g.fillStyle=th.m[L];g.beginPath();g.moveTo(0,H/2);
+   const step=isTV?12:8,phase=L*90;
+   for(let x=0;x<=W;x+=step)g.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+phase)*.025))-6*Math.sin((x+phase)*.1));
+   g.lineTo(W,H/2);g.fill();
+  }
+  __crTerrainKey=key;
+ }
+ ctx.drawImage(__crTerrainCanvas,0,0);
+}
 function renderBackdrop(){
  const skyKey=[W,H,curSky[0],curSky[1],th.night?1:0,wx].join('|');
  if(skyKey!==__crSkyLayerKey){
@@ -795,7 +814,9 @@ function renderBackdrop(){
  if(th.night){ctx.fillStyle='#fff';for(let i=0;i<(isTV?24:45);i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);
  if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<(isTV?9:18);i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
- for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=(isTV?16:4)){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(__crSin((x+o)*.025))-6*__crSin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+ // Relief lointain précalculé : les montagnes ne sont plus reconstruites en centaines
+ // de segments Canvas à chaque frame. Leur légère dérive n'apporte aucun détail perceptible.
+ drawTerrainCached();
  if(th.bg)drawBgCached(th.bg);
  const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34);
 }

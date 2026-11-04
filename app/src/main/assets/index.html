@@ -99,6 +99,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
+// Render distance is intentionally capped at 64 segments; detail LOD remains adaptive.
 const roadDrawN=64;let drawN=14,decorDrawN=64;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 if(isTV){drawN=13;decorDrawN=roadDrawN;}
@@ -247,7 +248,7 @@ function initAudio(){
  const dss=ac.createBufferSource();dss.buffer=nb;dss.loop=true;dss.connect(dsf);dsf.connect(window.__driftSqueal);window.__driftSqueal.connect(master);dss.start();
  tb=ac.createOscillator();tb.type='sine';tbg=ac.createGain();tbg.gain.value=0;tb.connect(tbg);tbg.connect(master);tb.start();
  rev=ac.createConvolver();const ir=ac.createBuffer(2,ac.sampleRate*2.2|0,ac.sampleRate);for(let c2=0;c2<2;c2++){const d=ir.getChannelData(c2);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}rev.buffer=ir;const rsd=ac.createGain();rsd.gain.value=.28;mus.connect(rsd);rsd.connect(rev);rev.connect(master);PB=ac.createGain();PB.connect(mus);
- const lpn=(f,ty,q)=>{const s=ac.createBufferSource(),b=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;s.loop=true;b.type=ty;b.frequency.value=f;b.Q.value=q;g.gain.value=0;s.connect(b);b.connect(g);g.connect(BUS||master);s.start();return g};sk=lpn(2300,'bandpass',4);rb=lpn(260,'lowpass',1);rn=lpn(2600,'highpass',.4);nxt=ac.currentTime+.1;setInterval(sched,25)}
+ const lpn=(f,ty,q)=>{const s=ac.createBufferSource(),b=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;s.loop=true;b.type=ty;b.frequency.value=f;b.Q.value=q;g.gain.value=0;s.connect(b);b.connect(g);g.connect(BUS||master);s.start();return g};sk=lpn(2300,'bandpass',4);rb=lpn(260,'lowpass',1);rn=lpn(2600,'highpass',.4);nxt=ac.currentTime+.1;setInterval(sched,50)}
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||master);o.start(t);o.stop(t+d+.05)}
 function kick(t){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(40,t+.12);g.gain.setValueAtTime(.35,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.connect(g);g.connect(BUS||master);o.start(t);o.stop(t+.2)}
 function hat(t){const s=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s.buffer=nb;f.type='highpass';f.frequency.value=7000;g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);s.connect(f);f.connect(g);g.connect(BUS||master);s.start(t);s.stop(t+.06)}
@@ -270,7 +271,7 @@ function clap(t){for(let i=0;i<3;i++){const s2=ac.createBufferSource(),g=ac.crea
 function hat2(t,op,v){const s2=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s2.buffer=nb;f.type='highpass';f.frequency.value=8200;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+(op?.16:.04));s2.connect(f);f.connect(g);g.connect(mus);s2.start(t);s2.stop(t+.2)}
 function riser(t,d){const s2=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s2.buffer=nb;s2.loop=true;f.type='bandpass';f.Q.value=2;f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(9000,t+d);g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.12,t+d);g.gain.linearRampToValueAtTime(.0001,t+d+.05);s2.connect(f);f.connect(g);g.connect(mus);s2.start(t);s2.stop(t+d+.1)}
 function pluck(n,t,v){const o=ac.createOscillator(),g=ac.createGain(),f=ac.createBiquadFilter();o.type='square';o.frequency.value=mf(n);f.type='lowpass';f.frequency.setValueAtTime(4200,t);f.frequency.exponentialRampToValueAtTime(500,t+.16);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.connect(f);f.connect(g);g.connect(PB);if(dly)g.connect(dly);o.start(t);o.stop(t+.22)}
-function sched(){if(!ac||!PB||document.hidden||ac.state!=='running')return;BUS=mus;try{while(nxt<ac.currentTime+.2){const T=TR[tr],S=STY[T.st]||STY.epic,s2=step%128,b=s2&15,bar=s2>>4,sd=60/T.bpm/4,r=T.r[bar],q=T.q[bar],iv=[0,q=='m'?3:4,7],sw=b%2?sd*.1:0;
+function sched(){if(!ac||!PB||!musOn||document.hidden||ac.state!=='running')return;BUS=mus;try{while(nxt<ac.currentTime+.2){const T=TR[tr],S=STY[T.st]||STY.epic,s2=step%128,b=s2&15,bar=s2>>4,sd=60/T.bpm/4,r=T.r[bar],q=T.q[bar],iv=[0,q=='m'?3:4,7],sw=b%2?sd*.1:0;
  if(T.m[s2]){lead(T.m[s2][0],nxt,T.m[s2][1]*sd,S.tim);if(T.gen&&bar>=4)lead(T.m[s2][0]+12,nxt,T.m[s2][1]*sd,S.tim,.3)}
  if(b==0)pad(r,q,nxt,16*sd);
  if(S.bs.includes(b)){BUS=PB;tone(mf(r+(b%4==2?12:0)),nxt,sd*1.7,'sawtooth',.07);tone(mf(r),nxt,sd*1.7,'sine',.14);if(T.gen)tone(mf(r-12),nxt,sd*1.7,'sine',.09);BUS=mus}
@@ -289,9 +290,18 @@ const shc=new Map();function shade(c,f){const k=c+f;if(shc.has(k))return shc.get
 const __crGradientCache=new Map();
 let __crLensFlareGradient=null,__crLensFlareKey='';
 const __crFlareRings=[[.25,7,'#ffd080'],[.5,4,'#80d0ff'],[.8,10,'#ffa0c0'],[1.15,5,'#a0ffb0']];
-const LG=(a,b,c1,c2)=>{const key=[W,H,a,b,c1,c2].join('|');let g=__crGradientCache.get(key);if(g)return g;g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,c1);g.addColorStop(1,c2);if(__crGradientCache.size>=160)__crGradientCache.delete(__crGradientCache.keys().next().value);__crGradientCache.set(key,g);return g};
+const LG=(a,b,c1,c2)=>{a=Math.round(a*.5)*2;b=Math.round(b*.5)*2;const key=[W,H,a,b,c1,c2].join('|');let g=__crGradientCache.get(key);if(g)return g;g=ctx.createLinearGradient(0,a,0,b);g.addColorStop(0,c1);g.addColorStop(1,c2);if(__crGradientCache.size>=160)__crGradientCache.delete(__crGradientCache.keys().next().value);__crGradientCache.set(key,g);return g};
 const __crRadialCache=new Map();
-function CRG(x0,y0,r0,x1,y1,r1,c0,c1){const key=[W,H,x0,y0,r0,x1,y1,r1,c0,c1].join('|');let g=__crRadialCache.get(key);if(g)return g;g=ctx.createRadialGradient(x0,y0,r0,x1,y1,r1);g.addColorStop(0,c0);g.addColorStop(1,c1);if(__crRadialCache.size>=96)__crRadialCache.delete(__crRadialCache.keys().next().value);__crRadialCache.set(key,g);return g}
+// Two fixed glow sprites replace per-car, per-frame radial-gradient creation.
+function __crMakeCarGlow(color){
+ const c=document.createElement('canvas');c.width=128;c.height=64;
+ const g=c.getContext('2d'),r=g.createRadialGradient(64,32,0,64,32,58);
+ r.addColorStop(0,color);r.addColorStop(1,'#ff200000');
+ g.fillStyle=r;g.fillRect(0,0,128,64);return c;
+}
+const __crCarGlowSprite=__crMakeCarGlow('#ff202033');
+const __crBrakeGlowSprite=__crMakeCarGlow('#ff2020bb');
+function CRG(x0,y0,r0,x1,y1,r1,c0,c1){x0=Math.round(x0/4)*4;y0=Math.round(y0/4)*4;x1=Math.round(x1/4)*4;y1=Math.round(y1/4)*4;const key=[W,H,x0,y0,r0,x1,y1,r1,c0,c1].join('|');let g=__crRadialCache.get(key);if(g)return g;g=ctx.createRadialGradient(x0,y0,r0,x1,y1,r1);g.addColorStop(0,c0);g.addColorStop(1,c1);if(__crRadialCache.size>=96)__crRadialCache.delete(__crRadialCache.keys().next().value);__crRadialCache.set(key,g);return g}
 
 let BRK=0,BOOSTF=0;
 function drawCar(x,y,w,c,pl,ln,ph,po,vt){const u=w/16;
@@ -303,7 +313,7 @@ function drawCar(x,y,w,c,pl,ln,ph,po,vt){const u=w/16;
  ctx.strokeStyle='#ffffff66';ctx.lineWidth=Math.max(.3,u*.18);ctx.beginPath();ctx.moveTo(x-6.2*u,y-7.45*u);ctx.lineTo(x+6.2*u,y-7.45*u);ctx.stroke();
  rrp(x-7.2*u,y-6.2*u,14.4*u,2.3*u,u*.5);ctx.fillStyle='#14080a';ctx.fill();
  for(const sx of[-7,1.15])for(let i=0;i<4;i++){rrp(x+(sx+i*1.45)*u,y-6*u,1.25*u,1.9*u,u*.3);ctx.fillStyle=i%2?'#c4161c':'#ff3b3b';ctx.fill()}
- const gl=CRG(x,y-5*u,u,x,y-5*u,w*.6,BRK?'#ff2020bb':'#ff202033','#ff200000');ctx.fillStyle=gl;ctx.fillRect(x-w*.7,y-w*.5,w*1.4,w*.7);
+ const glowSprite=BRK?__crBrakeGlowSprite:__crCarGlowSprite;ctx.drawImage(glowSprite,x-w*.7,y-w*5.5*u,w*1.4,w*.7);
  rrp(x-1.7*u,y-5.2*u,3.4*u,1.4*u,u*.25);ctx.fillStyle='#f4f4f0';ctx.fill();ctx.fillStyle='#223';ctx.fillRect(x-1.3*u,y-4.8*u,2.6*u,.35*u);
  for(const sx of[-5.4,5.4]){ctx.fillStyle=LG(y-3.4*u,y-2.2*u,'#e8e8f0','#6a6a74');ctx.beginPath();ctx.ellipse(x+sx*u,y-2.7*u,.9*u,.6*u,0,0,7);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.ellipse(x+sx*u,y-2.7*u,.5*u,.35*u,0,0,7);ctx.fill();if(BOOSTF){poly('#ffb020aa',[x+sx*u-.5*u,y-2.4*u,x+sx*u+.5*u,y-2.4*u,x+sx*u,y+(1.5+Math.random()*3)*u]);poly('#fff4b0cc',[x+sx*u-.25*u,y-2.4*u,x+sx*u+.25*u,y-2.4*u,x+sx*u,y+(.5+Math.random()*1.5)*u])}}
  const cx=x+(ln||0)*1.2*u;
@@ -1102,7 +1112,7 @@ function loop(t){
  }else{if(crHud)crHud.style.display='none';crLastRaf=0;crWindowStart=0;crFrames=0;crRafSum=0;crRafCount=0;crRafMax=0;crFrameSampleCount=0;crFrameSampleWrite=0;crWorkSampleCount=0;crWorkSampleWrite=0;crLongFrames=0}
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
- if(crManualPaused){try{render()}catch(e){}return}
+ if(crManualPaused)return
  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));/* Décor complet conservé : pas de réduction adaptative du nombre d'objets. */__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));/* Décor complet conservé : déjà au maximum de visibilité. */__crLoadGood=0;__crLoadBad=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;

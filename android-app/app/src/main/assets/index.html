@@ -503,7 +503,7 @@ function setupWeather(id){const RW=rng(id*131+7+wxSalt),hot=['DESERT','LE CAIRE'
  const pool=th.n=='LONDRES'?['cloud','rain','rain','fog','clear']:th.snowy?['snow','snow','snow','cloud','fog']:hot?['clear','clear','clear','cloud','fog']:['clear','clear','clear','cloud','cloud','rain','snow','fog'];
  wx=pool[RW()*pool.length|0];FM={clear:1,cloud:1.1,rain:1.5,snow:1.8,fog:2.6}[wx];gripF={clear:1,cloud:1,rain:.92,snow:.88,fog:1}[wx];
  const M={clear:0,cloud:.35,rain:.6,snow:.4,fog:.55}[wx];curSky=wx=='clear'?th.sky:[mixc(th.sky[0],'#7a828e',M),mixc(th.sky[1],wx=='snow'?'#e8eef4':'#aab2bc',M)];
- curG=th.g.map(c=>(wx=='snow'||th.snowy)?mixc(c,'#f4f8ff',.75):wx=='rain'?mixc(c,'#20242a',.25):c);
+ curG=th.g.map(c=>(wx=='snow'||th.snowy)?mixc(c,'#f4f8ff',.75):wx=='rain'?mixc(c,'#20242a',.25):c);__crDecoThemeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);
  const RS=rng(id*31+3+wxSalt),kinds=(wx=='rain'||wx=='snow'||wx=='fog')?['bird','bird']:['bird','bird','bird','plane','heli','drone','blimp','balloon','balloon'];skyObjs=[];
  const n=4+(RS()*4|0);for(let i=0;i<n;i++){const k=kinds[RS()*kinds.length|0];skyObjs.push({k,x:RS()*(W+160),y:k=='bird'?10+RS()*60:k=='plane'?8+RS()*20:12+RS()*46,v:{bird:26,plane:16,heli:9,drone:6,blimp:3,balloon:2}[k]*(.6+RS()*.8)*(RS()<.5?-1:1),ph:RS()*6,c:['#d8323a','#2a6aff','#ffc830','#2ecc40','#c03aff'][RS()*5|0]})}}
 function drawSkyObjs(){for(const o of skyObjs){const sp=W+160,x=(((o.x+flash*o.v)%sp)+sp)%sp-80,y=o.y+Math.sin(flash*.6+o.ph)*3;
@@ -649,23 +649,24 @@ const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl']); 
 const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
+ let __crDecoSpriteKeys=new WeakMap(),__crDecoThemeKey='';
 function deco(sp,x,y,sc){
  const t=sp&&sp.t;
  const projected=sc*3200*H/2;
  // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
  if(isTV&&projected<.85)return;
  if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>38){decoRaster(sp,x,y,sc);return;}
- const qsc=Math.round(sc*256)/256;
- const projectedQ=qsc*3200*H/2;
- const radius=Math.ceil(projectedQ*2.7)+2;
- if(radius>108||qsc<=0){decoRaster(sp,x,y,sc);return;}
- let params='';try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
- const themeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);
- const key=[t,qsc,params,W,H,roadW,themeKey].join('|');
- const ratio=sc/qsc;
- let entry=__crDecoCache.get(key);
- if(entry){__crDecoCache.delete(key);__crDecoCache.set(key,entry);__crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);return;}
- __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
+ const qsc=Math.round(sc*128)/128;
+  const projectedQ=qsc*3200*H/2;
+  const radius=Math.ceil(projectedQ*2.7)+2;
+  if(radius>108||qsc<=0){decoRaster(sp,x,y,sc);return;}
+  let state=__crDecoSpriteKeys.get(sp),key;
+  if(state&&state.qsc===qsc&&state.theme===__crDecoThemeKey)key=state.key;
+  else{let params;try{params=state?state.params:JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}key=t+'|'+qsc+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;__crDecoSpriteKeys.set(sp,{qsc:qsc,theme:__crDecoThemeKey,key:key,params:params});}
+  const ratio=sc/qsc;
+  const entry=__crDecoCache.get(key);
+  if(entry){__crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);return;}
+  __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
  const size=radius*2+2,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
  const liveCtx=ctx,cacheCtx=canvas.getContext('2d');
  if(!cacheCtx){decoRaster(sp,x,y,sc);return;}
@@ -689,7 +690,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';
   return true;
@@ -1237,7 +1238,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(n!==countShown&&n>0){countShown=n;beep(440);say(String(n),1.5,1.2)}
   if(cd<=0){cd=0;state='play';if(NET()&&MP&&mpStartAt>0)mpRaceStartAt=mpStartAt;countShown=0;beep(880);say('Go!',1.4,1.2)}
  }
- cv.style.transform=(shake>0||crash>0)?'translate('+((Math.random()-.5)*8)+'px,'+((Math.random()-.5)*8)+'px)':'';
+ if(shake>0||crash>0){cv.style.transform='translate('+((Math.random()-.5)*8)+'px,'+((Math.random()-.5)*8)+'px)';window.__crCanvasShaken=true}else if(window.__crCanvasShaken){cv.style.transform='';window.__crCanvasShaken=false}
  if(state=='play'){if(fk()&&MP&&forkRoute<0&&isOutrunLeader()&&ps.i>=N-FORK+12&&Math.abs(px)>.22){forkRoute=px<0?0:1;forkRouteBy=myId;remoteLeaderRoute=forkRoute;}
    if(fk()&&MP&&forkRoute>=0&&!isOutrunLeader()&&ps.i>=N-FORK+7){
     const allowed=forkRoute===0?-1:1;
@@ -1307,7 +1308,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(state=='play'&&useItems)for(const sp of ps.sp)if(sp.t=='I'&&!(flash<sp.off)&&!item&&Math.abs(px-sp.o)<.22){sp.off=flash+5;item=sp.k||1+(Math.random()*7|0);pickup();say(sp.k?'Item!':'Mystery!',1.6,1.2)}
  for(let i=objs.length-1;i>=0;i--){const b=objs[i];let dead=false;
   if(b.k=='s'){
-   const targetValid=!!(b.t&&cars.includes(b.t)&&b.t.z>b.z&&b.t.z>pos+playerZ-segL*.5);
+   const targetValid=!!(b.t&&b.t.z>b.z&&b.t.z>pos+playerZ-segL*.5);
    if(targetValid){
     const target=b.t,dz=target.z-b.z;b.o+=(target.o-b.o)*Math.min(1,dt*6);
     b.z+=Math.min(b.sp*dt,Math.max(dz,0)+1);

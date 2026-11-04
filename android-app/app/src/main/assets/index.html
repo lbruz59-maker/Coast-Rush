@@ -664,7 +664,7 @@ function deco(sp,x,y,sc){
   if(state&&state.qsc===qsc&&state.theme===__crDecoThemeKey)key=state.key;
   else{let params;try{params=state?state.params:JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}key=t+'|'+qsc+'|'+params+'|'+W+'|'+H+'|'+__crDecoThemeKey;__crDecoSpriteKeys.set(sp,{qsc:qsc,theme:__crDecoThemeKey,key:key,params:params});}
   const ratio=sc/qsc;
-  const entry=__crDecoCache.get(key);
+  let entry=__crDecoCache.get(key);
   if(entry){__crDecoCacheHits++;__crDecoTypeHits[t]=(__crDecoTypeHits[t]||0)+1;ctx.drawImage(entry.canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);return;}
   __crDecoCacheMisses++;__crDecoTypeMisses[t]=(__crDecoTypeMisses[t]||0)+1;
  const size=radius*2+2,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;

@@ -890,11 +890,23 @@ function render(){
    const wallCol=fg((s.i/6|0)%2?'#303b4b':'#394657',ft),wallEdge=fg('#77879a',ft);
    __crPoly4(wallCol,ax-aw,a.y,ax-outerA,wallTopA,bx-outerB,wallTopB,bx-bw,by);
    __crPoly4(wallCol,ax+aw,a.y,ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,by);
+   // Plafond continu : il ferme le volume sans toucher à la géométrie de la chaussée.
+   const roofA=aw*1.34,roofB=bw*1.34,roofTopA=a.y-aw*1.62,roofTopB=by-bw*1.62;
+   __crPoly4(fg('#171f2d',ft),ax-roofA,roofTopA,ax+roofA,roofTopA,bx+roofB,roofTopB,bx-roofB,roofTopB);
+   __crPoly4(fg('#39485b',ft),ax-roofA,roofTopA,ax+roofA,roofTopA+Math.max(1,aw*.055),bx+roofB,roofTopB+Math.max(1,bw*.055),bx-roofB,roofTopB);
    __crPoly4(wallEdge,ax-outerA,wallTopA,ax-aw,wallTopA+Math.max(1,aw*.035),bx-bw,wallTopB+Math.max(1,bw*.035),bx-outerB,wallTopB);
    __crPoly4(wallEdge,ax+aw,wallTopA+Math.max(1,aw*.035),ax+outerA,wallTopA,bx+outerB,wallTopB,bx+bw,wallTopB+Math.max(1,bw*.035));
-   if((s.i-s.tS)%8===0){
+   if((s.i-s.tS)%4===0){
     const lampA=aw*1.12,lampB=bw*1.12,lyA=wallTopA+aw*.12,lyB=wallTopB+bw*.12;
-    ctx.fillStyle=fg('#ffe7a8',ft);ctx.fillRect(ax-lampA,lyA,Math.max(1,aw*.10),Math.max(1,aw*.035));ctx.fillRect(ax+lampA-aw*.10,lyA,Math.max(1,aw*.10),Math.max(1,aw*.035));
+    const lampW=Math.max(1,aw*.10),lampH=Math.max(1,aw*.035);
+    ctx.fillStyle=fg('#ffe7a8',ft);ctx.fillRect(ax-lampA,lyA,lampW,lampH);ctx.fillRect(ax+lampA-lampW,lyA,lampW,lampH);
+    // Trois halos précalculés : plafond et deux parois.
+    const glow=getTunnelLampSprite(),glowSize=Math.max(5,aw*.52);
+    ctx.globalAlpha=Math.min(.72,Math.max(.08,1-ft*.7));
+    ctx.drawImage(glow,ax-glowSize/2,roofTopA-aw*.08,glowSize,glowSize*.72);
+    ctx.drawImage(glow,ax-lampA-glowSize*.32,lyA-glowSize*.3,glowSize*.64,glowSize*.64);
+    ctx.drawImage(glow,ax+lampA-glowSize*.32,lyA-glowSize*.3,glowSize*.64,glowSize*.64);
+    ctx.globalAlpha=1;
     // Faisceau lumineux doux sur l'asphalte : un trapèze par segment éclairé.
     __crPoly4(fg('#ffe8a8',Math.min(.22,ft*.22)),ax-aw*.72,a.y,ax+aw*.72,a.y,bx+bw*.58,by,bx-bw*.58,by);
    }
@@ -913,7 +925,7 @@ function render(){
   ctx.globalAlpha=1-s.ft*.88;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  if(s.__crDecorVisible)for(let dj=0;dj<s.sp.length;dj++){const sp=s.sp[dj];
+  if(s.__crDecorVisible&&!s.tun)for(let dj=0;dj<s.sp.length;dj++){const sp=s.sp[dj];
    deco(sp,a.x+a.sc*sp.o*roadW*160,a.y,a.sc);
   }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
@@ -933,7 +945,7 @@ function render(){
  while(lo<hi){const m=(lo+hi)>>1;if(__crWorldDecoPoints[m].seg<=lastSeg)lo=m+1;else hi=m}
  for(let pi=lo-1;pi>=firstPoint;pi--){
   const p=__crWorldDecoPoints[pi],seg=segs[p.seg];
-  if(!seg||!seg.v||!seg.__crDecorVisible)continue;
+  if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
   const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
   // Une projection pour le groupe ; chaque élément conserve son décalage latéral local.
   for(let gi=0;gi<p.items.length;gi++){
@@ -941,7 +953,7 @@ function render(){
    deco(item.sp,x,y,a.sc*item.scale);
   }
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

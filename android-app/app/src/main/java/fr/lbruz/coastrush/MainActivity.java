@@ -107,7 +107,10 @@ public class MainActivity extends Activity {
     private boolean dispatchRemoteKey(KeyEvent event) {
         if (webView == null) return false;
         int code = event.getKeyCode();
-        String key;
+        if (code == KeyEvent.KEYCODE_BACK) return false;
+        boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+        if (!down && event.getAction() != KeyEvent.ACTION_UP) return false;
+        String key = null;
         switch (code) {
             case KeyEvent.KEYCODE_DPAD_UP: key = "ArrowUp"; break;
             case KeyEvent.KEYCODE_DPAD_DOWN: key = "ArrowDown"; break;
@@ -115,20 +118,30 @@ public class MainActivity extends Activity {
             case KeyEvent.KEYCODE_DPAD_RIGHT: key = "ArrowRight"; break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
-            case KeyEvent.KEYCODE_NUMPAD_ENTER: key = "Enter"; break;
-            case KeyEvent.KEYCODE_BUTTON_A: key = " "; break;
+            case KeyEvent.KEYCODE_NUMPAD_ENTER:
+            case KeyEvent.KEYCODE_BUTTON_A: key = "Enter"; break;
             default: return false;
         }
-        if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 0) return true;
-        String action = event.getAction() == KeyEvent.ACTION_UP ? "keyup" : "keydown";
-        String jsKey = JSONObject.quote(key);
-        webView.evaluateJavascript("(function(){var k=" + jsKey + ";var code=(k==='ArrowUp'?38:k==='ArrowDown'?40:k==='ArrowLeft'?37:k==='ArrowRight'?39:k==='Enter'?13:32);var e=new KeyboardEvent('" + action + "',{key:k,code:k,bubbles:true,cancelable:true});Object.defineProperty(e,'keyCode',{get:function(){return code;}});Object.defineProperty(e,'which',{get:function(){return code;}});window.dispatchEvent(e);document.dispatchEvent(e);})();", null);
+        if (down && event.getRepeatCount() > 0) return true;
+        if (down && (key.equals("ArrowUp") || key.equals("ArrowDown") || key.equals("ArrowLeft") || key.equals("ArrowRight"))) {
+            final int delta = (key.equals("ArrowDown") || key.equals("ArrowRight")) ? 1 : -1;
+            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(!m||getComputedStyle(m).display==='none')return;var a=[].slice.call(m.querySelectorAll('button,input')).filter(function(x){return x.getClientRects().length&& !x.disabled;});if(!a.length)return;var i=a.indexOf(document.activeElement);i=(i+(" + delta + ")+a.length)%a.length;a[i].focus();a[i].scrollIntoView({block:'nearest'});})();", null);
+            return true;
+        }
+        if (down && key.equals("Enter")) {
+            webView.evaluateJavascript("(function(){var m=document.getElementById('menu');if(m&&getComputedStyle(m).display!=='none'){var a=document.activeElement;if(!a||!m.contains(a)||typeof a.click!=='function')a=document.getElementById('go');if(a)a.click();return;}var e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+            return true;
+        }
+        if (!down) {
+            String jsKey = JSONObject.quote(key);
+            webView.evaluateJavascript("(function(){var k=" + jsKey + ";var e=new KeyboardEvent('keyup',{key:k,code:k,bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+        }
         return true;
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (webView != null) webView.evaluateJavascript("if(typeof state!=='undefined' && state!=='menu'){ if(typeof endDuel==='function' && duelW) endDuel(); else if(typeof toMenu==='function') toMenu(); }", null);
+            if (webView != null) webView.evaluateJavascript("if(typeof state!=='undefined' && state!=='menu'){ if(typeof endDuel==='function' && duelW) endDuel(); else if(typeof toMenu==='function') toMenu(); } else if(window.CoastRushFrameStats&&CoastRushFrameStats.exitApp) CoastRushFrameStats.exitApp();", null);
             return true;
         }
         if (dispatchRemoteKey(event)) return true;
@@ -200,7 +213,7 @@ public class MainActivity extends Activity {
             Choreographer.getInstance().postFrameCallback(this);
         }
 
-        @JavascriptInterface public synchronized String getStats() {
+        @JavascriptInterface public void exitApp() { runOnUiThread(() -> finish()); }\n\n        @JavascriptInterface public synchronized String getStats() {
             long now = System.nanoTime();
             long elapsed = Math.max(1L, now - windowStartNs);
             double fps = samples * 1_000_000_000.0 / elapsed;

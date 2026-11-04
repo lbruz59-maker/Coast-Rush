@@ -97,10 +97,10 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
-const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d'),W=320,H=224;
-const roadDrawN=105;let drawN=42;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
+const roadDrawN=105;let drawN=28;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
-if(isTV)drawN=42;
+if(isTV)drawN=28;
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
  if(kind==='pause'){window.__coastRushNativePaused=true;try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -759,8 +759,8 @@ function render(){
  ctx.restore();
  {const vk=W+'x'+H;if(vk!==__crVignetteKey){__crVignetteKey=vk;__crVignette=ctx.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.62);__crVignette.addColorStop(0,'#0000');__crVignette.addColorStop(1,'#0007')}ctx.fillStyle=__crVignette;ctx.fillRect(0,0,W,H)}
  if(ps.tun){ctx.fillStyle='#0008';ctx.fillRect(0,0,W,H)}
- if(!ps.tun){if(wx=='rain'){ctx.strokeStyle='#cfe0ffaa';ctx.lineWidth=.7;ctx.beginPath();for(let i=0,n=isTV?58:150;i<n;i++){const x=(i*61+flash*40)%(W+40)-20,y=((i*37+flash*320)%(H+30))-10;ctx.moveTo(x,y);ctx.lineTo(x-3,y+10)}ctx.stroke();ctx.fillStyle='#10203a22';ctx.fillRect(0,0,W,H)}
-  else if(wx=='snow'){ctx.fillStyle='#ffffffcc';ctx.beginPath();for(let i=0,n=isTV?52:140;i<n;i++){const x=(i*53+Math.sin(flash*.7+i)*14+flash*8)%(W+20)-10,y=((i*29+flash*(30+i%5*8))%(H+10))-5;ctx.moveTo(x+.9+(i%3)*.5,y);ctx.arc(x,y,.9+(i%3)*.5,0,7)}ctx.fill()}
+ if(!ps.tun){if(wx=='rain'){ctx.strokeStyle='#cfe0ffaa';ctx.lineWidth=.7;ctx.beginPath();for(let i=0,n=isTV?36:150;i<n;i++){const x=(i*61+flash*40)%(W+40)-20,y=((i*37+flash*320)%(H+30))-10;ctx.moveTo(x,y);ctx.lineTo(x-3,y+10)}ctx.stroke();ctx.fillStyle='#10203a22';ctx.fillRect(0,0,W,H)}
+  else if(wx=='snow'){ctx.fillStyle='#ffffffcc';ctx.beginPath();for(let i=0,n=isTV?32:140;i<n;i++){const x=(i*53+Math.sin(flash*.7+i)*14+flash*8)%(W+20)-10,y=((i*29+flash*(30+i%5*8))%(H+10))-5;ctx.moveTo(x+.9+(i%3)*.5,y);ctx.arc(x,y,.9+(i%3)*.5,0,7)}ctx.fill()}
   else if(wx=='fog'){ctx.fillStyle=curSky[1]+'33';ctx.fillRect(0,0,W,H)}
   if(wx=='clear'&&!th.night){const sx=W*.72,sy=H/2-36;ctx.save();ctx.globalCompositeOperation='lighter';const flareKey=W+'x'+H;if(flareKey!==__crLensFlareKey){__crLensFlareKey=flareKey;__crLensFlareGradient=ctx.createRadialGradient(sx,sy,0,sx,sy,H*.5);__crLensFlareGradient.addColorStop(0,'#fff2c022');__crLensFlareGradient.addColorStop(1,'#fff2c000')}ctx.fillStyle=__crLensFlareGradient;ctx.fillRect(0,0,W,H);ctx.globalAlpha=.1;for(const[k2,r2,c2] of __crFlareRings){ctx.fillStyle=c2;ctx.beginPath();ctx.arc(sx+(W/2-sx)*k2*2,sy+(H/2+20-sy)*k2*2,r2,0,7);ctx.fill()}ctx.restore()}
   if(speed>MAX*.7&&state=='play'){ctx.strokeStyle='#ffffff'+(Math.min(40,(speed/MAX-.7)*160|0)+16).toString(16).padStart(2,'0');ctx.lineWidth=.8;ctx.beginPath();for(let i=0;i<20;i++){const a=i/20*6.283+Math.sin(flash*3+i)*.05;ctx.moveTo(W/2+Math.cos(a)*W*.46,H*.45+Math.sin(a)*H*.5);ctx.lineTo(W/2+Math.cos(a)*W*.64,H*.45+Math.sin(a)*H*.74)}ctx.stroke()}}
@@ -1036,7 +1036,7 @@ function loop(t){
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused){try{render()}catch(e){}return}
- if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.024:.045),fast=ema<(isTV?.018:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?24:70,drawN-(isTV?6:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?56:170,drawN+(isTV?2:8));__crLoadGood=0;__crLoadBad=0}}}
+ if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?20:70,drawN-(isTV?4:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?36:170,drawN+(isTV?1:8));__crLoadGood=0;__crLoadBad=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;

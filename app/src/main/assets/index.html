@@ -611,7 +611,7 @@ const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.
   for(let i=0;i<4;i++)for(let j=0;j<3;j++){ctx.fillStyle=(i+j)%2?'#000':'#fff';ctx.fillRect(q+wv*h*.08+i*h*.12+Math.sin(flash*8+i)*h*.03,pt+j*h*.1,h*.12,h*.1)}}
  else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;ctx.beginPath();ctx.rect(x-w*7,y-w*7,w*14,w*7.02);ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();ctx.fillStyle=sp.port?'#9a8f7a':((sp.k%4<2)?'#2c2f3a':'#252833');ctx.fill('evenodd');
  if(sp.port){ctx.strokeStyle='#d8cdb4';ctx.lineWidth=Math.max(1,w*.06);ctx.beginPath();ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.stroke()}
- if(sp.k%5==0){const ly=y-hh-k+w*.12,gl=ctx.createRadialGradient(x,ly,0,x,ly,w*.5);gl.addColorStop(0,'#ffe9a099');gl.addColorStop(1,'#ffe9a000');ctx.fillStyle=gl;ctx.fillRect(x-w*.5,ly-w*.5,w,w);ctx.fillStyle='#fff6c8';ctx.beginPath();ctx.arc(x,ly,Math.max(1,w*.06),0,7);ctx.fill()}}
+ if(sp.k%5==0){const ly=y-hh-k+w*.12;ctx.drawImage(getTunnelLampSprite(),x-w*.5,ly-w*.5,w,w);ctx.fillStyle='#fff6c8';ctx.beginPath();ctx.arc(x,ly,Math.max(1,w*.06),0,7);ctx.fill()}}
  else if(t=='A'){const w=sc*roadW*160*1.2,hh=w*.62,pw=w*.2,lh=w*.2,X0=x-w-pw,X1=x+w,sg=ctx.createLinearGradient(X0,0,x+w+pw,0);sg.addColorStop(0,'#e2d2ae');sg.addColorStop(.5,'#cdbb94');sg.addColorStop(1,'#a89468');
   ctx.fillStyle=sg;ctx.fillRect(X0,y-hh,pw,hh);ctx.fillRect(X1,y-hh,pw,hh);ctx.fillRect(X0-pw*.15,y-hh-lh,w*2+pw*2.3,lh);
   ctx.fillStyle='#00000040';ctx.fillRect(x-w,y-hh,w*2,lh*.25);ctx.strokeStyle='#8a7a5a99';ctx.lineWidth=Math.max(.3,w*.012);
@@ -761,6 +761,15 @@ function renderBackdrop(){
 // Projection caméra : les enregistrements de projection sont réutilisés par segment.
 function __crProjectPoint(out,wx,wy,z,cx,cy){const sc=camD/z;out.x=W/2+sc*(wx-cx)*160;out.y=H/2-sc*(wy-cy)*H/2;out.w=sc*roadW*160;out.sc=sc;return out}
 const __crForkBlockSprite={t:'X'};
+// Lueur de tunnel précalculée une seule fois : évite de recréer un gradient radial à chaque frame.
+let __crTunnelLampSprite=null;
+function getTunnelLampSprite(){
+ if(__crTunnelLampSprite)return __crTunnelLampSprite;
+ const c=document.createElement('canvas');c.width=64;c.height=64;
+ const g=c.getContext('2d');const radial=g.createRadialGradient(32,32,0,32,32,32);
+ radial.addColorStop(0,'#ffe9a099');radial.addColorStop(1,'#ffe9a000');
+ g.fillStyle=radial;g.fillRect(0,0,64,64);__crTunnelLampSprite=c;return c;
+}
 function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
  /* Sprite sheet construit à la première rencontre de chaque variante, puis réutilisé. */

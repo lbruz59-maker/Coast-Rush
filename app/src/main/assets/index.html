@@ -788,12 +788,13 @@ function getMountainTunnelSprite(){
  // Stone arch rim and dark inner lip, drawn only around the opening.
  g.strokeStyle='#d0b99a';g.lineWidth=10;g.beginPath();g.moveTo(25,192);g.lineTo(25,112);g.quadraticCurveTo(25,8,160,8);g.quadraticCurveTo(295,8,295,112);g.lineTo(295,192);g.stroke();
  g.strokeStyle='#28282b';g.lineWidth=5;g.beginPath();g.moveTo(34,192);g.lineTo(34,112);g.quadraticCurveTo(34,20,160,20);g.quadraticCurveTo(286,20,286,112);g.lineTo(286,192);g.stroke();
- // Deep tunnel interior is painted behind the opening as a separate, narrow distant portal.
- const inside=g.createLinearGradient(0,28,0,192);inside.addColorStop(0,'#151b25');inside.addColorStop(.55,'#080d16');inside.addColorStop(1,'#030509');
- g.fillStyle=inside;g.beginPath();g.moveTo(39,192);g.lineTo(39,112);g.quadraticCurveTo(39,27,160,27);g.quadraticCurveTo(281,27,281,112);g.lineTo(281,192);g.closePath();g.fill();
- g.strokeStyle='#292d32';g.lineWidth=4;g.beginPath();g.moveTo(39,192);g.lineTo(39,112);g.quadraticCurveTo(39,27,160,27);g.quadraticCurveTo(281,27,281,112);g.lineTo(281,192);g.stroke();
- // Bright distant exit glow makes the road direction readable.
- const exit=g.createRadialGradient(160,120,2,160,120,48);exit.addColorStop(0,'#ffe6a855');exit.addColorStop(1,'#ffe6a800');g.fillStyle=exit;g.fillRect(112,72,96,96);
+ // Petit portail sombre au fond seulement : le reste de l'ouverture reste
+ // réellement transparent pour laisser voir la route et ses marquages.
+ const inside=g.createLinearGradient(0,76,0,184);inside.addColorStop(0,'#151b25');inside.addColorStop(.55,'#080d16');inside.addColorStop(1,'#030509');
+ g.fillStyle=inside;g.beginPath();g.moveTo(112,184);g.lineTo(112,137);g.quadraticCurveTo(112,78,160,78);g.quadraticCurveTo(208,78,208,137);g.lineTo(208,184);g.closePath();g.fill();
+ g.strokeStyle='#292d32';g.lineWidth=3;g.beginPath();g.moveTo(112,184);g.lineTo(112,137);g.quadraticCurveTo(112,78,160,78);g.quadraticCurveTo(208,78,208,137);g.lineTo(208,184);g.stroke();
+ // Faible lueur au fond, sans recouvrir la chaussée au premier plan.
+ const exit=g.createRadialGradient(160,132,2,160,132,25);exit.addColorStop(0,'#ffe6a855');exit.addColorStop(1,'#ffe6a800');g.fillStyle=exit;g.fillRect(135,107,50,50);
  __crMountainTunnelSprite=c;return c;
 }
 function getTunnelLampSprite(){

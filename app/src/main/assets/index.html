@@ -518,7 +518,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
 const __crVehicleSpriteCanvas=document.createElement('canvas');
 __crVehicleSpriteCanvas.width=__crVehicleSpriteCanvas.height=192;
 const __crVehicleSpriteCtx=__crVehicleSpriteCanvas.getContext('2d');
-const __crVehicleSprites=new Map();
+const __crVehicleSprites=new Map();let __crVehicleCacheHits=0;
 function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
 function drawVeh(x,y,w,c,v,ln,ph,em){
  if(w<7||w>190||BOOSTF||v<0){__crDrawVehRaster(x,y,w,c,v,ln,ph,em);return}
@@ -539,7 +539,7 @@ function drawVeh(x,y,w,c,v,ln,ph,em){
   entry.canvas=copy;
   __crVehicleSprites.set(key,entry);
   if(__crVehicleSprites.size>72)__crVehicleSprites.delete(__crVehicleSprites.keys().next().value);
- }
+ }else __crVehicleCacheHits++;
  const d=w/96;
  ctx.drawImage(entry.canvas,x-96*d,y-112*d,192*d,192*d);
 }
@@ -770,7 +770,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();__crVehicleCacheHits=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crSheetEntries.clear();__crSheetNext=0;__crSheetHits=0;__crSheetMisses=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize);__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';__crStarField=null;__crStarFieldKey='';
   return true;
@@ -966,7 +966,7 @@ function render(){
    deco(item.sp,x,y,a.sc*item.scale);
   }
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:vis.reduce((n,v)=>n+(v.tun?1:0),0),groupedDecorPoints:lo-firstPoint,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

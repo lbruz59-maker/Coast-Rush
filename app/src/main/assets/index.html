@@ -162,7 +162,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  loopS=-1;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
- const tl=Math.min(140,Math.floor(N*.25));let tS=-1;if(tl>=24&&R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1;if(tS>=0&&tS+tl>N*.25)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
+ const tl=Math.min(140,Math.floor(N*.25));let tS=-1;if(tl>=24&&R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
  segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});

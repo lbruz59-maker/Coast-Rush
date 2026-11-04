@@ -116,14 +116,18 @@ public class MainActivity extends Activity {
         if (event.getAction() != KeyEvent.ACTION_DOWN && event.getAction() != KeyEvent.ACTION_UP) return false;
         if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 0) return true;
         final String jsKey = JSONObject.quote(key);
+        if (event.getAction() == KeyEvent.ACTION_DOWN && "Enter".equals(key)) {
+            webView.evaluateJavascript("(function(){var a=document.activeElement;if(a&&a!==document.body&&typeof a.click==='function'&&/^(BUTTON|INPUT)$/.test(a.tagName)){a.click();return;}var e=new KeyboardEvent('keydown',{key:'Enter',code:'Enter',bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+            return true;
+        }
         final String type = event.getAction() == KeyEvent.ACTION_DOWN ? "keydown" : "keyup";
-        webView.evaluateJavascript("(function(){var k=" + jsKey + ";var e=new KeyboardEvent('" + type + "',{key:k,code:k,bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
+        webView.evaluateJavascript("(function(){var k=" + jsKey + ";if(window.__coastRushRemoteNav&&window.__coastRushRemoteNav(k))return;var e=new KeyboardEvent('" + type + "',{key:k,code:k,bubbles:true,cancelable:true});window.dispatchEvent(e);})();", null);
         return true;
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
         if (event.getKeyCode() == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (webView != null) webView.evaluateJavascript("if(typeof state!=='undefined' && state!=='menu'){if(typeof toMenu==='function')toMenu();}", null);
+            if (webView != null) webView.evaluateJavascript("(function(){if(typeof state!=='undefined'&&state!=='menu'){if(typeof toMenu==='function')toMenu();}else if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();}})();", null);
             return true;
         }
         if (sendRemoteKey(event)) return true;
@@ -209,6 +213,6 @@ public class MainActivity extends Activity {
             startNs = now; totalNs = 0; maxNs = 0; samples = 0; delayed = 0;
             return out.toString();
         }
-        @JavascriptInterface public void exitApp() { runOnUiThread(() -> finish()); }
+        @JavascriptInterface public void exitApp() { runOnUiThread(() -> { if (webView != null) webView.stopLoading(); finishAndRemoveTask(); }); }
     }
 }

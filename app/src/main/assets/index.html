@@ -576,23 +576,8 @@ function drawBgCached(themeKey){
 function decoRaster(sp,x,y,sc){
  const t=sp.t;
  const proj=sc*3200*H/2;
- // LOD Firestick : silhouette conservee tant que l'objet est visible.
- // Seuls les objets sous-pixel sont culles; la route/horizon ne changent pas.
- if(isTV&&proj<.85)return;
- if(isTV&&proj<7){
-  const ww=Math.max(1,proj*.15),hh=Math.max(1,proj*.48);
-  let col='#61765a';
-  if(t==='p'||t==='c'||t==='t')col='#347b42';
-  else if(t==='h'||t==='B'||t==='A')col=sp.c||'#68758a';
-  else if(t==='l')col='#a8a9a4';
-  else if(t==='r')col='#b18b58';
-  ctx.fillStyle=col;
-  if(t==='p'||t==='c'||t==='t'){
-   ctx.fillRect(x-ww*.18,y-hh*.48,Math.max(1,ww*.36),hh*.48);
-   ctx.beginPath();ctx.arc(x,y-hh*.55,Math.max(1,ww*.72),Math.PI,0);ctx.fill();
-  }else ctx.fillRect(x-ww/2,y-hh,ww,hh);
-  return;
- }
+ // Pas de simplification visuelle : seul le culling sous-pixel reste actif.
+ if(isTV&&proj<.35)return;
 const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.05,y,s*.16,s*.025,0,0,7);ctx.fill();ctx.restore()}
  if(t=='p')palm(x,y,s,sc);
  else if(t=='c'){ctx.fillStyle='#2e8b3a';const w=Math.max(1,s*.06);ctx.fillRect(x-w/2,y-s*.7,w,s*.7);ctx.fillRect(x-w*3,y-s*.45,w*3,w*.8);ctx.fillRect(x-w*3,y-s*.55,w*.8,s*.12);ctx.fillRect(x,y-s*.35,w*3,w*.8);ctx.fillRect(x+w*2.2,y-s*.45,w*.8,s*.12)}
@@ -694,7 +679,9 @@ let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
  if(isTV&&projected<.85)return;
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<10){decoRaster(sp,x,y,sc);return;}
+ // Les objets proches sont toujours dessinés à leur taille réelle : pas d'agrandissement
+ // d'une vignette pré-rendue. Les objets moyens/lointains réutilisent le sprite partagé.
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<10||projected>40){decoRaster(sp,x,y,sc);return;}
  // Ne mettre dans la clé que les attributs qui changent réellement le dessin.
  // Les coordonnées, la distance et les données de placement ne doivent jamais créer
  // une variante de sprite : elles sont appliquées au moment du drawImage.

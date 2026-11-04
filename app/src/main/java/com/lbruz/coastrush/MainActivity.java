@@ -88,6 +88,14 @@ public class MainActivity extends Activity {
         setPerfMonitoring(true);
     }
 
+    private void stopPerfMonitoringRuntime() {
+        bridge.stop();
+        if (Build.VERSION.SDK_INT >= 24 && frameMetricsRegistered) {
+            getWindow().removeOnFrameMetricsAvailableListener(frameMetricsListener);
+            frameMetricsRegistered = false;
+        }
+    }
+
     private void setPerfMonitoring(boolean enabled) {
         perfMonitoringRequested = enabled;
         if (enabled) {
@@ -97,11 +105,7 @@ public class MainActivity extends Activity {
                 frameMetricsRegistered = true;
             }
         } else {
-            bridge.stop();
-            if (Build.VERSION.SDK_INT >= 24 && frameMetricsRegistered) {
-                getWindow().removeOnFrameMetricsAvailableListener(frameMetricsListener);
-                frameMetricsRegistered = false;
-            }
+            stopPerfMonitoringRuntime();
         }
     }
 
@@ -170,6 +174,7 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onPause() {
+        stopPerfMonitoringRuntime();
         if (webView != null) {
             webView.evaluateJavascript("window.__coastRushLifecycle && window.__coastRushLifecycle('pause')", null);
             webView.onPause();

@@ -1465,7 +1465,7 @@ function loop(t){
   actions.insertBefore(btn('VALIDER ET RETOUR AU MENU',()=>{try{localStorage.setItem('cr_veh',String(myV));localStorage.setItem('cr_color',myCol)}catch(e){}crProfileTag();layer.remove();toast('Véhicule et couleur enregistrés')},true),actions.firstChild);
   paint();
  };
- const crReadHistory=()=>{try{return JSON.parse(localStorage.getItem('cr_race_history')||'[]')}catch(e){return []}};
+ const crReadHistory=()=>{try{let h=JSON.parse(localStorage.getItem('cr_race_history')||'[]');if(!h.length){const old=JSON.parse(localStorage.getItem('cr_scores')||'[]');h=old.map(r=>({date:r.d||'Ancienne course',mode:'OUTRUN',score:r.s||0,stage:r.st||1,vehicle:'—',name:myName||'Pilote',players:[]}));if(h.length)localStorage.setItem('cr_race_history',JSON.stringify(h))}return h}catch(e){return []}};
  const crShowCareer=()=>{
   const {layer,card,actions,btn}=crMakeLayer('CARRIÈRE · HISTORIQUE DES COURSES','min(96vw,900px)');
   const rows=crReadHistory();const summary=document.createElement('p');summary.textContent=rows.length+' course(s) enregistrée(s) sur cet appareil';summary.style.cssText='color:#bfeaff;text-align:left;font:13px system-ui';card.insertBefore(summary,actions);

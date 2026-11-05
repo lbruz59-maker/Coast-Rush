@@ -211,41 +211,6 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 @media(max-width:700px){#crMenuHotspots .cr-status{font-size:7px;padding:1px 3px;border-radius:3px}}
 
 
-/* V105 — commandes tactiles réellement adaptatives selon le viewport et l'orientation. */
-:root{
- --cr-safe-l:max(10px,env(safe-area-inset-left));
- --cr-safe-r:max(10px,env(safe-area-inset-right));
- --cr-safe-b:max(10px,env(safe-area-inset-bottom));
- --cr-steer:clamp(48px,12vmin,78px);
- --cr-pedal:clamp(62px,15vmin,92px);
- --cr-gap:clamp(8px,2vmin,14px);
-}
-.b{box-sizing:border-box;min-width:0;min-height:0}
-#l,#r{width:var(--cr-steer);height:var(--cr-steer);font-size:clamp(22px,5.8vmin,34px);bottom:var(--cr-safe-b)}
-#l{left:var(--cr-safe-l)}
-#r{left:calc(var(--cr-safe-l) + var(--cr-steer) + var(--cr-gap))}
-#g,#br{width:var(--cr-pedal);height:var(--cr-pedal);bottom:var(--cr-safe-b)}
-#g{right:var(--cr-safe-r);font-size:clamp(15px,4vmin,24px)}
-#br{right:calc(var(--cr-safe-r) + var(--cr-pedal) + var(--cr-gap));font-size:clamp(12px,3.2vmin,19px)}
-#gr{right:var(--cr-safe-r);bottom:calc(var(--cr-safe-b) + var(--cr-pedal) + var(--cr-gap));width:clamp(46px,10vmin,62px);height:clamp(46px,10vmin,62px);font-size:clamp(11px,2.8vmin,16px)}
-#it{left:var(--cr-safe-l);bottom:calc(var(--cr-safe-b) + var(--cr-steer) + var(--cr-gap));width:clamp(42px,9vmin,58px);height:clamp(42px,9vmin,58px);font-size:clamp(16px,4vmin,23px)}
-#hn{left:calc(var(--cr-safe-l) + var(--cr-steer) + var(--cr-gap));bottom:calc(var(--cr-safe-b) + var(--cr-steer) + var(--cr-gap));width:clamp(42px,9vmin,58px);height:clamp(42px,9vmin,58px);font-size:clamp(16px,4vmin,23px)}
-@media (orientation:landscape){
- :root{--cr-steer:clamp(46px,11.5vmin,74px);--cr-pedal:clamp(58px,14vmin,86px);--cr-gap:clamp(7px,1.6vmin,12px)}
- #l,#r{bottom:var(--cr-safe-b)}
- #g,#br{bottom:var(--cr-safe-b)}
- #gr{bottom:calc(var(--cr-safe-b) + var(--cr-pedal) + var(--cr-gap))}
- #it,#hn{bottom:calc(var(--cr-safe-b) + var(--cr-steer) + var(--cr-gap))}
-}
-@media (orientation:landscape) and (max-height:440px){
- :root{--cr-steer:clamp(42px,12vmin,58px);--cr-pedal:clamp(52px,14vmin,68px);--cr-gap:7px}
- #it,#hn{bottom:calc(var(--cr-safe-b) + var(--cr-steer) + 5px)}
- #gr{bottom:calc(var(--cr-safe-b) + var(--cr-pedal) + 5px)}
-}
-@media (orientation:portrait){
- :root{--cr-steer:clamp(54px,14vmin,84px);--cr-pedal:clamp(66px,17vmin,98px)}
-}
-
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>

@@ -5,7 +5,7 @@
 :root{box-sizing:border-box}
 html,body{-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;margin:0;height:100%;background:radial-gradient(circle at 50% 40%,#3a0a5a,#0a0218 72%);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:monospace}
 #w{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-canvas{display:block;flex:0 0 auto;width:100%;height:auto;max-width:100%;max-height:100%;aspect-ratio:16/9;object-fit:contain;background:#000;box-shadow:none}
+canvas{display:block;flex:0 0 auto;width:100%;height:100%;max-width:none;max-height:none;aspect-ratio:auto;object-fit:fill;background:#000;box-shadow:none}
 .b{position:fixed;width:clamp(70px,20vmin,120px);height:clamp(70px,20vmin,120px);border-radius:50%;border:3px solid #fff8;background:#fff3;color:#fff;font-size:clamp(26px,8vmin,46px);display:flex;align-items:center;justify-content:center;font-weight:bold;touch-action:none}
 .b:active,.b.on{background:#ff4d6dcc}
 #l{left:max(12px,env(safe-area-inset-left));bottom:max(14px,env(safe-area-inset-bottom))}
@@ -1763,29 +1763,20 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   rb.gain.value=(__crAudioOffRoad&&speed>MAX*.1)?.3*sp+.08:0;if(rn)rn.gain.value=(wx=='rain'&&state!='menu')?.05:0}}
 let RS=4,qMode=0,RSmax=isTV?2:6;const QN=['AUTO','ÉCO','HD','FULL HD'];
 function sizeCanvas(){
- // Fire TV 4K Max: use the actual WebView viewport, not a guessed HDMI resolution.
- // Fire TV's native TV canvas is 16:9. Keep the game's 398x224 logical coordinate
- // system, but make the presentation surface occupy the complete available viewport.
- H=224;W=398;
+ // Adaptive full-viewport rendering: retain the logical height and expand the
+ // logical width to match the actual screen ratio. This removes 16:9 side bars.
+ H=224;
  const vv=window.visualViewport;
  const vw=Math.max(1,Math.round((vv&&vv.width)||window.innerWidth||document.documentElement.clientWidth||1920));
  const vh=Math.max(1,Math.round((vv&&vv.height)||window.innerHeight||document.documentElement.clientHeight||1080));
  const ratio=vw/vh;
- const nativeRatio=16/9;
- let cssW=vw,cssH=vh,offsetX=0,offsetY=0;
- // Only compensate for a genuinely non-16:9 WebView viewport (e.g. split-screen).
- // On a normal Fire TV 16:9 viewport, the canvas fills every available pixel.
- if(ratio>nativeRatio){cssW=Math.round(vh*nativeRatio);offsetX=Math.round((vw-cssW)/2)}
- else if(ratio<nativeRatio){cssH=Math.round(vw/nativeRatio);offsetY=Math.round((vh-cssH)/2)}
- cv.style.position='absolute';cv.style.left=offsetX+'px';cv.style.top=offsetY+'px';
- cv.style.width=cssW+'px';cv.style.height=cssH+'px';cv.style.maxWidth='none';cv.style.maxHeight='none';
+ W=Math.max(320,Math.round(H*ratio));
+ cv.style.position='absolute';cv.style.left='0px';cv.style.top='0px';
+ cv.style.width='100vw';cv.style.height='100vh';cv.style.maxWidth='none';cv.style.maxHeight='none';
  cv.style.aspectRatio='auto';cv.style.objectFit='fill';cv.style.flex='0 0 auto';
- // Backing store is independent from CSS size and HDMI mode. Fire TV uses 480p internal rendering; the compositor still scales to the full HDMI viewport.
- // Fire TV: plafonnement du backing store à 480 lignes (≈854×480, rendu 480p).
- // Le WebView reste plein écran; seule la résolution de composition Canvas est plafonnée.
  const dpr=Math.max(1,Math.min(isTV?4:2,window.devicePixelRatio||1));
  const maxBackingH=isTV?480:2160;
- const wantedH=Math.round(cssH*dpr);
+ const wantedH=Math.round(vh*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));
  let k=targetH/H;
  if(qMode===1)k=Math.min(k,1.5);
@@ -1794,8 +1785,8 @@ function sizeCanvas(){
  k=Math.max(1,k);RS=k;
  const cw=Math.max(1,Math.round(W*k)),ch=Math.max(1,Math.round(H*k));
  if(cv.width!==cw||cv.height!==ch){
-   cv.width=cw;cv.height=ch;
-   if(typeof window.__coastRushTrimCaches==='function')window.__coastRushTrimCaches();
+  cv.width=cw;cv.height=ch;
+  if(typeof window.__coastRushTrimCaches==='function')window.__coastRushTrimCaches();
  }
  if(ctx&&ctx.setTransform)ctx.setTransform(RS,0,0,RS,0,0);
 }

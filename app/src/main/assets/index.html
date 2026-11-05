@@ -123,7 +123,34 @@ const __crWorldDecoPoints=[];
 /* Atlases composites de groupes statiques : un bitmap par groupe, créé à la demande.
    Budget plafonné pour protéger la mémoire des appareils Android/Fire TV. */
 let __crGroupBitmapBytes=0,__crGroupBitmapBuilt=0,__crGroupBitmapDraws=0;
-const __crGroupBitmapBudget=40*1024*1024,__crGroupBitmapPad=112;
+const __crGroupBitmapBudget=isTV?24*1024*1024:40*1024*1024,__crGroupBitmapPad=112;
+// File de pré-rendu différé : un seul groupe est rasterisé par tranche de temps libre.
+// Cela évite les gros pics CPU au moment où un décor entre dans le champ.
+const __crGroupBitmapQueue=[];
+let __crGroupBitmapQueueBusy=false;
+function __crQueueGroupBitmap(p,tier){
+ if(!p.__crBitmapQueued)p.__crBitmapQueued=Object.create(null);
+ if(p.__crBitmapQueued[tier]||p.__crGroupBitmaps&&p.__crGroupBitmaps[tier]!==undefined)return;
+ p.__crBitmapQueued[tier]=true;__crGroupBitmapQueue.push({point:p,tier});
+ if(!__crGroupBitmapQueueBusy){__crGroupBitmapQueueBusy=true;__crScheduleGroupBitmap()}
+}
+function __crScheduleGroupBitmap(){
+ const run=deadline=>{
+  let built=0;
+  while(__crGroupBitmapQueue.length&&built<1&&(!deadline||deadline.timeRemaining()>3||deadline.didTimeout)){
+   const job=__crGroupBitmapQueue.shift(),p=job.point,tier=job.tier;
+   if(p.__crBitmapQueued)delete p.__crBitmapQueued[tier];
+   if(!p.__crGroupBitmaps||p.__crGroupBitmaps[tier]===undefined)__crBuildGroupBitmap(p,tier);
+   built++;
+  }
+  if(__crGroupBitmapQueue.length){
+   if(window.requestIdleCallback)requestIdleCallback(__crScheduleGroupBitmap,{timeout:180});
+   else setTimeout(()=>__crScheduleGroupBitmap(null),24);
+  }else __crGroupBitmapQueueBusy=false;
+ };
+ if(window.requestIdleCallback)requestIdleCallback(run,{timeout:180});
+ else setTimeout(()=>run(null),24);
+}
 // Trois résolutions de groupes : basse au loin, moyenne à mi-distance, haute avant le premier plan.
 function __crBuildGroupBitmap(p,tier){
  if(!p.__crGroupBitmaps)p.__crGroupBitmaps=Object.create(null);
@@ -150,7 +177,8 @@ function __crBuildGroupBitmap(p,tier){
  return bitmap;
 }
 function __crClearGroupBitmaps(){
- for(let i=0;i<__crWorldDecoPoints.length;i++)__crWorldDecoPoints[i].__crGroupBitmaps=null;
+ __crGroupBitmapQueue.length=0;__crGroupBitmapQueueBusy=false;
+ for(let i=0;i<__crWorldDecoPoints.length;i++){__crWorldDecoPoints[i].__crGroupBitmaps=null;__crWorldDecoPoints[i].__crBitmapQueued=null}
  __crGroupBitmapBytes=0;__crGroupBitmapBuilt=0;__crGroupBitmapDraws=0;
 }
 
@@ -1122,7 +1150,9 @@ function render(){
   const distance=p.seg-bs.i;
   if(distance>=12){
    const tier=distance>=32?'far':distance>=20?'mid':'near';
-   const bitmap=__crBuildGroupBitmap(p,tier);
+   // La première image reste en rendu direct ; le bitmap se construit hors du frame.
+   const bitmap=p.__crGroupBitmaps&&p.__crGroupBitmaps[tier]||null;
+   if(!bitmap)__crQueueGroupBitmap(p,tier);
    if(bitmap){
     const scale=groupScale/bitmap.unit;
     ctx.drawImage(bitmap.canvas,baseX+groupScale*p.x+groupScale*p.minOffset-bitmap.pad*scale,y-bitmap.baseY*scale,bitmap.width*scale,bitmap.height*scale);
@@ -1467,8 +1497,15 @@ const DF=[{n:'FACILE',t:120,k:28,b:45,s:65},{n:'NORMAL',t:90,k:40,b:60,s:55},{n:
 const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 // Pools de particules : réutilisation des objets pour limiter le garbage collector.
 const __crSmokePool=[],__crDriftPool=[];
-function __crEmitSmoke(x,y,vx){const p=__crSmokePool.pop()||{};p.x=x;p.y=y;p.t=0;p.vx=vx;smoke.push(p)}
-function __crEmitDrift(x,y,side){const p=__crDriftPool.pop()||{};p.x=x;p.y=y;p.t=0;p.side=side;driftTrail.push(p)}
+const __crSmokeLiveLimit=72,__crDriftLiveLimit=128;
+function __crEmitSmoke(x,y,vx){
+ if(smoke.length>=__crSmokeLiveLimit){const old=smoke.shift();if(__crSmokePool.length<160)__crSmokePool.push(old)}
+ const p=__crSmokePool.pop()||{};p.x=x;p.y=y;p.t=0;p.vx=vx;smoke.push(p)
+}
+function __crEmitDrift(x,y,side){
+ if(driftTrail.length>=__crDriftLiveLimit){const old=driftTrail.shift();if(__crDriftPool.length<240)__crDriftPool.push(old)}
+ const p=__crDriftPool.pop()||{};p.x=x;p.y=y;p.t=0;p.side=side;driftTrail.push(p)
+}
 const steer=()=>Math.max(-1,Math.min(1,(inp.l?-1:0)+(inp.r?1:0)+padAx+tiltAx+tapAx));
 function toggleGear(){gear^=1;if(ac){nz(.22,.5,1800,'highpass');tone(gear?392:262,ac.currentTime,.1,'sawtooth',.06)}}
 function horn(){if(!ac)return;const t=ac.currentTime;tone(349,t,.5,'sawtooth',.08);tone(351,t,.5,'sawtooth',.08);tone(440,t,.5,'sawtooth',.08);tone(443,t,.5,'sawtooth',.08)}

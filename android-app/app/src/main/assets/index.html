@@ -663,8 +663,8 @@ const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2);if('ptacl'.incl
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl']); // sprites statiques uniquement
-const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl']); // sprites statiques, anneaux et arches inclus
+const __crDecoDynamic=new Set(['I','F','G','C','T','X','P','B','W','u','S']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 // V80 : mémoriser la signature des sprites statiques et du thème.

@@ -20,13 +20,9 @@
   });
  }
  function loadManifest(){
-  fetch(ROOT+'manifest.json',{cache:'no-cache'}).then(function(r){
-   if(!r.ok)throw new Error('bitmap manifest unavailable');
-   return r.json();
-  }).then(function(m){
-   Object.keys(m.sprites||{}).forEach(function(k){loadOne(k,m.sprites[k])});
-   ready=true;
-  }).catch(function(){ready=true});
+  const embedded=window.CR_BITMAP_MANIFEST;
+  if(embedded){Object.keys(embedded.sprites||{}).forEach(function(k){loadOne(k,embedded.sprites[k])});ready=true;return;}
+  fetch(ROOT+'manifest.json',{cache:'no-cache'}).then(function(r){if(!r.ok)throw new Error('bitmap manifest unavailable');return r.json();}).then(function(m){Object.keys(m.sprites||{}).forEach(function(k){loadOne(k,m.sprites[k])});ready=true;}).catch(function(){ready=true});
  }
  function poseName(p){
   return ({0:'straight',1:'turn-right',2:'turn-left',3:'drift-right',4:'drift-left'})[p|0]||'straight';
@@ -34,10 +30,11 @@
  function draw(ctx,key,view,x,y,w,h){
   const e=registry.get(key+'|'+view)||registry.get(key+'|straight');
   if(!e||!e.img.complete||!e.img.naturalWidth){stats.fallback++;return false}
-  const s=e.spec||{},iw=e.img.naturalWidth,ih=e.img.naturalHeight;
-  const dw=w*(s.scaleX||1),dh=h*(s.scaleY||1);
+  const s=e.spec||{},dw=w*(s.scaleX||1),dh=h*(s.scaleY||1);
   const px=s.pivotX==null?.5:s.pivotX,py=s.pivotY==null?.86:s.pivotY;
-  ctx.drawImage(e.img,x-dw*px,y-dh*py,dw,dh);stats.drawn++;return true;
+  if(s.sw&&s.sh)ctx.drawImage(e.img,s.sx||0,s.sy||0,s.sw,s.sh,x-dw*px,y-dh*py,dw,dh);
+  else ctx.drawImage(e.img,x-dw*px,y-dh*py,dw,dh);
+  stats.drawn++;return true;
  }
  window.CRBitmap={
   drawVehicle:function(ctx,v,pose,x,y,w,h){

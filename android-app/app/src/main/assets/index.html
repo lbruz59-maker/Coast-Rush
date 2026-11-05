@@ -1201,7 +1201,7 @@ function drawOutrunMap(t){
  const currentProgress=Math.max(0,Math.min(1,(pos+playerZ)/(trackLen||1)));
  const completed=state==='win';
  const cardW=42,cardH=18,top=48,bottom=138;
- const colX=s=>23+(s-1)*68;
+ const colX=s=>W*.06+(s-1)*(W*.22); // V108: spread all five route stages across the adaptive canvas width
  const node=(s,k)=>({id:s*(s-1)/2+k,x:colX(s),y:s===1?(top+bottom)/2:top+k*(bottom-top)/(s-1)});
  const themeFor=id=>TH[THI[id]]||TH[0];
 

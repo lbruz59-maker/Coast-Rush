@@ -455,7 +455,7 @@ function drawMuskCraft(x,y,w,t){
 }
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
-function drawVehPose(x,y,w,c,v,pose,ph){
+function __crDrawVehPoseRaster(x,y,w,c,v,pose,ph){
  // Angles construits a partir du vrai dessin de chaque vehicule : aucune silhouette generique.
  // Le cisaillement donne une perspective arriere trois-quarts tout en conservant les details
  // propres a chaque carrosserie (Coccinelle, sportive, muscle car, pickup, van).
@@ -489,8 +489,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  ctx.restore();ctx.globalAlpha=1;
 }
 function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
-// V85 — atlas véhicule à la demande : chaque modèle, peinture, orientation,
-// phase lumineuse et état frein/boost possède sa vignette réutilisable.
+// V86 — atlas véhicule de base, borné en mémoire.
 const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
 function drawVeh(x,y,w,c,v,ln,ph,em){
  const qln=Math.round((ln||0)*100)/100,key=[v,c,qln,ph==null?'n':ph,em?1:0,BRK,BOOSTF].join('|');
@@ -500,9 +499,29 @@ function drawVeh(x,y,w,c,v,ln,ph,em){
   const live=ctx;ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,160,160);
   try{__crDrawVehRaster(80,116,96,c,v,qln,ph,em)}finally{ctx=live}
   e={canvas:cv,bytes:cv.width*cv.height*4};__crVehicleAtlas.set(key,e);__crVehicleAtlasBytes+=e.bytes;
-  while(__crVehicleAtlas.size>28){const first=__crVehicleAtlas.keys().next().value,drop=__crVehicleAtlas.get(first);__crVehicleAtlas.delete(first);__crVehicleAtlasBytes-=drop.bytes}
+  while(__crVehicleAtlas.size>42){const first=__crVehicleAtlas.keys().next().value,drop=__crVehicleAtlas.get(first);__crVehicleAtlas.delete(first);__crVehicleAtlasBytes-=drop.bytes}
  }else{__crVehicleAtlas.delete(key);__crVehicleAtlas.set(key,e)}
  const k=w/96;ctx.drawImage(e.canvas,x-80*k,y-116*k,160*k,160*k);
+}
+// Atlas de poses complet : 0 droit, 1 virage droit, 2 virage gauche,
+// 3 drift droit, 4 drift gauche. Les silhouettes restent celles de chaque modèle.
+// Les effets dynamiques frein/boost et la phase lumineuse font partie de la clé.
+const __crVehiclePoseAtlas=new Map();let __crVehiclePoseAtlasBytes=0;
+function drawVehPose(x,y,w,c,v,pose,ph){
+ if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
+ const p=pose|0,key=[v,c,p,ph==null?'n':ph,BRK,BOOSTF].join('|');
+ let e=__crVehiclePoseAtlas.get(key);
+ if(!e){
+  const cv=document.createElement('canvas');cv.width=192;cv.height=192;
+  const live=ctx;ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+  try{__crDrawVehPoseRaster(96,138,96,c,v,p,ph)}finally{ctx=live}
+  e={canvas:cv,bytes:cv.width*cv.height*4};__crVehiclePoseAtlas.set(key,e);__crVehiclePoseAtlasBytes+=e.bytes;
+  while(__crVehiclePoseAtlas.size>18||__crVehiclePoseAtlasBytes>3*1024*1024){
+   const first=__crVehiclePoseAtlas.keys().next().value,drop=__crVehiclePoseAtlas.get(first);
+   __crVehiclePoseAtlas.delete(first);__crVehiclePoseAtlasBytes-=drop.bytes;
+  }
+ }else{__crVehiclePoseAtlas.delete(key);__crVehiclePoseAtlas.set(key,e)}
+ const k=w/96;ctx.drawImage(e.canvas,x-96*k,y-138*k,192*k,192*k);
 }
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
@@ -709,11 +728,11 @@ function deco(sp,x,y,sc){
  const projected=sc*3200*H/2;
  // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
  if(isTV&&projected<.85)return;
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>38){decoRaster(sp,x,y,sc);return;}
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>(t==='T'?64:38)){decoRaster(sp,x,y,sc);return;}
  const qsc=Math.round(sc*256)/256;
  const projectedQ=qsc*3200*H/2;
  const radius=Math.ceil(projectedQ*2.7)+2;
- if(radius>108||qsc<=0){decoRaster(sp,x,y,sc);return;}
+ if(radius>(t==='T'?180:108)||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
  if(params===undefined){try{params=JSON.stringify(sp);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();
@@ -748,7 +767,7 @@ const __crRenderVisible=[];
 window.__coastRushTrimCaches=function(){
  try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crGlowSprites.clear();__crPlaneTrailCache=null;__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
-  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crSkyLayerKey='';__crVehicleAtlas.clear();__crVehicleAtlasBytes=0;
+  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crSkyLayerKey='';__crVehicleAtlas.clear();__crVehicleAtlasBytes=0;__crVehiclePoseAtlas.clear();__crVehiclePoseAtlasBytes=0;
   return true;
  }catch(e){return false}
 };

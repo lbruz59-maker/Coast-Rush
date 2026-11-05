@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V84 – Fire TV Graphics Optimization</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V85 – Vehicle Atlas and Tunnel Cache</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -488,7 +488,22 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  }
  ctx.restore();ctx.globalAlpha=1;
 }
-function drawVeh(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+// V85 — atlas véhicule à la demande : chaque modèle, peinture, orientation,
+// phase lumineuse et état frein/boost possède sa vignette réutilisable.
+const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
+function drawVeh(x,y,w,c,v,ln,ph,em){
+ const qln=Math.round((ln||0)*100)/100,key=[v,c,qln,ph==null?'n':ph,em?1:0,BRK,BOOSTF].join('|');
+ let e=__crVehicleAtlas.get(key);
+ if(!e){
+  const cv=document.createElement('canvas');cv.width=160;cv.height=160;
+  const live=ctx;ctx=cv.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,160,160);
+  try{__crDrawVehRaster(80,116,96,c,v,qln,ph,em)}finally{ctx=live}
+  e={canvas:cv,bytes:cv.width*cv.height*4};__crVehicleAtlas.set(key,e);__crVehicleAtlasBytes+=e.bytes;
+  while(__crVehicleAtlas.size>28){const first=__crVehicleAtlas.keys().next().value,drop=__crVehicleAtlas.get(first);__crVehicleAtlas.delete(first);__crVehicleAtlasBytes-=drop.bytes}
+ }else{__crVehicleAtlas.delete(key);__crVehicleAtlas.set(key,e)}
+ const k=w/96;ctx.drawImage(e.canvas,x-80*k,y-116*k,160*k,160*k);
+}
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
 function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function gridStart(){
@@ -674,8 +689,8 @@ const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2);if('ptacl'.incl
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl']); // sprites statiques, anneaux et arches inclus
-const __crDecoDynamic=new Set(['I','F','G','C','T','X','P','B','W','u','S']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl','T']); // sprites statiques, anneaux et arches inclus
+const __crDecoDynamic=new Set(['I','F','G','C','X','P','B','W','u','S']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 // V80 : mémoriser la signature des sprites statiques et du thème.
@@ -733,16 +748,29 @@ const __crRenderVisible=[];
 window.__coastRushTrimCaches=function(){
  try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crGlowSprites.clear();__crPlaneTrailCache=null;__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
-  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';
+  __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crSkyLayerKey='';__crVehicleAtlas.clear();__crVehicleAtlasBytes=0;
   return true;
  }catch(e){return false}
 };
+// V85 — silhouettes de montagnes pré-rendues; le défilement reste animé par pas d'un pixel.
+let __crSkyLayer=null,__crSkyLayerKey='';
+function __crDrawSkyMountains(){
+ const off=Math.round(skyOff),key=[W,H,off,th.bg||'',(th.m||[]).join('|')].join(':');
+ if(!__crSkyLayer||key!==__crSkyLayerKey){
+  if(!__crSkyLayer)__crSkyLayer=document.createElement('canvas');
+  __crSkyLayer.width=W;__crSkyLayer.height=H;
+  const live=ctx;ctx=__crSkyLayer.getContext('2d');ctx.clearRect(0,0,W,H);
+  try{for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}}finally{ctx=live}
+  __crSkyLayerKey=key;
+ }
+ ctx.drawImage(__crSkyLayer,0,0);
+}
 function renderBackdrop(){
  const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
  {const sx=W*.72,sy=H/2-36,sr=th.night?9:15,sgk=W+'x'+H+'|'+(th.night?'n':'d');if(sgk!==__crSunGlowKey){__crSunGlowKey=sgk;__crSunGlow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);__crSunGlow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');__crSunGlow.addColorStop(1,'#fff0')}const gl=__crSunGlow;ctx.globalAlpha=wx=='clear'?1:wx=='cloud'?.45:0;ctx.fillStyle=gl;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
- for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=skyOff*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+ __crDrawSkyMountains();
  if(th.bg)drawBgCached(th.bg);
  {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
 }

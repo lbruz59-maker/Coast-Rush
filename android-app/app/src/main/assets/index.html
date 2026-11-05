@@ -1320,7 +1320,7 @@ function loop(t){
  const defs=[
   ['play','Jouer',()=> $('go').click()],
   ['mode','Mode de jeu',()=> $('md').click()],
-  ['options','Options',()=>{const first=$('mm');if(first){first.click();toast('Musique : '+$('mm').textContent.replace('♪ Musique : ',''))}}],
+  ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
   ['profile','Profil',()=>{const old=myName||'';const v=window.prompt('Ton pseudo Coast Rush',old);if(v!==null){$('pn').value=v.slice(0,10);$('pn').dispatchEvent(new Event('input',{bubbles:true}));toast('Pseudo enregistré')}}],
   ['vehicle','Véhicule',()=>{const list=[...$('vh').querySelectorAll('button')];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
   ['quit','Quitter',()=>toast('Pour quitter Coast Rush, utilise le bouton Retour de ta télécommande.')],

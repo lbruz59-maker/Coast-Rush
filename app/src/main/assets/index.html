@@ -910,7 +910,7 @@ function deco(sp,x,y,sc){
    ctx.setTransform(1,0,0,1,sx,sy);
    decoRaster(sp,radius+1,radius+1,qsc);
   }finally{ctx=liveCtx}
-  entry={sx,sy,size,anchor:radius+1,qsc};
+  entry={sx,sy,size,anchor:radius+1,qsc,slot};
   __crSheetEntries.set(key,entry);
  }else __crSheetHits++;
  const ratio=sc/entry.qsc;

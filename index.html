@@ -337,7 +337,7 @@ $('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;
 $('sf').addEventListener('click',()=>{vm^=1;if(vm&&window.speechSynthesis)speechSynthesis.cancel();$('sf').style.opacity=vm?.4:1;if(master)master.gain.value=vm?0:.9});
 document.querySelectorAll('.st[data-t]').forEach(b=>b.onclick=()=>{tr=+b.dataset.t;document.querySelectorAll('.st[data-t]').forEach(x=>x.classList.toggle('sel',x==b))});
 $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').onclick=()=>{inputMode='controller';applyInputMode()};$('ui-touch').onclick=()=>{inputMode='touch';applyInputMode()};applyInputMode();
-function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(!NET()&&MODE==3)MODE=MODE0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
+function startGame(){applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE==4?15:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(MODE==4?15:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
 $('go').onclick=startGame;
 // ---- AUDIO (compositions originales)
 const TR=[{bpm:140,q:'mMMMmMMM',r:[45,41,48,43,45,41,43,40],L:[[69,8],[72,4],[76,4],[77,6],[76,2],[72,8],[67,4],[72,4],[76,4],[79,4],[74,8],[71,4],[67,4],[69,4],[72,4],[76,4],[81,4],[79,6],[77,2],[72,8],[71,4],[74,4],[79,4],[77,4],[76,12],[0,4]]},
@@ -1388,6 +1388,7 @@ function loop(t){
   actions.append(cancel,save);card.append(title,input,actions);layer.appendChild(card);host.appendChild(layer);input.focus();
  };
  const statusFor=cls=>{
+  if(cls==='mode')return ['OUTRUN','GRAND TOUR','CHASE H.Q.','COURSE LIBRE','TOUR DU MONDE'][MODE]||'OUTRUN';
   if(cls==='music')return musOn?'ON':'OFF';
   if(cls==='tilt')return tiltMode===0?'OFF':tiltMode===1?'ON':'INVERSÉ';
   if(cls==='quality')return $('ql')?$('ql').textContent.replace('Qualité : ',''):'AUTO';
@@ -1423,7 +1424,7 @@ function loop(t){
  const nav=()=>Array.from(host.querySelectorAll('button'));
  window.__crMenuFocus=function(i){const a=nav();if(!a.length)return;const n=(i+a.length)%a.length;a.forEach((x,j)=>{x.classList.toggle('cr-active',j===n)});a[n].focus()};
  host.addEventListener('focusin',e=>{nav().forEach(x=>x.classList.toggle('cr-active',x===e.target))});
- ['mm','gy','ql','bn','ag','gz','df'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',()=>requestAnimationFrame(sync))});
+ ['md','mm','gy','ql','bn','ag','gz','df'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',()=>requestAnimationFrame(sync))});
  sync();
  window.__crSyncMenuArtwork=sync;
 })();
@@ -1503,7 +1504,7 @@ function toast(t){let e=$('tt');if(!e){e=document.createElement('div');e.id='tt'
 function showHS(){try{const a=JSON.parse(localStorage.getItem('cr_scores')||'[]');best=a.length?a[0].s:0;$('hs').innerHTML=a.length?'🏆 Meilleurs scores<br>'+a.map((e,i)=>(i+1)+'. '+e.s+' (étape '+e.st+', '+e.d+')').join('<br>'):''}catch(e){}}
 function saveScore(){try{const a=JSON.parse(localStorage.getItem('cr_scores')||'[]');a.push({s:Math.floor(score),st:stage,d:new Date().toLocaleDateString()});a.sort((x,y)=>y.s-x.s);localStorage.setItem('cr_scores',JSON.stringify(a.slice(0,5)))}catch(e){}showHS()}
 showHS();
-$('md').onclick=()=>{MODE=(MODE+1)%5;$('md').textContent='Mode : '+['OUTRUN (5 étapes, fourches)','GRAND TOUR (15 circuits)','CHASE H.Q. (police)','COURSE LIBRE','TOUR DU MONDE (10 capitales)'][MODE]};
+$('md').onclick=()=>{MODE=(MODE+1)%5;if(MODE!==3)MODE0=MODE;$('md').textContent='Mode : '+['OUTRUN (5 étapes, fourches)','GRAND TOUR (15 circuits)','CHASE H.Q. (police)','COURSE LIBRE','TOUR DU MONDE (10 capitales)'][MODE];if(window.__crSyncMenuArtwork)window.__crSyncMenuArtwork()};
 if($('pn')){$('pn').value=/^J[A-Z0-9]{3}$/.test(myName)?'':myName;$('pn').oninput=()=>{const v=$('pn').value.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase().slice(0,10);if(v){myName=v;try{localStorage.setItem('cr_name',v)}catch(e){}}}}
 let autoG=isTV?1:0,autoGas=isTV?1:0,tapAx=0,tapT=0;$('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE');$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL');$('gz').onclick=()=>{autoGas^=1;$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL')};
 $('ag').onclick=()=>{autoG^=1;$('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE')};

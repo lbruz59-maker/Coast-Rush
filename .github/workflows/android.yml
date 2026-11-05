@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'android-app/**'
+      - 'app/**' # Fire TV project
       - '.github/workflows/android.yml'
 
 permissions:

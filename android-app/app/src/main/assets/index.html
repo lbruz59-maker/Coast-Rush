@@ -197,8 +197,8 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots .mode-duel{left:37.8%;top:85.0%;width:11.4%;height:9.0%}
 #crMenuHotspots .mode-time{left:49.5%;top:85.0%;width:13.5%;height:9.0%}
 #crMenuHotspots .mode-travel{left:63.1%;top:85.0%;width:11.2%;height:9.0%}
-#crMenuHotspots .profile{left:1.5%;top:84.0%;width:24.0%;height:12.0%}
-#crMenuHotspots .progress{left:73.0%;top:84.0%;width:24.0%;height:12.0%}
+#crMenuHotspots .profile{left:73.0%;top:84.0%;width:24.0%;height:12.0%}
+#crMenuHotspots .progress{left:1.5%;top:84.0%;width:24.0%;height:12.0%}
 #crMenuHotspots .score{left:2.0%;top:4.0%;width:20.0%;height:10.0%}
 #crMenuHotspots button::after{content:"";position:absolute;inset:0;pointer-events:none}
 @media(max-aspect-ratio:4/3){#menu{background-size:100% 100%!important}}
@@ -1407,10 +1407,11 @@ function loop(t){
  crEnsureProfile();
  const crProfileTag=()=>{
   let tag=document.getElementById('crProfileTag');
-  if(!tag){tag=document.createElement('div');tag.id='crProfileTag';tag.style.cssText='position:absolute;z-index:8;left:2%;bottom:3.2%;width:22%;max-width:280px;min-height:34px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:5px 8px;box-sizing:border-box;border:1px solid #9cecff88;border-radius:8px;background:rgba(4,16,37,.78);color:#fff;font:800 clamp(9px,1.05vw,14px)/1.2 system-ui,sans-serif;text-align:left;text-shadow:0 1px 3px #000;pointer-events:none;backdrop-filter:blur(3px)';$('menu').appendChild(tag)}
+  if(!tag){tag=document.createElement('div');tag.id='crProfileTag';tag.style.cssText='position:absolute;z-index:8;right:2%;bottom:3.2%;left:auto;width:22%;max-width:280px;min-height:34px;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:5px 8px;box-sizing:border-box;border:1px solid #9cecff88;border-radius:8px;background:rgba(4,16,37,.78);color:#fff;font:800 clamp(9px,1.05vw,14px)/1.2 system-ui,sans-serif;text-align:left;text-shadow:0 1px 3px #000;pointer-events:none;backdrop-filter:blur(3px)';$('menu').appendChild(tag)}
   const name=(myName&&!/^J[A-Z0-9]{3}$/.test(myName))?myName:'NON RENSEIGNÉ';
   const team=window.crTeam||'NON RENSEIGNÉ';
-  tag.innerHTML='<span>👤 '+name.replace(/[&<>"]/g,'')+'</span><span>🏁 TEAM : '+team.replace(/[&<>"]/g,'')+'</span>';
+  const vehicle=(VEH&&VEH[myV])?VEH[myV]:'Véhicule '+(myV+1);
+  tag.innerHTML='<span>👤 '+name.replace(/[&<>\"]/g,'')+'</span><span>🏁 TEAM : '+team.replace(/[&<>\"]/g,'')+'</span><span>🚗 '+String(vehicle).replace(/[&<>\"]/g,'')+'</span>';
  };
  crProfileTag();
  const crMakeLayer=(title,width='min(90vw,440px)')=>{

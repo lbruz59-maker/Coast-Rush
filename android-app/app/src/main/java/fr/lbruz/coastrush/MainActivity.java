@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
         rootView.setBackgroundColor(0xFF050B1B);
         webView = new WebView(this);
         webView.setBackgroundColor(0xFF050B1B);
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
         WebSettings s = webView.getSettings();
@@ -109,7 +108,6 @@ public class MainActivity extends Activity {
         webView.setPivotY(targetH / 2f);
         webView.setScaleX(renderSurfaceScale);
         webView.setScaleY(renderSurfaceScale);
-        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.post(this::publishDisplayInfo);
     }
 

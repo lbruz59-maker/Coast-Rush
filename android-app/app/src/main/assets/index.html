@@ -774,18 +774,23 @@ window.__coastRushTrimCaches=function(){
 // V85 — silhouettes de montagnes pré-rendues; le défilement reste animé par pas d'un pixel.
 let __crSkyLayer=null,__crSkyLayerKey='';
 function __crDrawSkyMountains(){
- const off=Math.round(skyOff),key=[W,H,off,th.bg||'',(th.m||[]).join('|')].join(':');
+ const off=Math.round(skyOff),key=[W,H,off,th.bg||'',th.night?1:0,(th.m||[]).join('|')].join(':');
  if(!__crSkyLayer||key!==__crSkyLayerKey){
   if(!__crSkyLayer)__crSkyLayer=document.createElement('canvas');
   __crSkyLayer.width=W;__crSkyLayer.height=H;
   const live=ctx;ctx=__crSkyLayer.getContext('2d');ctx.clearRect(0,0,W,H);
-  try{for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}}finally{ctx=live}
+  try{
+   // Les étoiles nocturnes sont statiques par pas de défilement : elles rejoignent
+   // la couche de ciel pré-rendue au lieu de générer 45 rectangles à chaque frame.
+   if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
+   for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+  }finally{ctx=live}
   __crSkyLayerKey=key;
  }
  ctx.drawImage(__crSkyLayer,0,0);
 }
 function renderBackdrop(){
- const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+skyOff*.2)%W,(i*37)%(H/2-14),1,1)}
+ const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);
  {const sx=W*.72,sy=H/2-36,sr=th.night?9:15,sgk=W+'x'+H+'|'+(th.night?'n':'d');if(sgk!==__crSunGlowKey){__crSunGlowKey=sgk;__crSunGlow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);__crSunGlow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');__crSunGlow.addColorStop(1,'#fff0')}const gl=__crSunGlow;ctx.globalAlpha=wx=='clear'?1:wx=='cloud'?.45:0;ctx.fillStyle=gl;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}

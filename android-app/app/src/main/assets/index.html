@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V98 – Full Sprite Raster Cache</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V99 – Full Sprite Raster Cache</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -828,9 +828,37 @@ function deco(sp,x,y,sc){
  finally{ctx=liveCtx}
  entry={canvas,anchor:radius+1,size,bytes:size*size*4};
  __crDecoCache.set(key,entry);__crDecoCacheBytes+=entry.bytes;
- // Budget V98 borné à 24 Mio, éviction LRU ; cache dérivé et recréable.
+ // Budget V99 borné à 24 Mio, éviction LRU ; cache dérivé et recréable.
  while(__crDecoCache.size>96||__crDecoCacheBytes>24*1024*1024){const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);__crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes}
  ctx.drawImage(canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
+}
+// V99 — composites de décors statiques par tronçon de route.
+const __crDecoGroupCache=new Map(),__crDecoGroupSig=new WeakMap();
+let __crDecoGroupBytes=0,__crDecoGroupHits=0,__crDecoGroupMisses=0,__crDecoGroupDrawCalls=0;
+function __crDrawDecoGroup(seg,baseX,baseY,sc){
+ const sprites=seg.sp||[];if(!sprites.length)return;
+ const qsc=Math.round(sc*256)/256;if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const stat=[],live=[];for(const sp of sprites){if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);else live.push(sp)}
+ for(const sp of live)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);
+ if(!stat.length)return;
+ let sig=__crDecoGroupSig.get(seg);
+ if(!sig){try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';');__crDecoGroupSig.set(seg,sig)}catch(_){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}}
+ const key=[sig,qsc,W,H,roadW,__crGetDecoThemeKey()].join('|'),ratio=sc/qsc;
+ let entry=__crDecoGroupCache.get(key);
+ if(entry){__crDecoGroupCache.delete(key);__crDecoGroupCache.set(key,entry);__crDecoGroupHits++;ctx.drawImage(entry.canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,entry.width*ratio,entry.height*ratio);__crDecoGroupDrawCalls++;return}
+ __crDecoGroupMisses++;
+ const radius=Math.ceil(qsc*3200*H/2*2.7)+3;
+ if(radius>320){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ let minX=Infinity,maxX=-Infinity;for(const sp of stat){const ox=qsc*sp.o*roadW*160;minX=Math.min(minX,ox-radius);maxX=Math.max(maxX,ox+radius)}
+ const width=Math.ceil(maxX-minX)+2,height=radius*2+2;
+ if(width>1536||height>768){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const cacheCtx=canvas.getContext('2d');
+ if(!cacheCtx){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const liveCtx=ctx,anchorX=-minX+1,anchorY=radius+1;
+ try{ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);for(const sp of stat)decoRaster(sp,anchorX+qsc*sp.o*roadW*160,anchorY,qsc)}finally{ctx=liveCtx}
+ entry={canvas,minX:minX-1,anchorY,width,height,bytes:width*height*4};__crDecoGroupCache.set(key,entry);__crDecoGroupBytes+=entry.bytes;
+ while(__crDecoGroupCache.size>48||__crDecoGroupBytes>20*1024*1024){const first=__crDecoGroupCache.keys().next().value,old=__crDecoGroupCache.get(first);__crDecoGroupCache.delete(first);__crDecoGroupBytes-=old.bytes}
+ ctx.drawImage(canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,width*ratio,height*ratio);__crDecoGroupDrawCalls++;
 }
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();
  poly('#8a5a2a',[x-s*.026,y,x+s*.026,y,x+s*.162,y-s,x+s*.138,y-s]);poly('#a8743a',[x-s*.004,y,x+s*.026,y,x+s*.162,y-s,x+s*.148,y-s]);
@@ -845,7 +873,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;__crDecoGroupCache.clear();__crDecoGroupBytes=0;__crDecoGroupHits=0;__crDecoGroupMisses=0;__crDecoGroupDrawCalls=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crGlowSprites.clear();__crPlaneTrailCache=null;__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crSkyLayerKey='';__crVehicleAtlas.clear();__crVehicleAtlasBytes=0;__crVehiclePoseAtlas.clear();__crVehiclePoseAtlasBytes=0;
   return true;
@@ -909,10 +937,7 @@ function render(){
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  for(let dj=0;dj<s.sp.length;dj++){
-   const sp=s.sp[dj],tt=sp.t;
-   const sx=a.x+a.sc*sp.o*roadW*160;deco(sp,sx,a.y,a.sc);
-  }if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
+  __crDrawDecoGroup(s,a.x,a.y,a.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
    const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;
    deco(__crForkBlockSprite,bx0,a.y,a.sc);

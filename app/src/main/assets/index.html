@@ -101,7 +101,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true,willReadFrequently:false}),W=320,H=224;
 // Fire TV: keep a 60-segment road horizon; adaptive quality now trims distant scenery, not the road.
 // Other devices retain 64. Track generation and vehicle physics are unchanged.
-const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?58:64,drawN=14,decorDrawN=isTV?36:roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?58:64,drawN=14,decorDrawN=roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 if(isTV){drawN=13;}
 window.__coastRushNativePaused=false;
@@ -215,10 +215,13 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
     sp.t==='rt'||sp.t==='cf'||sp.t==='ht'||sp.t==='A'||sp.t==='S';
    if(staticWorldType){
     const side=sp.o<0?0:1;
-    if(!groups[side])groups[side]={seg:si,z:si*segL,x:side===0?-1:1,y:0,items:[]};
+    if(!groups[side])groups[side]={seg:si,z:si*segL,x:side===0?-1:1,y:0,minOffset:Infinity,maxOffset:-Infinity,items:[]};
     const data={...sp},vegetation=sp.t==='p'||sp.t==='c'||sp.t==='t';
     if(vegetation)data.v=R()*4|0;
-    groups[side].items.push({offset:sp.o-(side===0?-1:1),scale:vegetation ? (.82+R()*.4) : 1,sp:data});
+    const offset=sp.o-(side===0?-1:1),scale=vegetation ? (.82+R()*.4) : 1;
+    groups[side].minOffset=Math.min(groups[side].minOffset,offset);
+    groups[side].maxOffset=Math.max(groups[side].maxOffset,offset);
+    groups[side].items.push({offset,scale,sp:data});
    }else keep.push(sp);
   }
   if(groups[0])__crWorldDecoPoints.push(groups[0]);
@@ -1067,7 +1070,13 @@ function render(){
   // Rendu direct via le sprite-sheet partagé : évite le cache de tuiles
   // par segment qui provoquait des évictions/reconstructions à chaque image.
   const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
-  for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;deco(item.sp,x,y,a.sc*item.scale)}
+  // Culling collectif du groupe : un seul test écran avant de parcourir ses sprites.
+  // Marge volontairement large pour ne jamais couper les grands décors débordants.
+  const groupScale=a.sc*roadW*160,groupPad=Math.max(32,a.sc*roadW*160*.85);
+  const groupLeft=baseX+groupScale*p.minOffset-groupPad;
+  const groupRight=baseX+groupScale*p.maxOffset+groupPad;
+  if(groupRight<0||groupLeft>W)continue;
+  for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+groupScale*item.offset;deco(item.sp,x,y,a.sc*item.scale)}
  }
  if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,zoneIndexReady:__crZoneIndexReady,landscapeTiles:__crLandscapeTiles.size,landscapeTileBuilds:__crLandscapeBuilds,landscapeBatchDrawCalls:__crLandscapeDrawCalls,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur

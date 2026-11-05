@@ -991,7 +991,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;__crDecoGroupCache.clear();__crDecoGroupBytes=0;__crDecoGroupHits=0;__crDecoGroupMisses=0;__crDecoGroupDrawCalls=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoCacheHits=0;__crDecoCacheMisses=0;__crDecoGroupCache.clear();__crDecoGroupBytes=0;__crDecoGroupHits=0;__crDecoGroupMisses=0;__crDecoGroupDrawCalls=0;__crDecoGroupFallbacks=0;__crDecoGroupSprites=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crGlowSprites.clear();__crPlaneTrailCache=null;__crLensFlareGradient=null;__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crSkyLayerKey='';__crVehicleAtlas.clear();__crVehicleAtlasBytes=0;__crVehiclePoseAtlas.clear();__crVehiclePoseAtlasBytes=0;
   return true;

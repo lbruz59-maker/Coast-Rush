@@ -2,10 +2,7 @@ name: Build Coast Rush Android APK
 on:
   push:
     paths:
-      - 'app/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle.properties'
+      - 'android-app/**'
       - '.github/workflows/android-apk.yml'
   workflow_dispatch:
 concurrency:
@@ -46,12 +43,12 @@ jobs:
           yes | "$SDKMANAGER" --licenses >/dev/null
           "$SDKMANAGER" 'platforms;android-35' 'build-tools;35.0.0'
       - name: Build debug APK
-        run: gradle --no-daemon assembleDebug
+        run: gradle --no-daemon -p android-app assembleDebug
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
           name: Coast-Rush-Android-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: android-app/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
 # Retry Android build after clearing the previous queued runs.

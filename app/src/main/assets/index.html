@@ -1062,8 +1062,10 @@ function render(){
   endPoint=lo;
  }
  for(let pi=endPoint-1;pi>=firstPoint;pi--){
-  const p=__crWorldDecoPoints[pi];if(p.seg<bs.i||p.seg>lastSeg)continue;const seg=segs[p.seg];
-  if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
+  const p=__crWorldDecoPoints[pi];if(p.seg<bs.i||p.seg>lastSeg)continue;
+  // Un seul compositing par segment, même si ses décors occupent les deux côtés.
+  if(pi>firstPoint&&__crWorldDecoPoints[pi-1].seg===p.seg)continue;
+  const seg=segs[p.seg];if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
   // Une tuile pré-rendue regroupe tout le paysage statique de ce segment.
   // Repli direct si la création du canvas échoue sur un WebView ancien.
   if(!__crDrawLandscapeSegment(seg)){

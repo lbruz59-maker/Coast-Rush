@@ -1154,7 +1154,7 @@ function render(){
   // Au-delà du premier plan, un groupe statique entier devient une seule image.
   // Près du joueur, les sprites d'origine restent utilisés pour préserver les détails.
   const distance=p.seg-bs.i;
-  if(distance>=12){
+  if(distance>=8){
    const tier=distance>=32?'far':distance>=20?'mid':'near';
    // La première image reste en rendu direct ; le bitmap se construit hors du frame.
    const bitmap=p.__crGroupBitmaps&&p.__crGroupBitmaps[tier]||null;
@@ -1457,7 +1457,7 @@ function loop(t){
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused)return
-  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);if(isTV){__crTVSlowWindows=0;__crTVFastWindows=0;}__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));__crLoadGood=0;__crLoadBad=0}}}
+  if(state=='play'&&rawDt>0&&!isTV){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>.045,fast=ema<.025;__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(70,drawN-12);__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(170,drawN+8);__crLoadGood=0;__crLoadBad=0}}}
  try{
    if(window.__CR_PERF_VISIBLE__){const p0=performance.now();pollPad();crPollMs=performance.now()-p0;const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;}else{pollPad();if(state!='menu')update(dt);if(state!=='menu')render();}
   if(window.__CR_PERF_VISIBLE__&&state==='play'&&t-crWindowStart>=1000){

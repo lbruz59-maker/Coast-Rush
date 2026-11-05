@@ -921,33 +921,62 @@ function deco(sp,x,y,sc){
  while(__crDecoCache.size>96||__crDecoCacheBytes>24*1024*1024){const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);__crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes}
  ctx.drawImage(canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
 }
-// V99 — composites de décors statiques par tronçon de route.
-const __crDecoGroupCache=new Map(),__crDecoGroupSig=new WeakMap();
+// V103 — regroupement généralisé des décors statiques de chaque tronçon.
+// Toutes les familles déclarées cacheables (palmiers, arbres, maisons, bâtiments,
+// panneaux et accessoires fixes) sont composées ensemble. Les éléments animés
+// restent dessinés séparément pour préserver leurs animations.
+const __crDecoGroupCache=new Map();
 let __crDecoGroupBytes=0,__crDecoGroupHits=0,__crDecoGroupMisses=0,__crDecoGroupDrawCalls=0;
+let __crDecoGroupFallbacks=0,__crDecoGroupSprites=0;
 function __crDrawDecoGroup(seg,baseX,baseY,sc){
- const sprites=seg.sp||[];if(!sprites.length)return;
- const qsc=Math.round(sc*256)/256;if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- const stat=[],live=[];for(const sp of sprites){if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);else live.push(sp)}
+ const sprites=seg.sp||[];
+ if(!sprites.length)return;
+ const qsc=Math.round(sc*64)/64; // quantification plus large = réutilisation du cache entre images
+ if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const stat=[],live=[];
+ for(const sp of sprites){
+  if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);
+  else live.push(sp);
+ }
+ // Animations, événements et éléments dépendants du temps : rendu natif inchangé.
  for(const sp of live)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);
  if(!stat.length)return;
- let sig=__crDecoGroupSig.get(seg);
- if(!sig){try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';');__crDecoGroupSig.set(seg,sig)}catch(_){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}}
- const key=[sig,qsc,W,H,roadW,__crGetDecoThemeKey()].join('|'),ratio=sc/qsc;
+ // Signature recalculée : supporte aussi les segments dont la liste de décors évolue.
+ let sig='';
+ try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';')}
+ catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const key=[seg.i,sig,qsc,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
+ const ratio=sc/qsc;
  let entry=__crDecoGroupCache.get(key);
- if(entry){__crDecoGroupCache.delete(key);__crDecoGroupCache.set(key,entry);__crDecoGroupHits++;ctx.drawImage(entry.canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,entry.width*ratio,entry.height*ratio);__crDecoGroupDrawCalls++;return}
+ if(entry){
+  __crDecoGroupCache.delete(key);__crDecoGroupCache.set(key,entry);__crDecoGroupHits++;
+  ctx.drawImage(entry.canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,entry.width*ratio,entry.height*ratio);
+  __crDecoGroupDrawCalls++;return;
+ }
  __crDecoGroupMisses++;
- const radius=Math.ceil(qsc*3200*H/2*2.7)+3;
- if(radius>320){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- let minX=Infinity,maxX=-Infinity;for(const sp of stat){const ox=qsc*sp.o*roadW*160;minX=Math.min(minX,ox-radius);maxX=Math.max(maxX,ox+radius)}
+ const radius=Math.ceil(qsc*3200*H/2*2.7)+4;
+ if(radius>384){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ let minX=Infinity,maxX=-Infinity;
+ for(const sp of stat){const ox=qsc*sp.o*roadW*160;minX=Math.min(minX,ox-radius);maxX=Math.max(maxX,ox+radius)}
  const width=Math.ceil(maxX-minX)+2,height=radius*2+2;
- if(width>1536||height>768){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;const cacheCtx=canvas.getContext('2d');
- if(!cacheCtx){for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- const liveCtx=ctx,anchorX=-minX+1,anchorY=radius+1;
- try{ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);for(const sp of stat)decoRaster(sp,anchorX+qsc*sp.o*roadW*160,anchorY,qsc)}finally{ctx=liveCtx}
- entry={canvas,minX:minX-1,anchorY,width,height,bytes:width*height*4};__crDecoGroupCache.set(key,entry);__crDecoGroupBytes+=entry.bytes;
- while(__crDecoGroupCache.size>48||__crDecoGroupBytes>20*1024*1024){const first=__crDecoGroupCache.keys().next().value,old=__crDecoGroupCache.get(first);__crDecoGroupCache.delete(first);__crDecoGroupBytes-=old.bytes}
- ctx.drawImage(canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,width*ratio,height*ratio);__crDecoGroupDrawCalls++;
+ if(width>2048||height>800){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+ const cacheCtx=canvas.getContext('2d');
+ if(!cacheCtx){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const liveCtx=ctx,anchorY=radius+2;
+ try{
+  ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);
+  for(const sp of stat)decoRaster(sp,-minX+1+qsc*sp.o*roadW*160,anchorY,qsc);
+ }finally{ctx=liveCtx}
+ entry={canvas,minX:minX-1,anchorY,width,height,bytes:width*height*4,sprites:stat.length};
+ __crDecoGroupCache.set(key,entry);__crDecoGroupBytes+=entry.bytes;__crDecoGroupSprites+=entry.sprites;
+ // Budget maîtrisé : LRU partagé, sans accumulation de variantes de zoom.
+ while(__crDecoGroupCache.size>96||__crDecoGroupBytes>28*1024*1024){
+  const first=__crDecoGroupCache.keys().next().value,old=__crDecoGroupCache.get(first);
+  __crDecoGroupCache.delete(first);__crDecoGroupBytes-=old.bytes;__crDecoGroupSprites-=old.sprites||0;
+ }
+ ctx.drawImage(canvas,baseX+entry.minX*ratio,baseY-entry.anchorY*ratio,width*ratio,height*ratio);
+ __crDecoGroupDrawCalls++;
 }
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();
  poly('#8a5a2a',[x-s*.026,y,x+s*.026,y,x+s*.162,y-s,x+s*.138,y-s]);poly('#a8743a',[x-s*.004,y,x+s*.026,y,x+s*.162,y-s,x+s*.148,y-s]);

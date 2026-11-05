@@ -29,12 +29,12 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Build Coast Rush APK
-        run: gradle -p android-app assembleDebug --no-daemon
+      - name: Build Coast Rush Fire TV APK
+        run: gradle -p . assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Coast-Rush-FireTV-APK
-          path: android-app/app/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error

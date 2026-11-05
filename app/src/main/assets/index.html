@@ -1107,11 +1107,9 @@ function render(){
   if(distance>=12){
    const bitmap=__crBuildGroupBitmap(p);
    if(bitmap){
-    const ratio=groupScale/bitmap.baseSc/(roadW*160); // correction vers l'échelle monde de la composition
     const scale=groupScale/(__crGroupBitmapUnit);
-    ctx.globalAlpha=1-seg.ft*.88;
     ctx.drawImage(bitmap.canvas,baseX+groupScale*p.x+groupScale*p.minOffset-bitmap.pad*scale,y-bitmap.baseY*scale,bitmap.width*scale,bitmap.height*scale);
-    ctx.globalAlpha=1;__crGroupBitmapDraws++;continue;
+    __crGroupBitmapDraws++;continue;
    }
   }
   for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+groupScale*item.offset;deco(item.sp,x,y,a.sc*item.scale)}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V85 – Vehicle Atlas and Tunnel Cache</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V87 – Fire TV 540p Optimized</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -1454,9 +1454,10 @@ function sizeCanvas(){
  cv.style.width=cssW+'px';cv.style.height=cssH+'px';cv.style.maxWidth='none';cv.style.maxHeight='none';
  cv.style.aspectRatio='auto';cv.style.objectFit='fill';cv.style.flex='0 0 auto';
  // Backing store is independent from CSS size and HDMI mode.
- // Fire TV Stick 4K Max can output up to 4K, but WebView controls its own render buffer.
+ // Fire TV: plafonnement du backing store à 540 lignes (≈960×540, sous 720p).
+ // Le WebView reste plein écran; seule la résolution de composition Canvas est plafonnée.
  const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
- const maxBackingH=(isTV&&qMode===0)?1080:2160;
+ const maxBackingH=isTV?540:2160;
  const wantedH=Math.round(cssH*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));
  let k=targetH/H;

@@ -573,9 +573,6 @@ function drawMuskCraft(x,y,w,t){
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
 // Cache des poses du joueur : carrosserie et ombre précalculées, fumée de drift conservée en dynamique.
-const __crPlayerPoseCanvas=document.createElement('canvas');
-__crPlayerPoseCanvas.width=__crPlayerPoseCanvas.height=192;
-const __crPlayerPoseCtx=__crPlayerPoseCanvas.getContext('2d');
 const __crPlayerPoseCache=new Map();
 let __crPlayerPoseHits=0,__crPlayerPoseMisses=0;
 function drawVehPose(x,y,w,c,v,pose,ph){
@@ -588,7 +585,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  if(!entry){
   const live=ctx;
   try{
-   ctx=__crPlayerPoseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   const poseCanvas=document.createElement('canvas');poseCanvas.width=poseCanvas.height=192;const poseCtx=poseCanvas.getContext('2d');ctx=poseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
    const px=96,py=112,pw=96,u=pw/16,lean=visualDir*(drift?.34:.23),shift=visualDir*pw*(drift?.10:.065);
    ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";
    ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,pw*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
@@ -597,22 +594,22 @@ function drawVehPose(x,y,w,c,v,pose,ph){
   }finally{ctx=live}
   if(cacheable){
    if(__crPlayerPoseCache.size>=32)__crPlayerPoseCache.delete(__crPlayerPoseCache.keys().next().value);
-   entry={};__crPlayerPoseCache.set(key,entry);__crPlayerPoseMisses++;
+   entry={canvas:poseCanvas};__crPlayerPoseCache.set(key,entry);__crPlayerPoseMisses++;
   }
  }else __crPlayerPoseMisses++;
  const d=w/96;
- if(cacheable&&entry)ctx.drawImage(__crPlayerPoseCanvas, x-96*d,y-112*d,192*d,192*d);
+ if(cacheable&&entry)ctx.drawImage(entry.canvas, x-96*d,y-112*d,192*d,192*d);
  else {
   // Repli sans cache pour les tailles atypiques.
   const live=ctx;
   try{
-   ctx=__crPlayerPoseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   const fallbackCanvas=document.createElement('canvas');fallbackCanvas.width=fallbackCanvas.height=192;ctx=fallbackCanvas.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
    const px=96,py=112,u=6,lean=visualDir*(drift?.34:.23),shift=visualDir*96*(drift?.10:.065);
    ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,96*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
    ctx.save();ctx.translate(px+shift,py);ctx.transform(1,0,lean,1,0,0);ctx.scale(drift?.96:.985,1);ctx.translate(-px,-py);
    drawVeh(px,py,96,c,v,visualDir*(drift?1.8:1.15),phase/4);ctx.restore();
   }finally{ctx=live}
-  ctx.drawImage(__crPlayerPoseCanvas,x-96*d,y-112*d,192*d,192*d);
+  ctx.drawImage(fallbackCanvas,x-96*d,y-112*d,192*d,192*d);
  }
  if(entry)__crPlayerPoseHits++;
  // Les traces et la fumée restent animées et ne sont jamais figées dans le cache.

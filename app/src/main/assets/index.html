@@ -120,6 +120,34 @@ const lerp=(a,b,p)=>a+(b-a)*p,eIn=(a,b,p)=>a+(b-a)*p*p,eOut=(a,b,p)=>a+(b-a)*(1-
 const segs=[];let trackLen;
 // Décors fixes : connecteurs géographiques 3D indépendants des segments de rendu.
 const __crWorldDecoPoints=[];
+/* Atlases composites de groupes statiques : un bitmap par groupe, créé à la demande.
+   Budget plafonné pour protéger la mémoire des appareils Android/Fire TV. */
+let __crGroupBitmapBytes=0,__crGroupBitmapBuilt=0,__crGroupBitmapDraws=0;
+const __crGroupBitmapBudget=40*1024*1024,__crGroupBitmapUnit=64,__crGroupBitmapPad=112;
+function __crBuildGroupBitmap(p){
+ if(p.__crGroupBitmap||p.__crGroupBitmapSkipped)return p.__crGroupBitmap||null;
+ const unit=__crGroupBitmapUnit,pad=__crGroupBitmapPad,span=Math.max(0,p.maxOffset-p.minOffset);
+ const width=Math.max(256,Math.ceil(span*unit+pad*2)),height=320,bytes=width*height*4;
+ if(width>1024||__crGroupBitmapBytes+bytes>__crGroupBitmapBudget){p.__crGroupBitmapSkipped=true;return null}
+ const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+ const groupCtx=canvas.getContext('2d');if(!groupCtx){p.__crGroupBitmapSkipped=true;return null}
+ const liveCtx=ctx,baseSc=unit/(roadW*160),baseY=height-18;
+ try{
+  ctx=groupCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,width,height);
+  for(let i=0;i<p.items.length;i++){
+   const item=p.items[i],x=pad+(item.offset-p.minOffset)*unit;
+   decoRaster(item.sp,x,baseY,baseSc*item.scale);
+  }
+ }catch(e){p.__crGroupBitmapSkipped=true;return null}
+ finally{ctx=liveCtx}
+ p.__crGroupBitmap={canvas,width,height,pad,baseY,baseSc,bytes};
+ __crGroupBitmapBytes+=bytes;__crGroupBitmapBuilt++;
+ return p.__crGroupBitmap;
+}
+function __crClearGroupBitmaps(){
+ for(let i=0;i<__crWorldDecoPoints.length;i++){const p=__crWorldDecoPoints[i];p.__crGroupBitmap=null;p.__crGroupBitmapSkipped=false}
+ __crGroupBitmapBytes=0;__crGroupBitmapBuilt=0;__crGroupBitmapDraws=0;
+}
 
 // Index spatial par zones (32 segments) : le Worker prépare les plages de décors
 // hors de la boucle de rendu. Le moteur garde un parcours binaire de secours.
@@ -838,7 +866,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crLandscapeTiles.clear();__crLandscapeBuilds=0;__crLandscapeDrawCalls=0;__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();__crVehicleCacheHits=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crClearGroupBitmaps();__crLandscapeTiles.clear();__crLandscapeBuilds=0;__crLandscapeDrawCalls=0;__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();__crVehicleCacheHits=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crSheetEntries.clear();__crSheetNext=0;__crSheetHits=0;__crSheetMisses=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize);__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';__crStarField=null;__crStarFieldKey='';
   return true;
@@ -1069,16 +1097,26 @@ function render(){
   const seg=segs[p.seg];if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
   // Rendu direct via le sprite-sheet partagé : évite le cache de tuiles
   // par segment qui provoquait des évictions/reconstructions à chaque image.
-  const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
-  // Culling collectif du groupe : un seul test écran avant de parcourir ses sprites.
-  // Marge volontairement large pour ne jamais couper les grands décors débordants.
-  const groupScale=a.sc*roadW*160,groupPad=Math.max(32,a.sc*roadW*160*.85);
-  const groupLeft=baseX+groupScale*p.minOffset-groupPad;
-  const groupRight=baseX+groupScale*p.maxOffset+groupPad;
+  const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y,groupScale=a.sc*roadW*160;
+  // Culling collectif du groupe avant tout traitement de ses éléments.
+  const groupPad=Math.max(32,groupScale*.85),groupLeft=baseX+groupScale*p.minOffset-groupPad,groupRight=baseX+groupScale*p.maxOffset+groupPad;
   if(groupRight<0||groupLeft>W)continue;
+  // Au-delà du premier plan, un groupe statique entier devient une seule image.
+  // Près du joueur, les sprites d'origine restent utilisés pour préserver les détails.
+  const distance=p.seg-bs.i;
+  if(distance>=12){
+   const bitmap=__crBuildGroupBitmap(p);
+   if(bitmap){
+    const ratio=groupScale/bitmap.baseSc/(roadW*160); // correction vers l'échelle monde de la composition
+    const scale=groupScale/(__crGroupBitmapUnit);
+    ctx.globalAlpha=1-seg.ft*.88;
+    ctx.drawImage(bitmap.canvas,baseX+groupScale*p.x+groupScale*p.minOffset-bitmap.pad*scale,y-bitmap.baseY*scale,bitmap.width*scale,bitmap.height*scale);
+    ctx.globalAlpha=1;__crGroupBitmapDraws++;continue;
+   }
+  }
   for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+groupScale*item.offset;deco(item.sp,x,y,a.sc*item.scale)}
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,zoneIndexReady:__crZoneIndexReady,landscapeTiles:__crLandscapeTiles.size,landscapeTileBuilds:__crLandscapeBuilds,landscapeBatchDrawCalls:__crLandscapeDrawCalls,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,groupBitmapBuilt:__crGroupBitmapBuilt,groupBitmapDraws:__crGroupBitmapDraws,groupBitmapMB:Math.round(__crGroupBitmapBytes/1048576*10)/10,zoneIndexReady:__crZoneIndexReady,landscapeTiles:__crLandscapeTiles.size,landscapeTileBuilds:__crLandscapeBuilds,landscapeBatchDrawCalls:__crLandscapeDrawCalls,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

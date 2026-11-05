@@ -1693,10 +1693,11 @@ function sizeCanvas(){
  cv.style.position='absolute';cv.style.left=offsetX+'px';cv.style.top=offsetY+'px';
  cv.style.width=cssW+'px';cv.style.height=cssH+'px';cv.style.maxWidth='none';cv.style.maxHeight='none';
  cv.style.aspectRatio='auto';cv.style.objectFit='fill';cv.style.flex='0 0 auto';
- // Fire TV Stick : résolution interne fixe 1280x720 (720p), indépendamment
- // du DPR Android/HDMI. Le navigateur peut annoncer DPR=4, mais le jeu ne
- // rend jamais en 1080p/4K : le backing store reste strictement en 720p.
- const targetH=isTV?720:Math.min(2160,Math.max(224,Math.round(cssH*Math.min(2,window.devicePixelRatio||1))));
+ // Fire TV Stick : résolution interne fixe 640p, indépendamment du DPR
+ // Android/HDMI. Les décors gardent leur géométrie et leur niveau de détail ;
+ // seule la surface de composition est réduite pour alléger Canvas/GPU.
+ // Le DPR annoncé par Android (parfois 4) ne multiplie jamais le backing store.
+ const targetH=isTV?640:Math.min(2160,Math.max(224,Math.round(cssH*Math.min(2,window.devicePixelRatio||1))));
  let k=targetH/H;
  if(!isTV){
    if(qMode===1)k=Math.min(k,1.5);

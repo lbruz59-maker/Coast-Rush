@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V94 – Compact Performance HUD</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V98 – Full Sprite Raster Cache</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -787,7 +787,7 @@ const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2);if('ptacl'.incl
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl','T','sm','ap','sc','rt','cf','ht','ho','ec','X','P','B','W','u','S']); // décors fixes, bâtiments et signalétique pré-rendus
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','a','n','R','A','sk','bs','gs','py','cl','T','sm','ap','sc','rt','cf','ht','ho','ec','X','P','B','W','u','S']); // décors fixes, bâtiments et signalétique pré-rendus
 const __crDecoDynamic=new Set(['I','F','G','C']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
@@ -806,13 +806,13 @@ function deco(sp,x,y,sc){
  const t=sp&&sp.t;
  const projected=sc*3200*H/2;
  // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
- if(isTV&&projected<.85)return;
+ 
  const largeStatic=t==='T'||t==='sm'||t==='ap'||t==='sc'||t==='bs'||t==='gs'||t==='rt'||t==='cf'||t==='ht'||t==='ho'||t==='ec'||t==='sk';
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>(largeStatic?64:38)){decoRaster(sp,x,y,sc);return;}
+ if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)){decoRaster(sp,x,y,sc);return;}
  const qsc=Math.round(sc*256)/256;
  const projectedQ=qsc*3200*H/2;
  const radius=Math.ceil(projectedQ*2.7)+2;
- if(radius>(largeStatic?180:108)||qsc<=0){decoRaster(sp,x,y,sc);return;}
+ if(radius>320||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
  if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();
@@ -828,8 +828,8 @@ function deco(sp,x,y,sc){
  finally{ctx=liveCtx}
  entry={canvas,anchor:radius+1,size,bytes:size*size*4};
  __crDecoCache.set(key,entry);__crDecoCacheBytes+=entry.bytes;
- // Budget strict : 8 Mio, eviction LRU. Eviction never affects visible scene data.
- while(__crDecoCache.size>48||__crDecoCacheBytes>8*1024*1024){const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);__crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes}
+ // Budget V98 borné à 24 Mio, éviction LRU ; cache dérivé et recréable.
+ while(__crDecoCache.size>96||__crDecoCacheBytes>24*1024*1024){const first=__crDecoCache.keys().next().value,removed=__crDecoCache.get(first);__crDecoCache.delete(first);__crDecoCacheBytes-=removed.bytes}
  ctx.drawImage(canvas,x-entry.anchor*ratio,y-entry.anchor*ratio,entry.size*ratio,entry.size*ratio);
 }
 function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.1,y,s*.22,s*.03,0,0,7);ctx.fill();ctx.restore();

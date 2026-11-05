@@ -231,6 +231,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
+<script src="sprites/bitmap/bitmap-renderer.js"></script>
 <script>
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
 let drawN=105;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
@@ -643,6 +644,7 @@ function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1)
 // V86 — atlas véhicule de base, borné en mémoire.
 const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
 function drawVeh(x,y,w,c,v,ln,ph,em){
+ const bitmapScale=w/96;if(window.CRBitmap&&window.CRBitmap.drawVehicle(ctx,v,0,x,y,160*bitmapScale,160*bitmapScale))return;
  const qln=Math.round((ln||0)*100)/100,key=[v,c,qln,ph==null?'n':ph,em?1:0,BRK,BOOSTF].join('|');
  let e=__crVehicleAtlas.get(key);
  if(!e){
@@ -659,6 +661,7 @@ function drawVeh(x,y,w,c,v,ln,ph,em){
 // Les effets dynamiques frein/boost et la phase lumineuse font partie de la clé.
 const __crVehiclePoseAtlas=new Map();let __crVehiclePoseAtlasBytes=0;
 function drawVehPose(x,y,w,c,v,pose,ph){
+ const bitmapScale=w/96;if(window.CRBitmap&&window.CRBitmap.drawVehicle(ctx,v,pose,x,y,192*bitmapScale,192*bitmapScale))return;
  if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
  const p=pose|0,key=[v,c,p,ph==null?'n':ph,BRK,BOOSTF].join('|');
  let e=__crVehiclePoseAtlas.get(key);

@@ -202,12 +202,13 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 /* V104 — interactive artwork labels and visible option state. */
 #crMenuHotspots button{appearance:none;-webkit-appearance:none;overflow:visible}
 #crMenuHotspots button.cr-active{z-index:2}
-#crMenuHotspots .cr-status{position:absolute;right:2%;bottom:3%;min-width:38%;max-width:96%;padding:2px 4px;border:1px solid #b9f4ff;border-radius:6px;background:rgba(3,18,37,.9);color:#fff;font:900 clamp(8px,1.15vw,14px)/1.15 system-ui,sans-serif;text-align:center;white-space:nowrap;text-shadow:0 1px 2px #000;box-shadow:0 1px 7px #0009;pointer-events:none}
-#crMenuHotspots .cr-status.is-off{background:rgba(80,17,38,.94);border-color:#ff9bb0;color:#ffd8e0}
-#crMenuHotspots .cr-status.is-on{background:rgba(5,77,75,.94);border-color:#7fffe3;color:#c9fff1}
-#crMenuHotspots .music .cr-status{right:4%;bottom:4%}
-#crMenuHotspots button:focus-visible{outline:3px solid #fff!important}
-@media(max-width:700px){#crMenuHotspots .cr-status{font-size:clamp(8px,1.7vw,12px);padding:2px 3px}}
+/* V105 — compact option indicators: never cover the artwork labels. */
+#crMenuHotspots .cr-status{position:absolute;right:2%;top:2%;bottom:auto;left:auto;display:inline-flex;align-items:center;justify-content:center;min-width:0;width:auto;max-width:48%;height:auto;min-height:0;margin:0;padding:1px 4px;border:1px solid #b9f4ff;border-radius:4px;background:rgba(3,18,37,.82);color:#fff;font:900 clamp(7px,.72vw,10px)/1.05 system-ui,sans-serif;text-align:center;white-space:nowrap;text-shadow:0 1px 2px #000;box-shadow:0 1px 3px #0008;pointer-events:none;box-sizing:border-box}
+#crMenuHotspots .cr-status.is-off{background:rgba(80,17,38,.88);border-color:#ff9bb0;color:#ffd8e0}
+#crMenuHotspots .cr-status.is-on{background:rgba(5,77,75,.88);border-color:#7fffe3;color:#c9fff1}
+#crMenuHotspots .music .cr-status{right:2%;top:2%;bottom:auto}
+#crMenuHotspots button:focus-visible{outline:2px solid #fff!important}
+@media(max-width:700px){#crMenuHotspots .cr-status{font-size:7px;padding:1px 3px;border-radius:3px}}
 
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>

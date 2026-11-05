@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "note": "Add transparent PNG/WebP sprite files here. Each view is an independent pre-rendered angle; omitted views use straight as fallback. pivotX/pivotY are normalized anchors.",
+  "sprites": {}
+}

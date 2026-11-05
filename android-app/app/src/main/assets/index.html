@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V91 – City Landmark Set</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V92 – Shared Sprite Signatures</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -798,7 +798,7 @@ function deco(sp,x,y,sc){
  const radius=Math.ceil(projectedQ*2.7)+2;
  if(radius>(largeStatic?180:108)||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
- if(params===undefined){try{params=JSON.stringify(sp);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
+ if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();
  const key=[t,qsc,params,W,H,roadW,themeKey].join('|');
  const ratio=sc/qsc;

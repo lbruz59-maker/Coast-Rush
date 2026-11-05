@@ -212,7 +212,7 @@ let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[
 const FORK=125;let th=TH[0],cid=0,cposk=0;
 const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc'];
 let cars=[];
-function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}segs.length=0;__crCarSegments.length=0;
+function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}__crClearGroupBitmaps();segs.length=0;__crCarSegments.length=0;
  road(0,50,0,0,0);
  loopS=-1;loopE=-1;loopA=0;inLoop=0;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V80 – Fire TV Cache Optimization</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V81 – Fog Cache Fast Path</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -91,7 +91,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
 <div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
 <div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v80</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v81</div><div id="hs" style="font-size:12px;opacity:.9"></div>
 <div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
@@ -651,6 +651,7 @@ const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S'])
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 // V80 : mémoriser la signature des sprites statiques et du thème.
+// V81 : accès direct au cache de brouillard ; FIFO borné sans réordonner la Map à chaque hit.
 // Les sprites cacheables ne changent pas pendant une course ; on évite donc JSON.stringify à chaque frame.
 const __crDecoParamCache=new WeakMap();
 let __crDecoThemeRef=null,__crDecoThemeFT=null,__crDecoThemeWx=null,__crDecoThemeKey='';
@@ -696,7 +697,7 @@ function palm(x,y,s,sc){ctx.save();ctx.globalAlpha*=.3;ctx.fillStyle='#000';ctx.
   ctx.strokeStyle='#14782a';ctx.lineWidth=Math.max(1,s*.05);ctx.beginPath();ctx.moveTo(tx,ty);ctx.quadraticCurveTo(tx+dx*L*.5,ty-s*.14,ex,ey);ctx.stroke();
   ctx.strokeStyle='#33c24f';ctx.lineWidth=Math.max(.6,s*.022);ctx.beginPath();ctx.moveTo(tx,ty);ctx.quadraticCurveTo(tx+dx*L*.5,ty-s*.14,ex,ey);ctx.stroke()}
  ctx.fillStyle='#5a3a1a';ctx.beginPath();ctx.arc(tx-s*.02,ty+s*.02,s*.03,0,7);ctx.arc(tx+s*.025,ty+s*.025,s*.03,0,7);ctx.fill()}
-let fogC='#ffffff';const fcache=new Map();function fg(c,t){const q=Math.min(10,t*12|0);if(!q||c[0]!='#'||c.length!=7)return c;const k=c+q+fogC;if(fcache.has(k)){const v=fcache.get(k);fcache.delete(k);fcache.set(k,v);return v}const f=fogC,p=x=>parseInt(x,16),a=[p(c.slice(1,3)),p(c.slice(3,5)),p(c.slice(5,7))],b=[p(f.slice(1,3)),p(f.slice(3,5)),p(f.slice(5,7))],u=q/12*.75,v='#'+a.map((x,i)=>Math.round(x+(b[i]-x)*u).toString(16).padStart(2,'0')).join('');if(fcache.size>=384)fcache.delete(fcache.keys().next().value);fcache.set(k,v);return v}
+let fogC='#ffffff';const fcache=new Map();function fg(c,t){const q=Math.min(10,t*12|0);if(!q||c[0]!='#'||c.length!=7)return c;const k=c+q+fogC;if(fcache.has(k))return fcache.get(k);const f=fogC,p=x=>parseInt(x,16),a=[p(c.slice(1,3)),p(c.slice(3,5)),p(c.slice(5,7))],b=[p(f.slice(1,3)),p(f.slice(3,5)),p(f.slice(5,7))],u=q/12*.75,v='#'+a.map((x,i)=>Math.round(x+(b[i]-x)*u).toString(16).padStart(2,'0')).join('');if(fcache.size>=384)fcache.delete(fcache.keys().next().value);fcache.set(k,v);return v}
 let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=null,__crVignetteKey='',__crVignette=null,__crSunGlowKey='',__crSunGlow=null;
 // Reuse render scratch storage: avoid allocating a new visible list and two projection objects per segment on every frame.
 const __crRenderVisible=[];

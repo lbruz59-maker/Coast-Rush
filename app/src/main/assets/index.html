@@ -644,7 +644,7 @@ function drawBgCached(themeKey){
 // sont composés dans une tuile transparente, puis envoyés au Canvas principal
 // par un seul drawImage. Cache LRU borné pour les appareils à mémoire limitée.
 const __crLandscapeTiles=new Map();
-const __crLandscapeTileSize=512,__crLandscapeAnchorX=256,__crLandscapeAnchorY=500,__crLandscapeBaseScale=.0008,__crLandscapeTileLimit=32;
+const __crLandscapeTileSize=1024,__crLandscapeAnchorX=512,__crLandscapeAnchorY=900,__crLandscapeBaseScale=.0008,__crLandscapeTileLimit=12;
 let __crLandscapeBuilds=0,__crLandscapeDrawCalls=0;
 function __crLandscapeTile(segIndex){
  let tile=__crLandscapeTiles.get(segIndex);
@@ -835,7 +835,7 @@ let __crSkyGradKey='',__crSkyGrad=null,__crHorizonGradKey='',__crHorizonGrad=nul
 const __crRenderVisible=[];
 // Nettoyage mémoire demandé par Android sous pression : seuls les caches dérivés sont purgés.
 window.__coastRushTrimCaches=function(){
- try{__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();__crVehicleCacheHits=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
+ try{__crLandscapeTiles.clear();__crLandscapeBuilds=0;__crLandscapeDrawCalls=0;__crDecoCache.clear();__crDecoCacheBytes=0;__crDecoSpriteKeys=new WeakMap();__crDecoCacheHits=0;__crDecoCacheMisses=0;__crVehicleSprites.clear();__crVehicleCacheHits=0;if(window.__crRouteThumbs)window.__crRouteThumbs.clear();
   __crGradientCache.clear();__crRadialCache.clear();__crLensFlareGradient=null;__crSheetEntries.clear();__crSheetNext=0;__crSheetHits=0;__crSheetMisses=0;__crSheetCtx.setTransform(1,0,0,1,0,0);__crSheetCtx.clearRect(0,0,__crSheetSize,__crSheetSize);__crLensFlareKey='';fcache.clear();shc.clear();
   __crBgCacheKey='';__crSkyGradKey='';__crHorizonGradKey='';__crVignetteKey='';__crSunGlowKey='';__crTerrainKey='';__crStarField=null;__crStarFieldKey='';
   return true;

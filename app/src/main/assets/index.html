@@ -226,6 +226,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   seg.sp=keep;
  }
  __crBuildZoneIndex();
+ __crLandscapeTiles.clear();__crLandscapeBuilds=0;__crLandscapeDrawCalls=0;
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
@@ -638,6 +639,43 @@ function drawBgCached(themeKey){
  ctx.drawImage(__crBgCacheCanvas,0,0,W,H);
 }
 
+
+// Paysages statiques pré-rendus par segment : tous les objets d'un même segment
+// sont composés dans une tuile transparente, puis envoyés au Canvas principal
+// par un seul drawImage. Cache LRU borné pour les appareils à mémoire limitée.
+const __crLandscapeTiles=new Map();
+const __crLandscapeTileSize=512,__crLandscapeAnchorX=256,__crLandscapeAnchorY=500,__crLandscapeBaseScale=.0008,__crLandscapeTileLimit=32;
+let __crLandscapeBuilds=0,__crLandscapeDrawCalls=0;
+function __crLandscapeTile(segIndex){
+ let tile=__crLandscapeTiles.get(segIndex);
+ if(tile){__crLandscapeTiles.delete(segIndex);__crLandscapeTiles.set(segIndex,tile);return tile}
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=__crLandscapeTileSize;
+ const tileCtx=canvas.getContext('2d');
+ const live=ctx;
+ try{
+  ctx=tileCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,__crLandscapeTileSize,__crLandscapeTileSize);
+  let lo=0,hi=__crWorldDecoPoints.length;
+  while(lo<hi){const m=(lo+hi)>>1;if(__crWorldDecoPoints[m].seg<segIndex)lo=m+1;else hi=m}
+  for(let pi=lo;pi<__crWorldDecoPoints.length&&__crWorldDecoPoints[pi].seg===segIndex;pi++){
+   const p=__crWorldDecoPoints[pi];
+   for(let gi=0;gi<p.items.length;gi++){
+    const item=p.items[gi],worldOffset=p.x+item.offset;
+    const x=__crLandscapeAnchorX+__crLandscapeBaseScale*worldOffset*roadW*160;
+    decoRaster(item.sp,x,__crLandscapeAnchorY,__crLandscapeBaseScale*item.scale);
+   }
+  }
+ }finally{ctx=live}
+ tile=canvas;__crLandscapeTiles.set(segIndex,tile);__crLandscapeBuilds++;
+ while(__crLandscapeTiles.size>__crLandscapeTileLimit){const oldest=__crLandscapeTiles.keys().next().value;__crLandscapeTiles.delete(oldest)}
+ return tile;
+}
+function __crDrawLandscapeSegment(seg){
+ const tile=__crLandscapeTile(seg.i),ratio=seg.a.sc/__crLandscapeBaseScale;
+ if(!(ratio>0))return false;
+ ctx.drawImage(tile,seg.a.x-__crLandscapeAnchorX*ratio,seg.a.y-__crLandscapeAnchorY*ratio,__crLandscapeTileSize*ratio,__crLandscapeTileSize*ratio);
+ __crLandscapeDrawCalls++;return true;
+}
+
 function decoRaster(sp,x,y,sc){
  const t=sp.t;
  const proj=sc*3200*H/2;
@@ -1026,14 +1064,14 @@ function render(){
  for(let pi=endPoint-1;pi>=firstPoint;pi--){
   const p=__crWorldDecoPoints[pi];if(p.seg<bs.i||p.seg>lastSeg)continue;const seg=segs[p.seg];
   if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
-  const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
-  // Une projection pour le groupe ; chaque élément conserve son décalage latéral local.
-  for(let gi=0;gi<p.items.length;gi++){
-   const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;
-   deco(item.sp,x,y,a.sc*item.scale);
+  // Une tuile pré-rendue regroupe tout le paysage statique de ce segment.
+  // Repli direct si la création du canvas échoue sur un WebView ancien.
+  if(!__crDrawLandscapeSegment(seg)){
+   const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
+   for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;deco(item.sp,x,y,a.sc*item.scale)}
   }
  }
- if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,zoneIndexReady:__crZoneIndexReady,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
+ if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,zoneIndexReady:__crZoneIndexReady,landscapeTiles:__crLandscapeTiles.size,landscapeTileBuilds:__crLandscapeBuilds,landscapeBatchDrawCalls:__crLandscapeDrawCalls,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

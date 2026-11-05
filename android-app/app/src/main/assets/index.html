@@ -1449,21 +1449,73 @@ function loop(t){
   nameInput.focus();
  };
  const crShowGarage=()=>{
-  const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];
-  const {layer,card,actions,btn}=crMakeLayer('GARAGE','min(92vw,560px)');
-  const intro=document.createElement('p');intro.textContent='CHOISIS TON VÉHICULE';intro.style.cssText='margin:-5px 0 12px;color:#d9efff;font-size:12px;letter-spacing:.12em';card.insertBefore(intro,actions);
-  const preview=document.createElement('div');preview.style.cssText='position:relative;height:100px;margin:8px 0 14px;border:1px solid #7bdfff66;border-radius:14px;background:radial-gradient(ellipse at 50% 70%,#315b83,#09172e 72%);display:flex;align-items:center;justify-content:center;overflow:hidden';
-  preview.innerHTML='<div style="position:absolute;bottom:18px;width:76%;height:2px;background:#8ceaff55;box-shadow:0 0 12px #62dfff"></div><div id="crGarageCar" style="position:relative;width:150px;height:42px;border-radius:45% 38% 18% 18%;background:linear-gradient(180deg,#ff6b78,#a7193f);border:2px solid #ffd3df;box-shadow:0 8px 14px #0009"><div style="position:absolute;left:34px;top:-16px;width:78px;height:23px;border:2px solid #c8f6ff;border-radius:24px 24px 3px 3px;background:linear-gradient(135deg,#75c9e5,#152c4e)"></div><i style="position:absolute;left:10px;bottom:-7px;width:23px;height:17px;border-radius:50%;background:#080d18;border:2px solid #a9c8d9"></i><i style="position:absolute;right:10px;bottom:-7px;width:23px;height:17px;border-radius:50%;background:#080d18;border:2px solid #a9c8d9"></i></div>';
+  const gameButtons=$('vh')?Array.from($('vh').querySelectorAll('button')):[];
+  const {layer,card,actions,btn}=crMakeLayer('GARAGE','min(96vw,760px)');
+  card.style.maxHeight='92%';
+  const intro=document.createElement('p');
+  intro.textContent='LES 7 VÉHICULES DU JEU — SÉLECTIONNE CELUI QUE TU VEUX CONDUIRE';
+  intro.style.cssText='margin:-5px 0 12px;color:#d9efff;font-size:clamp(10px,2.5vw,13px);letter-spacing:.06em;line-height:1.4';
+  card.insertBefore(intro,actions);
+  const preview=document.createElement('canvas');
+  preview.width=360;preview.height=190;
+  preview.style.cssText='display:block;width:100%;height:clamp(145px,28vw,190px);margin:8px 0 8px;border:1px solid #7bdfff77;border-radius:14px;background:radial-gradient(ellipse at 50% 72%,#315b83,#09172e 72%);';
   card.insertBefore(preview,actions);
-  const selected=document.createElement('div');selected.style.cssText='font-size:20px;color:#fff;margin:4px 0 14px;text-shadow:0 0 12px #5de7ff';card.insertBefore(selected,actions);
-  const statWrap=document.createElement('div');statWrap.style.cssText='display:grid;gap:10px;margin:10px 0 14px;text-align:left';card.insertBefore(statWrap,actions);
-  const statValues=[[82,74,78],[66,62,68],[88,58,70],[96,86,92],[70,84,64],[58,78,60],[80,76,82]];
-  const statNames=['VITESSE','ADHÉRENCE','ACCÉLÉRATION'];
-  const drawStats=i=>{selected.textContent=VEH[i]||('Véhicule '+(i+1));statWrap.innerHTML='';statNames.forEach((n,j)=>{const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:110px 1fr 34px;align-items:center;gap:8px;font:800 11px system-ui;color:#d8f5ff';const lab=document.createElement('span');lab.textContent=n;const track=document.createElement('div');track.style.cssText='height:9px;border-radius:8px;background:#071326;overflow:hidden;border:1px solid #72dfff55';const fill=document.createElement('div');fill.style.cssText='height:100%;width:'+statValues[i][j]+'%;border-radius:8px;background:linear-gradient(90deg,#39bde7,#8effe5)';track.append(fill);const val=document.createElement('b');val.textContent=statValues[i][j];row.append(lab,track,val);statWrap.append(row)})};
-  const choices=document.createElement('div');choices.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin:12px 0';card.insertBefore(choices,actions);
-  list.forEach((b,i)=>{const label=(b.textContent||('Véhicule '+(i+1))).trim();const x=document.createElement('button');x.type='button';x.textContent=label;x.style.cssText='padding:11px 8px;border:1px solid #5de7ff;border-radius:10px;background:'+(i===myV?'#176a83':'#172943')+';color:white;font-weight:bold;touch-action:manipulation';x.onclick=()=>{b.click();drawStats(i);Array.from(choices.children).forEach((q,j)=>{q.style.background=j===i?'#176a83':'#172943';q.textContent=(list[j].textContent||('Véhicule '+(j+1))).trim()+(j===i?' ✓':'')});toast('Véhicule sélectionné : '+label)};choices.append(x)});
-  if(!list.length){const p=document.createElement('p');p.textContent='La liste des véhicules est momentanément indisponible.';card.insertBefore(p,actions)}
-  drawStats(Math.max(0,Math.min(VEH.length-1,myV)));
+  const selected=document.createElement('div');
+  selected.style.cssText='font-size:clamp(19px,4vw,25px);font-weight:900;color:#fff;margin:5px 0 12px;text-shadow:0 0 12px #5de7ff';
+  card.insertBefore(selected,actions);
+  const hint=document.createElement('div');
+  hint.textContent='Aperçu du véritable sprite utilisé par le moteur de Coast Rush.';
+  hint.style.cssText='font-size:11px;color:#a9cce0;margin-bottom:12px';
+  card.insertBefore(hint,actions);
+  const choices=document.createElement('div');
+  choices.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,145px),1fr));gap:9px;margin:8px 0 12px';
+  card.insertBefore(choices,actions);
+  const safeIndex=()=>Math.max(0,Math.min(VEH.length-1,Number.isFinite(myV)?myV:0));
+  const paint=(canvas,index,big)=>{
+   const g=canvas.getContext('2d');
+   g.clearRect(0,0,canvas.width,canvas.height);
+   const old=ctx;ctx=g;
+   try{
+    ctx.save();
+    ctx.fillStyle='#ffffff0b';ctx.fillRect(0,canvas.height*.76,canvas.width,canvas.height*.24);
+    ctx.strokeStyle='#8ceaff55';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(canvas.width*.08,canvas.height*.79);ctx.lineTo(canvas.width*.92,canvas.height*.79);ctx.stroke();
+    drawVeh(canvas.width/2,big?canvas.height*.78:canvas.height*.78,big?132:72,myCol,index,0,0,1);
+    ctx.restore();
+   }finally{ctx=old}
+  };
+  const render=()=>{
+   const current=safeIndex();
+   selected.textContent=VEH[current]||('Véhicule '+(current+1));
+   paint(preview,current,true);
+   Array.from(choices.children).forEach((el,i)=>{
+    const active=i===current;
+    el.style.borderColor=active?'#9effe8':'#5de7ff77';
+    el.style.background=active?'linear-gradient(145deg,#176a83,#173c59)':'#101f38';
+    el.style.boxShadow=active?'0 0 0 2px #6fffe655,0 5px 16px #0007':'0 3px 10px #0005';
+    const mark=el.querySelector('.crGarageMark');if(mark)mark.textContent=active?'✓ SÉLECTIONNÉ':'CHOISIR';
+   });
+  };
+  VEH.forEach((name,i)=>{
+   const choice=document.createElement('button');choice.type='button';
+   choice.style.cssText='min-width:0;padding:7px;border:2px solid #5de7ff77;border-radius:12px;color:white;text-align:center;touch-action:manipulation;cursor:pointer';
+   const thumb=document.createElement('canvas');thumb.width=160;thumb.height=100;
+   thumb.style.cssText='display:block;width:100%;height:92px;border-radius:8px;background:radial-gradient(ellipse at 50% 70%,#294a6c,#08152a 75%)';
+   paint(thumb,i,false);
+   const title=document.createElement('div');title.textContent=name;
+   title.style.cssText='font:bold 13px system-ui;margin:5px 0 3px';
+   const mark=document.createElement('div');mark.className='crGarageMark';
+   mark.style.cssText='font:900 9px system-ui;letter-spacing:.06em;color:#9effe8;min-height:12px';
+   choice.append(thumb,title,mark);
+   choice.onclick=()=>{
+    myV=i;
+    try{localStorage.setItem('cr_veh',String(i))}catch(e){}
+    if(gameButtons[i])gameButtons[i].click();
+    render();
+   };
+   choices.append(choice);
+  });
+  render();
   actions.insertBefore(btn('VALIDER ET RETOUR',()=>layer.remove(),true),actions.firstChild);
  };
   const crShowScores=()=>{

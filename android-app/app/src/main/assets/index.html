@@ -1471,6 +1471,14 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  netTick(dt);
  for(const c of cars){if(c.z<0)continue;c.bt=(c.bt||0)-dt;if(c.b&&!(c.hit>0)){c.o=Math.sin(flash*1.4+c.ph)*.6;c.cool-=dt}
   if(c.rp){}else if(c.hit>0){c.hit-=dt;c.o+=c.vo*dt;c.z+=c.sp*dt*.5;if(c.hit<=0){c.vo=0;if(c.noTp)c.lane=Math.max(-.7,Math.min(.7,c.o));else c.o=c.lane;if(!c.noTp)c.z+=segL*45;c.noTp=0}}else{c.z+=c.sp*dt*(c.sft>0?c.sf:(c.shr>0?.55:1));if(!c.b&&!c.rp)c.o+=(c.lane-c.o)*Math.min(1,dt*3)}if(c.shr>0)c.shr-=dt;if(c.sft>0)c.sft-=dt;
+  // LOD simulation : les véhicules éloignés avancent à coût minimal.
+  // Leur IA de voie, collisions et interactions ne tournent qu'à proximité.
+  const carDistance=Math.abs(c.z-(pos+playerZ));
+  if(carDistance>segL*55&&!c.hit&&!c.b&&!c.rp){
+   if(c.z>trackLen-(FORK+10)*segL){c.z=-1e9;continue}
+   c.pdz=c.z-(pos+playerZ);
+   continue;
+  }
   if(c.z>trackLen-(FORK+10)*segL){c.z=-1e9;continue}
   __crAddSegmentCar(Math.floor(c.z/segL),c);
   const dz=c.z-(pos+playerZ),pd=c.pdz;c.pdz=dz;if(pd>0&&dz<=0&&state=='play'&&!c.rp&&Math.abs(px-c.o)<.9&&flash-lastPass>.12){lastPass=flash;passSfx(Math.min(1,speed/MAX))}
@@ -1488,6 +1496,13 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(!ps.loop)inLoop=0;loopA=(inLoop&&crash<=0)?eIO(0,1,Math.max(0,Math.min(1,lp)))*Math.PI*2:0;
  if(state=='play'&&useItems)for(const sp of ps.sp)if(sp.t=='I'&&!(flash<sp.off)&&!item&&Math.abs(px-sp.o)<.22){sp.off=flash+5;item=sp.k||1+(Math.random()*7|0);pickup();say(sp.k?'Item!':'Mystery!',1.6,1.2)}
  for(let i=objs.length-1;i>=0;i--){const b=objs[i];let dead=false;
+  // Les objets très éloignés restent dans le monde mais leur logique coûteuse est suspendue.
+  // Les projectiles continuent leur déplacement; collisions et interactions reprennent dans la zone active.
+  if(Math.abs(b.z-(pos+playerZ))>segL*55){
+   if(b.k==='s'||b.k==='g')b.z+=b.sp*dt;
+   if(b.z>=trackLen||(b.tt&&flash-b.tt>(b.k==='x'?.5:b.k==='g'?1.5:15))||(b.k!=='b'&&b.k!=='o'&&b.k!=='x'&&b.z<pos-segL*5))objs.splice(i,1);
+   continue;
+  }
   if(b.k=='s'){
    const targetValid=!!(b.t&&cars.includes(b.t)&&b.t.z>b.z&&b.t.z>pos+playerZ-segL*.5);
    if(targetValid){

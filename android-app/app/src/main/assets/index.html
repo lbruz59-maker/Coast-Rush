@@ -1359,9 +1359,9 @@ function loop(t){
   ['play','Jouer',()=>safeClick('go')],
   ['mode','Mode de jeu',()=>safeClick('md')],
   ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
-  ['profile','Profil',()=>{const field=$('pn');if(!field)return;field.focus();try{field.scrollIntoView({block:'center'})}catch(e){}const v=window.prompt('Ton pseudo Coast Rush',myName||'');if(v!==null){field.value=String(v).slice(0,10);field.dispatchEvent(new Event('input',{bubbles:true}));toast('Pseudo enregistré')}}],
+  ['profile','Profil',()=>{crShowProfile()}],
   ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
-  ['quit','Quitter',()=>toast('Pour quitter Coast Rush, utilise le bouton Retour de ta télécommande.')],
+  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
   ['music','Musique',()=>safeClick('mm')],
   ['tilt','Inclinaison',()=>safeClick('gy')],
   ['quality','Qualité',()=>safeClick('ql')],
@@ -1370,6 +1370,22 @@ function loop(t){
   ['gas','Gaz',()=>safeClick('gz')],
   ['difficulty','Difficulté',()=>safeClick('df')]
  ];
+ const crShowProfile=()=>{
+  let layer=document.getElementById('crProfileDialog');
+  if(layer){layer.remove();return}
+  layer=document.createElement('div');layer.id='crProfileDialog';
+  layer.style.cssText='position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(1,8,22,.82);padding:18px;box-sizing:border-box';
+  const card=document.createElement('div');card.style.cssText='width:min(88vw,380px);padding:22px;border:2px solid #8beaff;border-radius:18px;background:linear-gradient(145deg,#193b60,#10172f);box-shadow:0 12px 40px #000c;color:white;font: bold 16px system-ui;text-align:center';
+  const title=document.createElement('div');title.textContent='TON PSEUDO';title.style.cssText='font-size:22px;color:#9cecff;margin-bottom:14px';
+  const input=document.createElement('input');input.type='text';input.maxLength=10;input.value=myName||'';input.placeholder='Pseudo';input.autocomplete='off';input.style.cssText='width:100%;box-sizing:border-box;padding:12px;border:1px solid #8beaff;border-radius:10px;background:#07152b;color:white;font:bold 18px system-ui;text-align:center';
+  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:10px;margin-top:14px';
+  const make=(label,color)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='flex:1;padding:12px;border:1px solid #b9f4ff;border-radius:10px;background:'+color+';color:white;font:bold 14px system-ui';return b};
+  const cancel=make('ANNULER','#35435f'),save=make('VALIDER','#176c83');
+  cancel.onclick=()=>layer.remove();
+  save.onclick=()=>{const v=input.value.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase().slice(0,10);if(v){myName=v;try{localStorage.setItem('cr_name',v)}catch(e){}toast('Pseudo enregistré')}layer.remove()};
+  input.addEventListener('keydown',e=>{if(e.key==='Enter')save.click();if(e.key==='Escape')cancel.click()});
+  actions.append(cancel,save);card.append(title,input,actions);layer.appendChild(card);host.appendChild(layer);input.focus();
+ };
  const statusFor=cls=>{
   if(cls==='music')return musOn?'ON':'OFF';
   if(cls==='tilt')return tiltMode===0?'OFF':tiltMode===1?'ON':'INVERSÉ';

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V89 – Bigger Scenery and Tunnel Polish</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V90 – 540p Render and Static Landmark Atlas</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -116,7 +116,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
 <script>
-const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d'),W=320,H=224;
+const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
 let drawN=105;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 window.__coastRushNativePaused=false;
@@ -748,8 +748,8 @@ const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2);if('ptacl'.incl
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl','T']); // sprites statiques, anneaux et arches inclus
-const __crDecoDynamic=new Set(['I','F','G','C','X','P','B','W','u','S']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','R','A','sk','bs','gs','py','cl','T','sm','ap','sc','rt','cf','ht','X','P','B','W','u','S']); // décors fixes, bâtiments et signalétique pré-rendus
+const __crDecoDynamic=new Set(['I','F','G','C']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 // V80 : mémoriser la signature des sprites statiques et du thème.
@@ -768,11 +768,12 @@ function deco(sp,x,y,sc){
  const projected=sc*3200*H/2;
  // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
  if(isTV&&projected<.85)return;
- if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>(t==='T'?64:38)){decoRaster(sp,x,y,sc);return;}
+ const largeStatic=t==='T'||t==='sm'||t==='ap'||t==='sc'||t==='bs'||t==='gs'||t==='rt'||t==='cf'||t==='ht'||t==='sk';
+ if(!isTV||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected<7||projected>(largeStatic?64:38)){decoRaster(sp,x,y,sc);return;}
  const qsc=Math.round(sc*256)/256;
  const projectedQ=qsc*3200*H/2;
  const radius=Math.ceil(projectedQ*2.7)+2;
- if(radius>(t==='T'?180:108)||qsc<=0){decoRaster(sp,x,y,sc);return;}
+ if(radius>(largeStatic?180:108)||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
  if(params===undefined){try{params=JSON.stringify(sp);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();

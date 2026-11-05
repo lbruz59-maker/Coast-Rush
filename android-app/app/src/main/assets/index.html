@@ -184,19 +184,19 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots{position:absolute;inset:0;z-index:5;pointer-events:none}
 #crMenuHotspots button{position:absolute;display:block;pointer-events:auto;margin:0;padding:0;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;clip-path:polygon(7% 0,95% 0,100% 78%,93% 100%,0 100%,3% 22%)}
 #crMenuHotspots button:focus,#crMenuHotspots button.cr-active{outline:none!important;background:rgba(0,238,255,.10)!important;box-shadow:inset 0 0 0 3px #fff,0 0 13px #00eaff,0 0 24px #00eaff!important}
-/* V106 — hotspots recalés sur le menu final 1670×942. */
-#crMenuHotspots::before{content:"";position:absolute;left:78.5%;top:14.0%;width:18.5%;height:7.0%;border:2px solid #4fdcff;border-radius:18px;background:linear-gradient(145deg,#071b3d,#06132d);box-shadow:0 0 10px #28dfff;box-sizing:border-box;pointer-events:none}
-#crMenuHotspots .play{left:35%;top:82%;width:30%;height:12%;z-index:4;background:transparent!important;border:0!important;border-radius:24px!important;box-shadow:none!important;clip-path:none!important}
-#crMenuHotspots .play::before{content:none!important}
-#crMenuHotspots .multiplayer{left:78.5%;top:22.6%;width:18.5%;height:7.0%}
-#crMenuHotspots .mode{left:78.5%;top:31.0%;width:18.5%;height:7.0%}
-#crMenuHotspots .garage{left:78.5%;top:39.4%;width:18.5%;height:7.0%}
-#crMenuHotspots .career{left:78.5%;top:47.8%;width:18.5%;height:7.0%}
-#crMenuHotspots .leaderboard{left:78.5%;top:56.2%;width:18.5%;height:7.0%}
-#crMenuHotspots .commands{left:78.5%;top:64.6%;width:18.5%;height:7.0%}
-#crMenuHotspots .quit{left:78.5%;top:73.0%;width:18.5%;height:7.0%}
+/* V107 — zones de clic calées sur les boutons réellement visibles dans menu-start.jpg (1536×708). */
+#crMenuHotspots .play{left:78.5%;top:22.8%;width:18.5%;height:7.1%}
+#crMenuHotspots .garage{left:78.5%;top:31.2%;width:18.5%;height:7.1%}
+#crMenuHotspots .career{left:78.5%;top:39.6%;width:18.5%;height:7.1%}
+#crMenuHotspots .leaderboard{left:78.5%;top:48.0%;width:18.5%;height:7.1%}
+#crMenuHotspots .commands{left:78.5%;top:56.4%;width:18.5%;height:7.1%}
+#crMenuHotspots .quit{left:78.5%;top:64.8%;width:18.5%;height:7.1%}
 #crMenuHotspots .music{left:80.0%;top:3.5%;width:17.5%;height:5.4%}
 #crMenuHotspots .sound{left:80.0%;top:9.0%;width:17.5%;height:5.4%}
+#crMenuHotspots .mode{left:29.8%;top:85.0%;width:10.5%;height:9.0%}
+#crMenuHotspots .multiplayer{left:42.2%;top:85.0%;width:10.5%;height:9.0%}
+#crMenuHotspots .timeTrial{left:54.8%;top:85.0%;width:12.0%;height:9.0%}
+#crMenuHotspots .travel{left:67.8%;top:85.0%;width:11.2%;height:9.0%}
 #crMenuHotspots .profile{left:1.5%;top:84.0%;width:24.0%;height:12.0%}
 #crMenuHotspots .progress{left:73.0%;top:84.0%;width:24.0%;height:12.0%}
 #crMenuHotspots .score{left:2.0%;top:4.0%;width:20.0%;height:10.0%}
@@ -1385,8 +1385,6 @@ function loop(t){
  const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[
   ['play','Jouer',()=>safeClick('go')],
-  ['multiplayer','Multijoueur',()=>safeClick('mp')],
-  ['mode','Mode de jeu',()=>crShowModes()],
   ['garage','Garage',()=>crShowGarage()],
   ['career','Carrière',()=>crShowProfile()],
   ['leaderboard','Classement',()=>crShowScores()],
@@ -1394,6 +1392,10 @@ function loop(t){
   ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
   ['music','Musique',()=>safeClick('mm')],
   ['sound','Sons',()=>safeClick('sf')],
+  ['mode','Outrun arcade',()=>{MODE=0;MODE0=0;safeClick('go')}],
+  ['multiplayer','Duel deux joueurs',()=>startDuel()],
+  ['timeTrial','Contre-la-montre',()=>{MODE=3;MODE0=3;safeClick('go')}],
+  ['travel','Voyage',()=>{MODE=4;MODE0=4;safeClick('go')}],
   ['profile','Profil et carrière',()=>crShowProfile()],
   ['progress','Progression carrière',()=>crShowScores()],
   ['score','Meilleur score',()=>crShowScores()]
@@ -1405,7 +1407,7 @@ function loop(t){
  crEnsureProfile();
  const crProfileTag=()=>{
   let tag=document.getElementById('crProfileTag');
-  if(!tag){tag=document.createElement('div');tag.id='crProfileTag';tag.style.cssText='position:absolute;z-index:8;left:11.8%;bottom:5.8%;width:11.8%;height:12.0%;display:flex;flex-direction:column;justify-content:space-around;gap:1px;padding:4px 6px;box-sizing:border-box;border:1px solid #79dcff;border-radius:8px;background:rgba(3,18,43,.97);color:#fff;font:900 clamp(8px,.95vw,13px)/1.05 system-ui,sans-serif;text-align:center;text-shadow:0 1px 3px #000;pointer-events:none';$('menu').appendChild(tag)}
+  if(!tag){tag=document.createElement('div');tag.id='crProfileTag';tag.style.cssText='position:absolute;z-index:8;left:10.0%;bottom:6.0%;width:13.5%;height:7.5%;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:2px 4px;box-sizing:border-box;border:0;border-radius:0;background:transparent;color:#fff;font:900 clamp(7px,.78vw,11px)/1.05 system-ui,sans-serif;text-align:left;text-shadow:0 1px 3px #000;pointer-events:none';$('menu').appendChild(tag)}
   const name=(myName&&!/^J[A-Z0-9]{3}$/.test(myName))?myName:'NON RENSEIGNÉ';
   const team=window.crTeam||'NON RENSEIGNÉ';
   const vehicle=(VEH&&VEH[myV])?VEH[myV]:'Véhicule '+(myV+1);
@@ -1793,7 +1795,7 @@ addEventListener('keydown',e=>{const inMenu=state=='menu'&&$('menu').style.displ
   else if(tag=='INPUT'&&(k=='ArrowDown'||k=='ArrowUp')){navFocus(k=='ArrowDown'?1:-1);e.preventDefault()}
  }
  if((e.key=='Escape'||e.key=='BrowserBack'||e.key=='GoBack')&&!inMenu&&state!='menu')toMenu();if(e.key=='MediaPlayPause'&&state=='play')useItem();if((e.key=='MediaTrackNext'||e.key=='MediaFastForward')&&state=='play')toggleGear()},true);
-try{history.pushState(null,'',location.href);addEventListener('popstate',()=>{try{history.pushState(null,'',location.href)}catch(e){}if(state!='menu')toMenu()})}catch(e){}
+try{history.pushState({crMenu:1},'',location.href);addEventListener('popstate',()=>{const layer=document.querySelector('#crMenuHotspots .crMenuLayer');if(layer){layer.remove();try{history.pushState({crMenu:1},'',location.href)}catch(e){}return}try{history.pushState({crMenu:1},'',location.href)}catch(e){}if(state!='menu')toMenu()})}catch(e){}
 if(isTV)cv.addEventListener('pointerdown',e=>{if(state!='play')return;const r=cv.getBoundingClientRect(),f=(e.clientX-r.left)/r.width;if(f<.33){tapAx=-1;tapT=.3}else if(f>.66){tapAx=1;tapT=.3}else useItem()});
 let fsDone=0;function goFS(){if(window.DUEL)return;if(isIOS&&!navigator.standalone&&!window._iosHint){window._iosHint=1;setTimeout(()=>toast("iPhone : pour le plein écran, touche Partager ⬆ puis « Sur l'écran d'accueil »."),1500)}const el=document.documentElement,f=el.requestFullscreen||el.webkitRequestFullscreen;if(f&&!(document.fullscreenElement||document.webkitFullscreenElement)){try{const r=f.call(el);if(r&&r.catch)r.catch(()=>{})}catch(e){}}}
 ['pointerdown','keydown','click','touchend'].forEach(ev=>addEventListener(ev,()=>{if(!fsDone){fsDone=1;goFS()}},true));

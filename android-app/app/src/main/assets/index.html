@@ -1215,8 +1215,17 @@ $('h1').onclick=async()=>{try{if(!p2p)p2p={host:1};const pc=new RTCPeerConnectio
 $('k1').onclick=async()=>{try{await pend.pc.setRemoteDescription(dec($('a1').value));setStat('Connexion…')}catch(e){setStat('Réponse invalide')}};
 $('j2').onclick=async()=>{try{p2p={host:0};const pc=new RTCPeerConnection(ICE),c={pc};pc.ondatachannel=e=>{c.dc=e.channel;wire(c)};pc.oniceconnectionstatechange=()=>setStat('ICE : '+pc.iceConnectionState);await pc.setRemoteDescription(dec($('o2').value));await pc.setLocalDescription(await pc.createAnswer());setStat('Génération…');await gather(pc);$('a2').value=enc(pc.localDescription);setStat("Envoie ta réponse à l'hôte")}catch(e){setStat('Code invalide ou WebRTC indisponible')}};
 addEventListener('keydown',e=>{const inMenu=state=='menu'&&$('menu').style.display!='none',tag=document.activeElement&&document.activeElement.tagName;
- if(inMenu&&tag!='INPUT'){if(e.key=='ArrowDown'||e.key=='ArrowRight'){navFocus(1);e.preventDefault()}else if(e.key=='ArrowUp'||e.key=='ArrowLeft'){navFocus(-1);e.preventDefault()}}
- else if(inMenu&&tag=='INPUT'&&(e.key=='ArrowDown'||e.key=='ArrowUp')){navFocus(e.key=='ArrowDown'?1:-1);e.preventDefault()}
+ if(inMenu){
+  const k=e.key||'',code=e.keyCode||e.which;
+  // Fire TV / Android TV remotes often send DPAD_CENTER (23/66), not a browser click.
+  const activate=k==='Enter'||k==='NumpadEnter'||k===' '||k==='Spacebar'||code===13||code===23||code===66;
+  if(activate&&tag!=='INPUT'&&tag!=='TEXTAREA'){
+   const el=document.activeElement, target=el&&el!==document.body&&el.matches&&el.matches('button')?el:$('go');
+   e.preventDefault();e.stopImmediatePropagation();if(target&&target.click)target.click();return;
+  }
+  if(tag!='INPUT'&&tag!='TEXTAREA'){if(k=='ArrowDown'||k=='ArrowRight'){navFocus(1);e.preventDefault()}else if(k=='ArrowUp'||k=='ArrowLeft'){navFocus(-1);e.preventDefault()}}
+  else if(tag=='INPUT'&&(k=='ArrowDown'||k=='ArrowUp')){navFocus(k=='ArrowDown'?1:-1);e.preventDefault()}
+ }
  if((e.key=='Escape'||e.key=='BrowserBack'||e.key=='GoBack')&&!inMenu&&state!='menu')toMenu();if(e.key=='MediaPlayPause'&&state=='play')useItem();if((e.key=='MediaTrackNext'||e.key=='MediaFastForward')&&state=='play')toggleGear()},true);
 try{history.pushState(null,'',location.href);addEventListener('popstate',()=>{try{history.pushState(null,'',location.href)}catch(e){}if(state!='menu')toMenu()})}catch(e){}
 if(isTV)cv.addEventListener('pointerdown',e=>{if(state!='play')return;const r=cv.getBoundingClientRect(),f=(e.clientX-r.left)/r.width;if(f<.33){tapAx=-1;tapT=.3}else if(f>.66){tapAx=1;tapT=.3}else useItem()});

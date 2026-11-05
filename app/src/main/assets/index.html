@@ -1546,11 +1546,11 @@ const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 const __crSmokePool=[],__crDriftPool=[];
 const __crSmokeLiveLimit=72,__crDriftLiveLimit=128;
 function __crEmitSmoke(x,y,vx){
- if(smoke.length>=__crSmokeLiveLimit){const old=smoke.shift();if(__crSmokePool.length<160)__crSmokePool.push(old)}
+ if(smoke.length>=__crSmokeLiveLimit){const old=smoke[0],last=smoke.length-1;if(last>0)smoke[0]=smoke[last];smoke.pop();if(__crSmokePool.length<160)__crSmokePool.push(old)}
  const p=__crSmokePool.pop()||{};p.x=x;p.y=y;p.t=0;p.vx=vx;smoke.push(p)
 }
 function __crEmitDrift(x,y,side){
- if(driftTrail.length>=__crDriftLiveLimit){const old=driftTrail.shift();if(__crDriftPool.length<240)__crDriftPool.push(old)}
+ if(driftTrail.length>=__crDriftLiveLimit){const old=driftTrail[0],last=driftTrail.length-1;if(last>0)driftTrail[0]=driftTrail[last];driftTrail.pop();if(__crDriftPool.length<240)__crDriftPool.push(old)}
  const p=__crDriftPool.pop()||{};p.x=x;p.y=y;p.t=0;p.side=side;driftTrail.push(p)
 }
 const steer=()=>Math.max(-1,Math.min(1,(inp.l?-1:0)+(inp.r?1:0)+padAx+tiltAx+tapAx));

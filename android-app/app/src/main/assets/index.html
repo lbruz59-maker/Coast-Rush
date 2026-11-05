@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V92 – Shared Sprite Signatures</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V93 – Compact Performance HUD</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -94,7 +94,20 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #sw .st{width:25px!important;height:25px!important;min-height:25px!important}
 #hs{font-size:clamp(9px,1.2vh,13px)!important}
 @media(max-width:600px){#mc{width:94vw;border-radius:16px;padding:2vh 2vw;gap:1vh}}
-\n</style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
+\n
+/* V93 — compact performance HUD: keep diagnostics readable without hiding gameplay. */
+#crPerfHud{
+  font-size:9px!important;
+  line-height:1.12!important;
+  padding:3px 5px!important;
+  letter-spacing:0!important;
+  border-width:1px!important;
+  background:rgba(0,0,0,.74)!important;
+  transform:scale(.72);
+  transform-origin:top left;
+  max-width:calc(100vw - 16px);
+}
+</style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>

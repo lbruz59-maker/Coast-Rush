@@ -702,7 +702,7 @@ const s=sc*3200*H/2;if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','sk','n','a','u','W','R','A','B','S']);
+const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','sk','n','a','u','W','A','B','S']);
 const __crDecoDynamic=new Set(['I','F','G','C','X','P']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
@@ -725,7 +725,7 @@ function deco(sp,x,y,sc){
  // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 128 px (proche).
  // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.
  // Les tours sont dessinées directement : leur hauteur dépasse le cadre du cache 256 px.
- if(t==='h'||t==='sk'||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
+ if(t==='h'||t==='sk'||t==='R'||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
  const tier=projected<10?'far':projected<40?'mid':'near';
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');

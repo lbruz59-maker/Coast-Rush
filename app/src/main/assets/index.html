@@ -186,7 +186,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
    const sp=seg.sp[j];
    // Décors statiques regroupés par segment et par côté : un seul connecteur 3D
    // porte plusieurs éléments locaux. Les éléments de gameplay restent sur leur segment.
-   const staticWorldType=sp.t==='p'||sp.t==='c'||sp.t==='t'||sp.t==='h'||
+   const staticWorldType=sp.t==='p'||sp.t==='c'||sp.t==='t'||sp.t==='h'||sp.t==='sk'||
     sp.t==='l'||sp.t==='r'||sp.t==='a'||sp.t==='n'||sp.t==='sk'||
     sp.t==='B'||sp.t==='u'||sp.t==='W'||sp.t==='py'||sp.t==='cl'||
     sp.t==='sm'||sp.t==='ap'||sp.t==='sc'||sp.t==='bs'||sp.t==='gs'||
@@ -721,7 +721,8 @@ function deco(sp,x,y,sc){
  if(isTV&&projected<.35)return;
  // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 128 px (proche).
  // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.
- if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
+ // Les tours sont dessinées directement : leur hauteur dépasse le cadre du cache 256 px.
+ if(t==='h'||t==='sk'||!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)||projected>128){decoRaster(sp,x,y,sc);return;}
  const tier=projected<10?'far':projected<40?'mid':'near';
  let params='';
  if(t==='h')params=[sp.c||'',sp.hh||1].join('|');
@@ -882,16 +883,17 @@ function drawWeatherFog(){ctx.fillStyle=curSky[1]+'33';ctx.fillRect(0,0,W,H)}
 function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
  /* Sprite sheet construit à la première rencontre de chaque variante, puis réutilisé. */
- renderBackdrop();
  const __crPerfActive=window.__CR_PERF_VISIBLE__,__crRoadStart=__crPerfActive?performance.now():0;
  const bs=segs[Math.floor(pos/segL)%segs.length],bp=(pos%segL)/segL,ps=segs[Math.floor((pos+playerZ)/segL)%segs.length],pp=((pos+playerZ)%segL)/segL;
+ // Dans la galerie, le fond extérieur est inutile : la coque rocheuse couvre toute la vue.
+ if(ps.tun){ctx.fillStyle='#242a31';ctx.fillRect(0,0,W,H)}else renderBackdrop();
  const cy=camH+lerp(ps.y1,ps.y2,pp);let x=0,dx=-bs.curve*bp,maxY=H;const N=segs.length,vis=__crRenderVisible,forkActive=fk();let __crTunnelVisibleCount=0;vis.length=0;
  for(let n=0;n<roadDrawN&&bs.i+n<N;n++){const s=segs[bs.i+n],lz=0,z1=s.i*segL+lz-pos,z2=z1+segL,cx=px*roadW;
   const a=__crProjectPoint(s.__crA||(s.__crA={}),0,s.y1,z1,cx-x,cy),b=__crProjectPoint(s.__crB||(s.__crB={}),0,s.y2,z2,cx-x-dx,cy);x+=dx;dx+=s.curve;
   s.clip=maxY;s.v=0;if(z1<=camD||b.y>=a.y||b.y>=maxY)continue;
   s.v=1;s.a=a;s.b=b;s.__crDetailVisible=n<drawN;s.__crDecorVisible=n<decorDrawN;fogC=s.tun?'#0a0a12':curSky[1];s.ft=Math.min(1,(n/roadDrawN)**1.65*FM+(s.tun?.4:0));if(s.tun)__crTunnelVisibleCount++;vis.push(s);const ft=s.ft,by=b.y-.6;const d=(s.i/3|0)%2;
  __crPoly4(fg(curG[d?0:1],ft),0,by,W,by,W,a.y,0,a.y);
- if(s.sea){const l1=a.x-a.w*1.8,l2=b.x-b.w*1.8;__crPoly4(fg(d?'#1f8fe0':'#2a9cef',ft),0,a.y,l1,a.y,l2,by,0,by);__crPoly4('#fff8',l1,a.y,l1+a.w*.12,a.y,l2+b.w*.12,by,l2,by)}
+ if(s.sea&&!s.tun){const l1=a.x-a.w*1.8,l2=b.x-b.w*1.8;__crPoly4(fg(d?'#1f8fe0':'#2a9cef',ft),0,a.y,l1,a.y,l2,by,0,by);__crPoly4('#fff8',l1,a.y,l1+a.w*.12,a.y,l2+b.w*.12,by,l2,by)}
  const fF=forkActive&&s.i>=N-FORK,fa=fF?Math.min(1,(s.i-(N-FORK))/FORK):0,fb=fF?Math.min(1,(s.i+1-(N-FORK))/FORK):0,rl=!fF&&!s.tun&&((s.i/90|0)%3==1);
  if(fF)__crPoly4(fg('#2f9a3a',ft),a.x-a.w*.9*fa,a.y,a.x+a.w*.9*fa,a.y,b.x+b.w*.9*fb,by,b.x-b.w*.9*fb,by);
  for(let sideIndex=0;sideIndex<(fF?2:1);sideIndex++){const sd=fF?(sideIndex===0?-1:1):0,ax=a.x+a.w*sd*(.5+.9*fa),bx=b.x+b.w*sd*(.5+.9*fb),k2=fF?.5:1,aw=a.w*k2,bw=b.w*k2,r1=aw*.14,r2=bw*.14,rc=fg((s.i/2|0)%2?'#e8203a':'#fff',ft);
@@ -907,6 +909,13 @@ function render(){
   if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}}
  maxY=b.y}
+ // Façade de montagne à l'entrée : on voit le massif et son ouverture avant de pénétrer.
+ for(let ti=vis.length-1;ti>=0;ti--){
+  const ts=vis[ti];if(!ts.tun||ts.i!==ts.tS)continue;
+  const a=ts.a,w=a.w*3.56,h=w*.60;
+  const mountain=getMountainTunnelSprite();
+  ctx.drawImage(mountain,a.x-w/2,a.y-h,w,h);
+ }
  // Tunnel creusé dans la montagne : masse rocheuse extérieure + coque intérieure épaisse.
  // Passe arrière-avant après la route : la roche masque le ciel et les décors hors tunnel.
  for(let ti=vis.length-1;ti>=0;ti--){

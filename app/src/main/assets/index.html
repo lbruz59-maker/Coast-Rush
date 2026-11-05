@@ -909,13 +909,6 @@ function render(){
   if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}}
  maxY=b.y}
- // Façade de montagne à l'entrée : on voit le massif et son ouverture avant de pénétrer.
- for(let ti=vis.length-1;ti>=0;ti--){
-  const ts=vis[ti];if(!ts.tun||ts.i!==ts.tS)continue;
-  const a=ts.a,w=a.w*3.56,h=w*.60;
-  const mountain=getMountainTunnelSprite();
-  ctx.drawImage(mountain,a.x-w/2,a.y-h,w,h);
- }
  // Tunnel creusé dans la montagne : masse rocheuse extérieure + coque intérieure épaisse.
  // Passe arrière-avant après la route : la roche masque le ciel et les décors hors tunnel.
  for(let ti=vis.length-1;ti>=0;ti--){
@@ -965,6 +958,13 @@ function render(){
    __crPoly4('#ffe8a820',ta.x-twA*.62,ta.y,ta.x+twA*.62,ta.y,
     tb.x+twB*.52,tb.y,tb.x-twB*.52,tb.y);
   }
+ }
+ // Façade de montagne à l'entrée : on voit le massif et son ouverture avant de pénétrer.
+ for(let ti=vis.length-1;ti>=0;ti--){
+  const ts=vis[ti];if(!ts.tun||ts.i!==ts.tS)continue;
+  const a=ts.a,w=a.w*3.56,h=w*.60;
+  const mountain=getMountainTunnelSprite();
+  ctx.drawImage(mountain,a.x-w/2,a.y-h,w,h);
  }
  const __crRoadDrawMs=__crPerfActive?performance.now()-__crRoadStart:0,__crDecorStart=__crPerfActive?performance.now():0;
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;

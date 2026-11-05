@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
                 if (request.isForMainFrame()) showLoadError(error == null ? "Erreur WebView inconnue" : error.getDescription().toString());
             }
         });
-        rootView.addView(webView, new FrameLayout.LayoutParams(renderSurfaceWidth, renderSurfaceHeight, Gravity.CENTER));
+        rootView.addView(webView, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         setContentView(rootView);
         configureRenderSurface();
         rootView.addOnLayoutChangeListener((v,l,t,rr,b,ol,ot,orr,ob) -> configureRenderSurface());
@@ -83,7 +83,8 @@ public class MainActivity extends Activity {
         webView.requestFocus();
     }
 
-    // Render into a true 960x540 Android view; the hardware compositor scales it to TV output.
+    // Use the full native display surface. The previous 960x540 WebView
+    // was scaled as 16:9, creating side bars on ultrawide phones.
     private void configureRenderSurface() {
         if (webView == null || rootView == null) return;
         DisplayMetrics real = new DisplayMetrics();
@@ -91,23 +92,18 @@ public class MainActivity extends Activity {
         display.getRealMetrics(real);
         int screenW = Math.max(1, real.widthPixels);
         int screenH = Math.max(1, real.heightPixels);
-        int targetW = Math.min(960, screenW);
-        int targetH = Math.min(540, Math.round(targetW * 9f / 16f));
-        if (targetH > screenH) {
-            targetH = screenH;
-            targetW = Math.min(960, Math.round(targetH * 16f / 9f));
-        }
-        targetW = Math.max(1, targetW);
-        targetH = Math.max(1, targetH);
-        renderSurfaceWidth = targetW;
-        renderSurfaceHeight = targetH;
-        renderSurfaceScale = Math.min(screenW / (float) targetW, screenH / (float) targetH);
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(targetW, targetH, Gravity.CENTER);
+        renderSurfaceWidth = screenW;
+        renderSurfaceHeight = screenH;
+        renderSurfaceScale = 1f;
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            Gravity.FILL);
         webView.setLayoutParams(lp);
-        webView.setPivotX(targetW / 2f);
-        webView.setPivotY(targetH / 2f);
-        webView.setScaleX(renderSurfaceScale);
-        webView.setScaleY(renderSurfaceScale);
+        webView.setPivotX(screenW / 2f);
+        webView.setPivotY(screenH / 2f);
+        webView.setScaleX(1f);
+        webView.setScaleY(1f);
         webView.post(this::publishDisplayInfo);
     }
 

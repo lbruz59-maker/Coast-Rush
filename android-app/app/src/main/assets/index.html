@@ -211,6 +211,32 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 @media(max-width:700px){#crMenuHotspots .cr-status{font-size:7px;padding:1px 3px;border-radius:3px}}
 
 
+
+/* V106 — hotspot layout aligned to the approved 1670x942 menu artwork. */
+#menu{background:#06152a url("menu-coast-rush-final.webp") center/100% 100% no-repeat!important;overflow:hidden!important}
+#crMenuHotspots{position:absolute;inset:0;z-index:8;pointer-events:none}
+#crMenuHotspots button{position:absolute;display:block;pointer-events:auto;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;box-shadow:none!important;touch-action:manipulation}
+#crMenuHotspots button:focus-visible,#crMenuHotspots button.cr-active{outline:2px solid #fff!important;box-shadow:0 0 12px #00dfff!important}
+#crMenuHotspots .play{left:78%;top:22.5%;width:19.5%;height:7.2%}
+#crMenuHotspots .garage{left:78%;top:31%;width:19.5%;height:7.2%}
+#crMenuHotspots .career{left:78%;top:39.5%;width:19.5%;height:7.2%}
+#crMenuHotspots .ranking{left:78%;top:48%;width:19.5%;height:7.2%}
+#crMenuHotspots .commands{left:78%;top:56.5%;width:19.5%;height:7.2%}
+#crMenuHotspots .quit{left:78%;top:65%;width:19.5%;height:7.2%}
+#crMenuHotspots .music{left:80%;top:3.8%;width:17%;height:10%}
+#crMenuHotspots .sounds{left:80%;top:8%;width:17%;height:6%}
+#crMenuHotspots .pseudo{left:11%;top:86%;width:13%;height:4%}
+#crMenuHotspots .team{left:11%;top:91%;width:13%;height:4%}
+#crMenuHotspots .mode0{left:26%;top:85%;width:12%;height:8%}
+#crMenuHotspots .mode1{left:38%;top:85%;width:12%;height:8%}
+#crMenuHotspots .mode2{left:50%;top:85%;width:12%;height:8%}
+#crMenuHotspots .mode3{left:62%;top:85%;width:12%;height:8%}
+#crMenuLive{position:absolute;inset:0;z-index:7;pointer-events:none;color:#fff;font:900 clamp(9px,1.05vw,17px) system-ui;text-shadow:0 2px 3px #000}
+#crMenuLive .score{position:absolute;left:9.4%;top:8.2%;width:11%;height:4%;text-align:center}
+#crMenuLive .career{position:absolute;left:11.5%;top:86.5%;width:9%;height:8%;display:flex;flex-direction:column;justify-content:space-around;overflow:hidden}
+#crMenuLive .progress{position:absolute;left:75.5%;top:84.5%;width:21%;height:8%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(8px,.9vw,14px)}
+#crMenuDialog input:focus{outline:2px solid #fff}
+
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1375,84 +1401,64 @@ function crReadNativeFrames(){try{if(typeof CoastRushFrameStats!=='undefined'&&C
 let __crRouteMapClassState=null,__crPauseButtonVisible=null;
 function loop(t){
  
-/* V104: one accessible, interactive hit layer over the menu artwork. */
+/* COAST RUSH MENU V106 — full artwork UI + garage + career + random quick play. */
 (function(){
- if(document.getElementById('crMenuHotspots'))return;
+ const menu=$('menu');
+ if(!menu||document.getElementById('crMenuHotspots'))return;
  const host=document.createElement('div');host.id='crMenuHotspots';
- const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
- const defs=[
-  ['play','Jouer',()=>safeClick('go')],
-  ['mode','Mode de jeu',()=>safeClick('md')],
-  ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
-  ['profile','Profil',()=>{crShowProfile()}],
-  ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
-  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
-  ['music','Musique',()=>safeClick('mm')],
-  ['tilt','Inclinaison',()=>safeClick('gy')],
-  ['quality','Qualité',()=>safeClick('ql')],
-  ['bonus','Bonus',()=>safeClick('bn')],
-  ['gear','Boîte',()=>safeClick('ag')],
-  ['gas','Gaz',()=>safeClick('gz')],
-  ['difficulty','Difficulté',()=>safeClick('df')]
- ];
- const crShowProfile=()=>{
-  let layer=document.getElementById('crProfileDialog');
-  if(layer){layer.remove();return}
-  layer=document.createElement('div');layer.id='crProfileDialog';
-  layer.style.cssText='position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;background:rgba(1,8,22,.82);padding:18px;box-sizing:border-box';
-  const card=document.createElement('div');card.style.cssText='width:min(88vw,380px);padding:22px;border:2px solid #8beaff;border-radius:18px;background:linear-gradient(145deg,#193b60,#10172f);box-shadow:0 12px 40px #000c;color:white;font: bold 16px system-ui;text-align:center';
-  const title=document.createElement('div');title.textContent='TON PSEUDO';title.style.cssText='font-size:22px;color:#9cecff;margin-bottom:14px';
-  const input=document.createElement('input');input.type='text';input.maxLength=10;input.value=myName||'';input.placeholder='Pseudo';input.autocomplete='off';input.style.cssText='width:100%;box-sizing:border-box;padding:12px;border:1px solid #8beaff;border-radius:10px;background:#07152b;color:white;font:bold 18px system-ui;text-align:center';
-  const actions=document.createElement('div');actions.style.cssText='display:flex;gap:10px;margin-top:14px';
-  const make=(label,color)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='flex:1;padding:12px;border:1px solid #b9f4ff;border-radius:10px;background:'+color+';color:white;font:bold 14px system-ui';return b};
-  const cancel=make('ANNULER','#35435f'),save=make('VALIDER','#176c83');
-  cancel.onclick=()=>layer.remove();
-  save.onclick=()=>{const v=input.value.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase().slice(0,10);if(v){myName=v;try{localStorage.setItem('cr_name',v)}catch(e){}toast('Pseudo enregistré')}layer.remove()};
-  input.addEventListener('keydown',e=>{if(e.key==='Enter')save.click();if(e.key==='Escape')cancel.click()});
-  actions.append(cancel,save);card.append(title,input,actions);layer.appendChild(card);host.appendChild(layer);input.focus();
+ const $el=id=>document.getElementById(id);
+ let crTeam='';try{crTeam=localStorage.getItem('cr_team')||''}catch(e){}
+ let crCareer={runs:[],best:0,wins:0,total:0};try{crCareer=Object.assign(crCareer,JSON.parse(localStorage.getItem('cr_career')||'{}'))}catch(e){}
+ const stats=[[90,76,84],[62,82,58],[82,68,78],[98,72,94],[55,88,48],[48,92,42],[70,80,68]];
+ const names=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo'];
+ const fmt=n=>Math.max(0,Math.floor(+n||0)).toLocaleString('fr-FR');
+ const persist=()=>{try{localStorage.setItem('cr_career',JSON.stringify(crCareer))}catch(e){}};
+ const add=(cls,label,fn)=>{const x=document.createElement('button');x.type='button';x.className=cls;x.setAttribute('aria-label',label);x.title=label;x.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{fn()}catch(err){toast('Action indisponible : '+(err.message||err))}});host.appendChild(x);return x};
+ const dialog=(title,body)=>{let layer=$el('crMenuDialog');if(layer)layer.remove();layer=document.createElement('div');layer.id='crMenuDialog';layer.style.cssText='position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;background:#020817d9;padding:3vw;box-sizing:border-box';const card=document.createElement('div');card.style.cssText='width:min(760px,92vw);max-height:88%;overflow:auto;padding:clamp(14px,2vw,26px);border:2px solid #35dfff;border-radius:20px;background:linear-gradient(145deg,#102b56,#07152f 75%);box-shadow:0 0 18px #00cfff,0 0 40px #d22cff;color:#fff;font:700 16px system-ui';const h=document.createElement('h2');h.textContent=title;h.style.cssText='margin:0 0 14px;text-align:center;color:#fff;text-shadow:0 0 12px #00dfff';card.append(h);card.append(body);const close=document.createElement('button');close.textContent='FERMER';close.style.cssText='display:block;margin:16px auto 0;padding:10px 26px;border:1px solid #5beaff;border-radius:12px;background:#073d70;color:#fff;font-weight:900';close.onclick=()=>layer.remove();card.append(close);layer.append(card);menu.append(layer);return layer};
+ const updatePanels=()=>{
+  let p=$el('crMenuLive');if(!p)return;
+  p.querySelector('[data-score]').textContent=fmt(crCareer.best||0);
+  p.querySelector('[data-name]').textContent=myName||'—';
+  p.querySelector('[data-team]').textContent=crTeam||'—';
+  p.querySelector('[data-progress]').textContent=(crCareer.runs||[]).length+' courses  ·  '+(crCareer.wins||0)+' victoires  ·  '+fmt(crCareer.total||0)+' pts';
  };
- const statusFor=cls=>{
-  if(cls==='mode')return ['OUTRUN','GRAND TOUR','CHASE H.Q.','COURSE LIBRE','TOUR DU MONDE'][MODE]||'OUTRUN';
-  if(cls==='music')return musOn?'ON':'OFF';
-  if(cls==='tilt')return tiltMode===0?'OFF':tiltMode===1?'ON':'INVERSÉ';
-  if(cls==='quality')return $('ql')?$('ql').textContent.replace('Qualité : ',''):'AUTO';
-  if(cls==='bonus')return useItems?'ON':'OFF';
-  if(cls==='gear')return autoG?'AUTO':'MANUEL';
-  if(cls==='gas')return autoGas?'AUTO':'MANUEL';
-  if(cls==='difficulty')return DF[dfi]?DF[dfi].n:'NORMAL';
-  return '';
+ const profile=()=>{
+  const body=document.createElement('div');body.style.cssText='display:grid;gap:12px';
+  const makeInput=(label,value,ph)=>{const wrap=document.createElement('label');wrap.textContent=label;wrap.style.cssText='display:grid;gap:6px;color:#9feaff';const input=document.createElement('input');input.value=value;input.placeholder=ph;input.maxLength=18;input.autocomplete='off';input.style.cssText='padding:12px;border:1px solid #62eaff;border-radius:10px;background:#06132b;color:white;font-size:18px;font-weight:800';wrap.append(input);body.append(wrap);return input};
+  const n=makeInput('PSEUDO',myName||'','Ton pseudo'),t=makeInput('TEAM',crTeam,'Nom de ta team');
+  const save=document.createElement('button');save.textContent='ENREGISTRER';save.style.cssText='padding:12px;border:0;border-radius:12px;background:linear-gradient(90deg,#00aaff,#b52cff);color:white;font-weight:900';save.onclick=()=>{const nn=n.value.trim().replace(/[^A-Za-z0-9 _-]/g,'').slice(0,18),tt=t.value.trim().replace(/[^A-Za-z0-9 _-]/g,'').slice(0,18);if(!nn){toast('Entre un pseudo');return}myName=nn;crTeam=tt;try{localStorage.setItem('cr_name',nn);localStorage.setItem('cr_team',tt)}catch(e){}updatePanels();$el('crMenuDialog').remove();toast('Profil enregistré')};body.append(save);dialog('CARRIÈRE — TON PROFIL',body);
  };
- const statusClasses=['music','tilt','bonus','gear','gas'];
- const sync=()=>{
-  defs.forEach(([cls],i)=>{
-   const b=host.children[i];if(!b)return;
-   const value=statusFor(cls);
-   if(!value)return;
-   let badge=b.querySelector('.cr-status');
-   if(!badge){badge=document.createElement('span');badge.className='cr-status';b.appendChild(badge)}
-   badge.textContent=value;
-   const active=statusClasses.includes(cls)?value!=='OFF'&&value!=='MANUEL':true;
-   badge.classList.toggle('is-on',active);
-   badge.classList.toggle('is-off',!active);
-   b.setAttribute('aria-label',defs[i][1]+' : '+value);
-   b.setAttribute('aria-pressed',active?'true':'false');
-  });
+ const garage=()=>{
+  let idx=myV|0;const body=document.createElement('div');body.style.cssText='display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:center';
+  const preview=document.createElement('div');preview.style.cssText='grid-column:1/-1;min-height:130px;border:1px solid #27dfff;border-radius:14px;background:radial-gradient(ellipse,#245b91,#07152e 70%);display:grid;place-items:center;font-size:clamp(26px,5vw,48px);font-weight:1000;color:#fff;text-shadow:0 0 12px #00dfff';
+  const specs=document.createElement('div');specs.style.cssText='grid-column:1/-1;display:grid;gap:10px';
+  const buttons=document.createElement('div');buttons.style.cssText='grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:10px';
+  const draw=()=>{preview.textContent=names[idx]+'  ·  '+(idx+1)+'/7';specs.innerHTML='';['VITESSE','ADHÉRENCE','ACCÉLÉRATION'].forEach((lab,k)=>{const v=stats[idx][k],row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:120px 1fr 44px;gap:8px;align-items:center';const l=document.createElement('b');l.textContent=lab;const track=document.createElement('div');track.style.cssText='height:13px;border:1px solid #66eaff;border-radius:10px;background:#031329;overflow:hidden';const bar=document.createElement('div');bar.style.cssText='height:100%;width:'+v+'%;background:linear-gradient(90deg,#00dfff,#42ff9a);box-shadow:0 0 8px #00dfff';track.append(bar);const num=document.createElement('b');num.textContent=v+'/100';row.append(l,track,num);specs.append(row)});};
+  const prev=document.createElement('button'),next=document.createElement('button'),select=document.createElement('button');prev.textContent='◀ PRÉCÉDENT';next.textContent='SUIVANT ▶';select.textContent='CHOISIR CE VÉHICULE';[prev,next,select].forEach(x=>x.style.cssText='padding:11px 8px;border:1px solid #45eaff;border-radius:10px;background:#073b70;color:#fff;font-weight:900');prev.onclick=()=>{idx=(idx+6)%7;draw()};next.onclick=()=>{idx=(idx+1)%7;draw()};select.style.gridColumn='1/-1';select.onclick=()=>{myV=idx;try{localStorage.setItem('cr_veh',String(myV))}catch(e){}$el('crMenuDialog').remove();toast('Véhicule sélectionné : '+names[idx])};buttons.append(prev,next,select);body.append(preview,specs,buttons);draw();dialog('GARAGE — CHOISIS TON VÉHICULE',body);
  };
- defs.forEach(([cls,label,fn])=>{
-  const b=document.createElement('button');b.type='button';b.className=cls;
-  b.setAttribute('aria-label',label);b.title=label;
-  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{fn()}catch(err){toast('Action indisponible : '+(err&&err.message||err))}sync()});
-  host.appendChild(b);
- });
- $('menu').appendChild(host);
- const nav=()=>Array.from(host.querySelectorAll('button'));
- window.__crMenuFocus=function(i){const a=nav();if(!a.length)return;const n=(i+a.length)%a.length;a.forEach((x,j)=>{x.classList.toggle('cr-active',j===n)});a[n].focus()};
- host.addEventListener('focusin',e=>{nav().forEach(x=>x.classList.toggle('cr-active',x===e.target))});
- ['md','mm','gy','ql','bn','ag','gz','df'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',()=>requestAnimationFrame(sync))});
- sync();
- window.__crSyncMenuArtwork=sync;
+ const careerBoard=()=>{const body=document.createElement('div');body.style.cssText='display:grid;gap:8px';const rows=(crCareer.runs||[]).slice(-12).reverse();if(!rows.length){const p=document.createElement('p');p.textContent='Aucune course enregistrée pour le moment.';body.append(p)}rows.forEach(r=>{const p=document.createElement('div');p.textContent=new Date(r.date).toLocaleDateString('fr-FR')+' · '+r.mode+' · '+fmt(r.score)+' pts';p.style.cssText='padding:8px;border-bottom:1px solid #2c75a0';body.append(p)});dialog('CARRIÈRE — HISTORIQUE',body)};
+ const commands=()=>{const p=document.createElement('p');p.textContent='CLAVIER : flèches ou WASD · Espace : boîte LO/HI · X : bonus · H : klaxon. Sur mobile : commandes tactiles à l’écran.';dialog('COMMANDES',p)};
+ const modes=[['OUTRUN',0],['DUEL',-1],['CONTRE-LA-MONTRE',3],['VOYAGE',4]];
+ const modeButtons=modes.map(([label,mode],i)=>add('mode mode'+i,label,()=>{if(mode<0){startDuel();return}MODE=mode;toast('Mode choisi : '+label);updatePanels()}));
+ add('play','Jouer tout de suite',()=>{myV=Math.floor(Math.random()*VEH.length);MODE=Math.floor(Math.random()*5);try{localStorage.setItem('cr_veh',String(myV))}catch(e){}startGame()});
+ add('garage','Garage',garage);
+ add('career','Carrière',profile);
+ add('ranking','Classement',careerBoard);
+ add('commands','Commandes',commands);
+ add('quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&CoastRushFrameStats.exitApp){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.')});
+ add('music','Musique',()=>{safeClick('mm');requestAnimationFrame(updatePanels)});
+ add('sounds','Sons',()=>{window.crSfxOn=window.crSfxOn===false?true:false;const b=host.querySelector('.sounds');b.setAttribute('aria-pressed',String(window.crSfxOn));toast('Sons '+(window.crSfxOn?'activés':'coupés'))});
+ add('pseudo','Modifier le pseudo',profile);add('team','Modifier la team',profile);
+ modeButtons.forEach((b,i)=>b.setAttribute('aria-label',modes[i][0]));
+ menu.append(host);
+ const live=document.createElement('div');live.id='crMenuLive';live.innerHTML='<div class="score"><span data-score></span></div><div class="career"><span data-name></span><span data-team></span></div><div class="progress"><span data-progress></span></div>';
+ menu.append(live);
+ const audio=host.querySelector('.music');audio.setAttribute('aria-label','Basculer la musique');
+ const syncAudio=()=>{audio.setAttribute('aria-pressed',musOn?'true':'false')};syncAudio();
+ updatePanels();
+ window.__crCareerRecord=()=>{const r={date:Date.now(),mode:['OUTRUN','GRAND TOUR','CHASE H.Q.','CONTRE-LA-MONTRE','VOYAGE'][MODE]||'COURSE',score:Math.floor(score||0),time:Math.max(0,Math.floor(raceT||0)),vehicle:myV};crCareer.runs=crCareer.runs||[];crCareer.runs.push(r);crCareer.runs=crCareer.runs.slice(-100);crCareer.total=(crCareer.total||0)+r.score;crCareer.best=Math.max(crCareer.best||0,r.score);if(state==='win'||state==='podium')crCareer.wins=(crCareer.wins||0)+1;persist();updatePanels()};
+ let lastSavedState='menu';setInterval(()=>{if(state!==lastSavedState){if(['over','win','podium'].includes(state)&&!['over','win','podium'].includes(lastSavedState))window.__crCareerRecord();lastSavedState=state}if(state==='menu')updatePanels()},500);
 })();
-
 requestAnimationFrame(loop);
  const routeMapActive=MODE===0&&(state==='over'||(state==='win'&&winT>=8));
  if(routeMapActive!==__crRouteMapClassState){document.body.classList.toggle('route-map-active',routeMapActive);__crRouteMapClassState=routeMapActive;}

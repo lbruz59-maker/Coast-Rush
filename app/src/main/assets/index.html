@@ -718,6 +718,9 @@ const __crSheetEntries=new Map();
 let __crSheetNext=0,__crSheetHits=0,__crSheetMisses=0;
 function deco(sp,x,y,sc){
  const t=sp&&sp.t,projected=sc*1600*H;
+ // Culling écran conservateur : évite de dessiner les sprites entièrement hors champ.
+ const margin=Math.max(3,projected*2.4);
+ if(x < -margin || x > W+margin || y > H+Math.max(3,projected*.18) || y < -Math.max(12,projected*3.4))return;
  if(isTV&&projected<.35)return;
  // Trois niveaux de détail précalculés : 10 px (lointain), 40 px (moyen), 128 px (proche).
  // Même les décors proches réutilisent un sprite au lieu de reconstruire fenêtres, tracés et dégradés.

@@ -1533,11 +1533,11 @@ function sizeCanvas(){
  cv.style.position='absolute';cv.style.left=offsetX+'px';cv.style.top=offsetY+'px';
  cv.style.width=cssW+'px';cv.style.height=cssH+'px';cv.style.maxWidth='none';cv.style.maxHeight='none';
  cv.style.aspectRatio='auto';cv.style.objectFit='fill';cv.style.flex='0 0 auto';
- // Backing store is independent from CSS size and HDMI mode.
- // Fire TV: plafonnement du backing store à 540 lignes (≈960×540, sous 720p).
+ // Backing store is independent from CSS size and HDMI mode. Fire TV uses 480p internal rendering; the compositor still scales to the full HDMI viewport.
+ // Fire TV: plafonnement du backing store à 480 lignes (≈854×480, rendu 480p).
  // Le WebView reste plein écran; seule la résolution de composition Canvas est plafonnée.
  const dpr=Math.max(1,Math.min(isTV?4:2,window.devicePixelRatio||1));
- const maxBackingH=isTV?540:2160;
+ const maxBackingH=isTV?480:2160;
  const wantedH=Math.round(cssH*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));
  let k=targetH/H;

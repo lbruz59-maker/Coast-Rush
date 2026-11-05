@@ -123,14 +123,18 @@ const __crWorldDecoPoints=[];
 /* Atlases composites de groupes statiques : un bitmap par groupe, créé à la demande.
    Budget plafonné pour protéger la mémoire des appareils Android/Fire TV. */
 let __crGroupBitmapBytes=0,__crGroupBitmapBuilt=0,__crGroupBitmapDraws=0;
-const __crGroupBitmapBudget=40*1024*1024,__crGroupBitmapUnit=64,__crGroupBitmapPad=112;
-function __crBuildGroupBitmap(p){
- if(p.__crGroupBitmap||p.__crGroupBitmapSkipped)return p.__crGroupBitmap||null;
- const unit=__crGroupBitmapUnit,pad=__crGroupBitmapPad,span=Math.max(0,p.maxOffset-p.minOffset);
- const width=Math.max(256,Math.ceil(span*unit+pad*2)),height=320,bytes=width*height*4;
- if(width>1024||__crGroupBitmapBytes+bytes>__crGroupBitmapBudget){p.__crGroupBitmapSkipped=true;return null}
+const __crGroupBitmapBudget=40*1024*1024,__crGroupBitmapPad=112;
+// Trois résolutions de groupes : basse au loin, moyenne à mi-distance, haute avant le premier plan.
+function __crBuildGroupBitmap(p,tier){
+ if(!p.__crGroupBitmaps)p.__crGroupBitmaps=Object.create(null);
+ const cached=p.__crGroupBitmaps[tier];
+ if(cached===false)return null;
+ if(cached)return cached;
+ const unit=tier==='far'?32:tier==='mid'?48:64,pad=__crGroupBitmapPad,span=Math.max(0,p.maxOffset-p.minOffset);
+ const width=Math.max(192,Math.ceil(span*unit+pad*2)),height=320,bytes=width*height*4;
+ if(width>1024||__crGroupBitmapBytes+bytes>__crGroupBitmapBudget){p.__crGroupBitmaps[tier]=false;return null}
  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
- const groupCtx=canvas.getContext('2d');if(!groupCtx){p.__crGroupBitmapSkipped=true;return null}
+ const groupCtx=canvas.getContext('2d');if(!groupCtx){p.__crGroupBitmaps[tier]=false;return null}
  const liveCtx=ctx,baseSc=unit/(roadW*160),baseY=height-18;
  try{
   ctx=groupCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,width,height);
@@ -138,14 +142,15 @@ function __crBuildGroupBitmap(p){
    const item=p.items[i],x=pad+(item.offset-p.minOffset)*unit;
    decoRaster(item.sp,x,baseY,baseSc*item.scale);
   }
- }catch(e){p.__crGroupBitmapSkipped=true;return null}
+ }catch(e){p.__crGroupBitmaps[tier]=false;return null}
  finally{ctx=liveCtx}
- p.__crGroupBitmap={canvas,width,height,pad,baseY,baseSc,bytes};
+ const bitmap={canvas,width,height,pad,baseY,baseSc,bytes,unit};
+ p.__crGroupBitmaps[tier]=bitmap;
  __crGroupBitmapBytes+=bytes;__crGroupBitmapBuilt++;
- return p.__crGroupBitmap;
+ return bitmap;
 }
 function __crClearGroupBitmaps(){
- for(let i=0;i<__crWorldDecoPoints.length;i++){const p=__crWorldDecoPoints[i];p.__crGroupBitmap=null;p.__crGroupBitmapSkipped=false}
+ for(let i=0;i<__crWorldDecoPoints.length;i++)__crWorldDecoPoints[i].__crGroupBitmaps=null;
  __crGroupBitmapBytes=0;__crGroupBitmapBuilt=0;__crGroupBitmapDraws=0;
 }
 
@@ -1105,9 +1110,10 @@ function render(){
   // Près du joueur, les sprites d'origine restent utilisés pour préserver les détails.
   const distance=p.seg-bs.i;
   if(distance>=12){
-   const bitmap=__crBuildGroupBitmap(p);
+   const tier=distance>=32?'far':distance>=20?'mid':'near';
+   const bitmap=__crBuildGroupBitmap(p,tier);
    if(bitmap){
-    const scale=groupScale/(__crGroupBitmapUnit);
+    const scale=groupScale/bitmap.unit;
     ctx.drawImage(bitmap.canvas,baseX+groupScale*p.x+groupScale*p.minOffset-bitmap.pad*scale,y-bitmap.baseY*scale,bitmap.width*scale,bitmap.height*scale);
     __crGroupBitmapDraws++;continue;
    }

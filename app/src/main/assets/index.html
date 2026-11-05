@@ -1359,7 +1359,7 @@ function loop(t){
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused)return
-  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));if(isTV){decorDrawN=Math.max(28,decorDrawN-2);}__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));if(isTV){decorDrawN=Math.min(40,decorDrawN+2);}__crLoadGood=0;__crLoadBad=0}}}
+  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.019:.045),fast=ema<(isTV?.015:.025);if(isTV){if(ema>.023){__crTVSlowWindows++;__crTVFastWindows=0}else if(ema<.018){__crTVFastWindows++;__crTVSlowWindows=0}else{__crTVSlowWindows=0;__crTVFastWindows=0}if(__crTVSlowWindows>=2&&__crTVTargetH>576){__crTVTargetH=576;__crTVSlowWindows=0;sizeCanvas()}else if(__crTVFastWindows>=8&&__crTVTargetH<640){__crTVTargetH=640;__crTVFastWindows=0;sizeCanvas()}}__crLoadBad=slow?Math.min(4,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?9:70,drawN-(isTV?2:12));if(isTV){decorDrawN=Math.max(28,decorDrawN-2);}__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?17:170,drawN+(isTV?1:8));if(isTV){decorDrawN=Math.min(40,decorDrawN+2);}__crLoadGood=0;__crLoadBad=0}}}
  try{
    if(window.__CR_PERF_VISIBLE__){const p0=performance.now();pollPad();crPollMs=performance.now()-p0;const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;}else{pollPad();if(state!='menu')update(dt);if(state!=='menu')render();}
   if(window.__CR_PERF_VISIBLE__&&state==='play'&&t-crWindowStart>=1000){
@@ -1674,7 +1674,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(eng){const gm=gear?1:.62,rpm=Math.min(1.1,sp/gm),run=state=='play'||speed>50;eng.frequency.value=48+rpm*190;eng2.frequency.value=24+rpm*95;engB.frequency.value=48+rpm*190;ef.frequency.value=ps.tun?Math.max(420,760+rpm*1050):500+rpm*2600;if(window.__crTunnelSend)window.__crTunnelSend.gain.setTargetAtTime(ps.tun?.48:0,ac.currentTime,.12);tb.frequency.value=1800+rpm*2600;tbg.gain.value=(state=='play'&&(inp.g||gpad.g)&&sp>.15)?.015+.025*rpm:0;eg.gain.value=run?.12+.14*((inp.g||gpad.g)?1:.4)*Math.min(1,sp*2+.2):0;
   const sl=(state=='play'&&speed>MAX*.4&&crash<=0)?Math.max(0,Math.abs(ps.curve)*sp-1.6*gripF)*.15+(Math.abs(steer())>.3&&sp>.8?.08:0):0;sk.gain.value=Math.min(.35,sl+(crash>0?.2:0));if((sl>.04||crash>0)&&Math.random()<.5)__crEmitSmoke(W/2+(Math.random()<.5?-20:20),H-8,(Math.random()-.5)*24);
   rb.gain.value=(__crAudioOffRoad&&speed>MAX*.1)?.3*sp+.08:0;if(rn)rn.gain.value=(wx=='rain'&&state!='menu')?.05:0}}
-let RS=4,qMode=0,RSmax=isTV?2:6;const QN=['AUTO','ÉCO','HD','FULL HD'];
+let RS=4,qMode=0,RSmax=isTV?2:6,__crTVTargetH=640,__crTVSlowWindows=0,__crTVFastWindows=0;const QN=['AUTO','ÉCO','HD','FULL HD'];
 function sizeCanvas(){
  // Fire TV 4K Max: use the actual WebView viewport, not a guessed HDMI resolution.
  // Fire TV's native TV canvas is 16:9. Keep the game's 398x224 logical coordinate
@@ -1697,7 +1697,7 @@ function sizeCanvas(){
  // Android/HDMI. Les décors gardent leur géométrie et leur niveau de détail ;
  // seule la surface de composition est réduite pour alléger Canvas/GPU.
  // Le DPR annoncé par Android (parfois 4) ne multiplie jamais le backing store.
- const targetH=isTV?640:Math.min(2160,Math.max(224,Math.round(cssH*Math.min(2,window.devicePixelRatio||1))));
+ const targetH=isTV?__crTVTargetH:Math.min(2160,Math.max(224,Math.round(cssH*Math.min(2,window.devicePixelRatio||1))));
  let k=targetH/H;
  if(!isTV){
    if(qMode===1)k=Math.min(k,1.5);

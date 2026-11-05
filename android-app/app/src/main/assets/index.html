@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V99 – Full Sprite Raster Cache</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V104 – Interactive Menu Artwork</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -199,6 +199,16 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots .difficulty{left:81.2%;top:84.3%;width:17.4%;height:9.7%}
 #crMenuHotspots button::after{content:"";position:absolute;inset:0;pointer-events:none}
 @media(max-aspect-ratio:4/3){#menu{background-size:100% 100%!important}}
+/* V104 — interactive artwork labels and visible option state. */
+#crMenuHotspots button{appearance:none;-webkit-appearance:none;overflow:visible}
+#crMenuHotspots button.cr-active{z-index:2}
+#crMenuHotspots .cr-status{position:absolute;right:2%;bottom:3%;min-width:38%;max-width:96%;padding:2px 4px;border:1px solid #b9f4ff;border-radius:6px;background:rgba(3,18,37,.9);color:#fff;font:900 clamp(8px,1.15vw,14px)/1.15 system-ui,sans-serif;text-align:center;white-space:nowrap;text-shadow:0 1px 2px #000;box-shadow:0 1px 7px #0009;pointer-events:none}
+#crMenuHotspots .cr-status.is-off{background:rgba(80,17,38,.94);border-color:#ff9bb0;color:#ffd8e0}
+#crMenuHotspots .cr-status.is-on{background:rgba(5,77,75,.94);border-color:#7fffe3;color:#c9fff1}
+#crMenuHotspots .music .cr-status{right:4%;bottom:4%}
+#crMenuHotspots button:focus-visible{outline:3px solid #fff!important}
+@media(max-width:700px){#crMenuHotspots .cr-status{font-size:clamp(8px,1.7vw,12px);padding:2px 3px}}
+
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1340,31 +1350,65 @@ function crReadNativeFrames(){try{if(typeof CoastRushFrameStats!=='undefined'&&C
 let __crRouteMapClassState=null,__crPauseButtonVisible=null;
 function loop(t){
  
-/* V102: install one single set of menu hotspots; loop() calls this section repeatedly. */
+/* V104: one accessible, interactive hit layer over the menu artwork. */
 (function(){
  if(document.getElementById('crMenuHotspots'))return;
  const host=document.createElement('div');host.id='crMenuHotspots';
+ const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[
-  ['play','Jouer',()=> $('go').click()],
-  ['mode','Mode de jeu',()=> $('md').click()],
+  ['play','Jouer',()=>safeClick('go')],
+  ['mode','Mode de jeu',()=>safeClick('md')],
   ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
-  ['profile','Profil',()=>{const old=myName||'';const v=window.prompt('Ton pseudo Coast Rush',old);if(v!==null){$('pn').value=v.slice(0,10);$('pn').dispatchEvent(new Event('input',{bubbles:true}));toast('Pseudo enregistré')}}],
-  ['vehicle','Véhicule',()=>{const list=[...$('vh').querySelectorAll('button')];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
+  ['profile','Profil',()=>{const field=$('pn');if(!field)return;field.focus();try{field.scrollIntoView({block:'center'})}catch(e){}const v=window.prompt('Ton pseudo Coast Rush',myName||'');if(v!==null){field.value=String(v).slice(0,10);field.dispatchEvent(new Event('input',{bubbles:true}));toast('Pseudo enregistré')}}],
+  ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
   ['quit','Quitter',()=>toast('Pour quitter Coast Rush, utilise le bouton Retour de ta télécommande.')],
-  ['music','Musique',()=> $('mm').click()],
-  ['tilt','Inclinaison',()=> $('gy').click()],
-  ['quality','Qualité',()=> $('ql').click()],
-  ['bonus','Bonus',()=> $('bn').click()],
-  ['gear','Boîte',()=> $('ag').click()],
-  ['gas','Gaz',()=> $('gz').click()],
-  ['difficulty','Difficulté',()=> $('df').click()]
+  ['music','Musique',()=>safeClick('mm')],
+  ['tilt','Inclinaison',()=>safeClick('gy')],
+  ['quality','Qualité',()=>safeClick('ql')],
+  ['bonus','Bonus',()=>safeClick('bn')],
+  ['gear','Boîte',()=>safeClick('ag')],
+  ['gas','Gaz',()=>safeClick('gz')],
+  ['difficulty','Difficulté',()=>safeClick('df')]
  ];
- defs.forEach(([cls,label,fn])=>{const b=document.createElement('button');b.type='button';b.className=cls;b.setAttribute('aria-label',label);b.title=label;b.addEventListener('click',e=>{e.preventDefault();fn()});host.appendChild(b)});
+ const statusFor=cls=>{
+  if(cls==='music')return musOn?'ON':'OFF';
+  if(cls==='tilt')return tiltMode===0?'OFF':tiltMode===1?'ON':'INVERSÉ';
+  if(cls==='quality')return $('ql')?$('ql').textContent.replace('Qualité : ',''):'AUTO';
+  if(cls==='bonus')return useItems?'ON':'OFF';
+  if(cls==='gear')return autoG?'AUTO':'MANUEL';
+  if(cls==='gas')return autoGas?'AUTO':'MANUEL';
+  if(cls==='difficulty')return DF[dfi]?DF[dfi].n:'NORMAL';
+  return '';
+ };
+ const statusClasses=['music','tilt','bonus','gear','gas'];
+ const sync=()=>{
+  defs.forEach(([cls],i)=>{
+   const b=host.children[i];if(!b)return;
+   const value=statusFor(cls);
+   if(!value)return;
+   let badge=b.querySelector('.cr-status');
+   if(!badge){badge=document.createElement('span');badge.className='cr-status';b.appendChild(badge)}
+   badge.textContent=value;
+   const active=statusClasses.includes(cls)?value!=='OFF'&&value!=='MANUEL':true;
+   badge.classList.toggle('is-on',active);
+   badge.classList.toggle('is-off',!active);
+   b.setAttribute('aria-label',defs[i][1]+' : '+value);
+   b.setAttribute('aria-pressed',active?'true':'false');
+  });
+ };
+ defs.forEach(([cls,label,fn])=>{
+  const b=document.createElement('button');b.type='button';b.className=cls;
+  b.setAttribute('aria-label',label);b.title=label;
+  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{fn()}catch(err){toast('Action indisponible : '+(err&&err.message||err))}sync()});
+  host.appendChild(b);
+ });
  $('menu').appendChild(host);
- const nav=()=>[...host.querySelectorAll('button')];
- window.__crMenuFocus=function(i){const a=nav();if(!a.length)return;const n=(i+a.length)%a.length;a[n].focus();a[n].classList.add('cr-active');a.forEach((x,j)=>{if(j!==n)x.classList.remove('cr-active')})};
+ const nav=()=>Array.from(host.querySelectorAll('button'));
+ window.__crMenuFocus=function(i){const a=nav();if(!a.length)return;const n=(i+a.length)%a.length;a.forEach((x,j)=>{x.classList.toggle('cr-active',j===n)});a[n].focus()};
  host.addEventListener('focusin',e=>{nav().forEach(x=>x.classList.toggle('cr-active',x===e.target))});
- window.__crMenuFocus(0);
+ ['mm','gy','ql','bn','ag','gz','df'].forEach(id=>{const el=$(id);if(el)el.addEventListener('click',()=>requestAnimationFrame(sync))});
+ sync();
+ window.__crSyncMenuArtwork=sync;
 })();
 
 requestAnimationFrame(loop);

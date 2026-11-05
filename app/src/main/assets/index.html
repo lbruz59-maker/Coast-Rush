@@ -1118,7 +1118,13 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=(c.z%segL)/segL,pt=c.__crWorldPoint||(c.__crWorldPoint={x:0,y:0,z:0,sc:0,w:0}),sc=pt.sc=lerp(a.sc,b.sc,pct),cxs=pt.x=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=pt.y=lerp(a.y,b.y,pct),cw=pt.w=sc*roadW*160*c.w*(c.shr>0?.6:1);pt.z=c.z;if(!isTV||cw>=2.2)drawObj(c,cxs,sy,cw)}
+  // Boucle indexée dans le chemin chaud : évite l'itérateur temporaire de for..of.
+  const segmentCars=s.cars;
+  for(let ci=0,cn=segmentCars.length;ci<cn;ci++){
+   const c=segmentCars[ci],pct=(c.z%segL)/segL,pt=c.__crWorldPoint||(c.__crWorldPoint={x:0,y:0,sc:0,w:0});
+   const sc=pt.sc=lerp(a.sc,b.sc,pct),cxs=pt.x=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=pt.y=lerp(a.y,b.y,pct),cw=pt.w=sc*roadW*160*c.w*(c.shr>0?.6:1);
+   if(!isTV||cw>=2.2)drawObj(c,cxs,sy,cw);
+  }
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // Rendu des connecteurs 3D visibles uniquement, du plus lointain au plus proche.
  // La liste étant triée par profondeur à la génération, deux recherches binaires
@@ -1170,7 +1176,7 @@ function render(){
   if(musk>0)drawMuskCraft(cxp+slide,cyp-bump-38,sw,flash);
   else drawVehPose(cxp+slide,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,drift>.15?(driftSide<0?4:3):(carTurn<-.18?2:carTurn>.18?1:0),Math.floor(pos/70)%2)}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(let fi=0;fi<2;fi++){const dx=fi===0?-13:13,ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
- for(const p of driftTrail){ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
+ for(let i=0,n=driftTrail.length;i<n;i++){const p=driftTrail[i];ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(let i=0,n=smoke.length;i<n;i++){const p=smoke[i];ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();
  if(!isTV){const vk=W+'x'+H;if(vk!==__crVignetteKey){__crVignetteKey=vk;__crVignette=ctx.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.62);__crVignette.addColorStop(0,'#0000');__crVignette.addColorStop(1,'#0007')}ctx.fillStyle=__crVignette;ctx.fillRect(0,0,W,H)}
 

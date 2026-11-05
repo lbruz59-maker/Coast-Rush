@@ -75,7 +75,26 @@ html.tv canvas{filter:none!important;box-shadow:none!important}
 #pauseCard p{margin:0 0 20px;color:#d5e8ff;font-size:14px}
 body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;pointer-events:none!important}\n#pauseCard button{display:block;width:100%;margin:10px 0;padding:14px;border:1px solid #8adfff;border-radius:12px;background:linear-gradient(135deg,#26739b,#25416f);color:white;font:bold 16px system-ui;touch-action:manipulation}
 #pauseCard button:last-child{background:linear-gradient(135deg,#71375f,#42264f);border-color:#ff9dbb}
-</style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
+
+/* V88 — launch menu: full-bleed race-start backdrop, compact arcade panel. */
+#menu{background:linear-gradient(180deg,rgba(4,12,28,.12),rgba(4,12,28,.76)),url("data:image/jpeg;base64,") center center/cover no-repeat!important;overflow-y:auto}
+#sun,#grid{display:none!important}
+#mc{width:min(88vw,620px);max-width:620px;min-height:100%;box-sizing:border-box;justify-content:center;padding:3vh 2vw;gap:1.25vh;background:linear-gradient(145deg,rgba(5,17,38,.82),rgba(5,10,25,.72));border:1px solid #b8eaff55;border-radius:22px;box-shadow:0 16px 50px #0009;backdrop-filter:blur(7px)}
+#sub{margin-top:0;font-size:clamp(10px,1.5vh,16px);letter-spacing:.24em}
+#menu h1{font-size:clamp(30px,6vh,64px);line-height:1}
+#go{width:min(82%,420px);font-size:clamp(19px,3vh,28px);padding:1.2vh 2vw;margin:.2vh 0}
+#mc>div:nth-of-type(2),#mc>div:nth-of-type(4),#mc>div:nth-of-type(5){display:none!important}
+#mc>div:nth-of-type(3),#mc>div:nth-of-type(6),#mc>div:nth-of-type(7),#mc>div:nth-of-type(8){width:100%;padding:.8vh 1vw;gap:.65vw}
+#mc>div:nth-of-type(3) b,#mc>div:nth-of-type(6) b,#mc>div:nth-of-type(7) b,#mc>div:nth-of-type(8) b{min-width:0;width:100%;text-align:center;font-size:clamp(10px,1.35vh,15px)}
+#mc>div:nth-of-type(3) .st,#mc>div:nth-of-type(6) .st,#mc>div:nth-of-type(7) .st,#mc>div:nth-of-type(8) .st{font-size:clamp(10px,1.35vh,15px);padding:.65vh 1vw;min-height:30px}
+#du,#mp2,#mr,#dg,#mc>div:last-child{display:none!important}
+#room{width:90px!important;max-width:22vw}
+#vh{max-width:100%;flex-wrap:wrap}
+#vh .st{padding:.55vh .8vw}
+#sw .st{width:25px!important;height:25px!important;min-height:25px!important}
+#hs{font-size:clamp(9px,1.2vh,13px)!important}
+@media(max-width:600px){#mc{width:94vw;border-radius:16px;padding:2vh 2vw;gap:1vh}}
+\n</style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
@@ -1156,7 +1175,7 @@ function loop(t){
    const work=crPollMs+crUpdateMs+crRenderMs,rafGap=Math.max(0,rafAvg-work),sorted=crFrameSamples.slice(0,crFrameSampleCount).sort((a,b)=>a-b),uSorted=crUpdateSamples.slice(0,crWorkSampleCount).sort((a,b)=>a-b),rSorted=crRenderSamples.slice(0,crWorkSampleCount).sort((a,b)=>a-b),pct=(a,q)=>a.length?a[Math.min(a.length-1,Math.floor((a.length-1)*q))]:0,canvasBytes=cv.width*cv.height*4,heap=(performance.memory&&performance.memory.usedJSHeapSize)||0;
    window.__COAST_RUSH_PERF__={fps:+crFps.toFixed(1),rafAvgMs:+rafAvg.toFixed(2),rafMaxMs:+rafMax.toFixed(2),pollMs:+crPollMs.toFixed(2),updateMs:+crUpdateMs.toFixed(2),renderMs:+crRenderMs.toFixed(2),rafGapMs:+rafGap.toFixed(2),refreshHz:+hz.toFixed(1),choreographerCallbacksPerSec:+(crNativeStats.nativeFps||0).toFixed(1),nativeFps:0,nativeAvgMs:+(crNativeStats.nativeAvgMs||0).toFixed(2),nativeMaxMs:+(crNativeStats.nativeMaxMs||0).toFixed(2),nativeDropped:crNativeStats.nativeDelayedCallbacks||0,nativeSamples:crNativeStats.nativeSamples||0,nativeCallbacks:crNativeStats.nativeCallbacks||0,bridge:crNativeStats.bridge||'absent',nativeAgeMs:(crNativeStats.lastCallbackAgeMs===undefined?-1:crNativeStats.lastCallbackAgeMs),bridgeError:crNativeStats.bridgeError||'',drawSegments:drawN,frameP50Ms:+pct(sorted,.50).toFixed(2),frameP95Ms:+pct(sorted,.95).toFixed(2),updateP95Ms:+pct(uSorted,.95).toFixed(2),renderP95Ms:+pct(rSorted,.95).toFixed(2),longFrames33ms:crLongFrames,canvasBackingMB:+(canvasBytes/1048576).toFixed(2),jsHeapMB:+(heap/1048576).toFixed(2),decoTypeHits:__crDecoTypeHits,decoTypeMisses:__crDecoTypeMisses,decoCacheHits:__crDecoCacheHits,decoCacheMisses:__crDecoCacheMisses,decoCacheEntries:__crDecoCache.size,decoCacheMB:+(__crDecoCacheBytes/1048576).toFixed(2),routeThumbs:window.__crRouteThumbs?window.__crRouteThumbs.size:0};
    window.__COAST_RUSH_PERF__.activeCarSegments=__crCarSegments.length;window.__COAST_RUSH_PERF__.decoCacheHits=__crDecoCacheHits;window.__COAST_RUSH_PERF__.decoCacheMisses=__crDecoCacheMisses;window.__COAST_RUSH_PERF__.decoCacheEntries=__crDecoCache.size;window.__COAST_RUSH_PERF__.decoCacheMB=__crDecoCacheBytes/1048576;window.__COAST_RUSH_PERF__.routeThumbs=window.__crRouteThumbs?window.__crRouteThumbs.size:0;window.__COAST_RUSH_PERF__.shadeCacheEntries=shc.size;window.__COAST_RUSH_PERF__.fogCacheEntries=fcache.size;window.__COAST_RUSH_PERF__.gradientCacheEntries=__crGradientCache.size;window.__COAST_RUSH_PERF__.glowSpriteEntries=__crGlowSprites.size;
-   if(crHud&&t-crHudAt>=450){crHud.textContent='WEB FPS '+crFps.toFixed(1)+' | RAF '+rafAvg.toFixed(1)+' / '+rafMax.toFixed(1)+'ms\nANDROID '+(crNativeStats.bridge==='ok'?'BRIDGE OK':'BRIDGE ABSENT')+' | CALLBACKS '+(crNativeStats.nativeCallbacks||0)+'\nCHOREO '+(crNativeStats.nativeFps||0).toFixed(1)+' FPS | '+(crNativeStats.nativeAvgMs||0).toFixed(1)+'ms\nJS '+crUpdateMs.toFixed(1)+' | DRAW '+crRenderMs.toFixed(1)+' | PAD '+crPollMs.toFixed(1)+'ms\nP95 FRAME '+pct(sorted,.95).toFixed(1)+'ms | JS '+pct(uSorted,.95).toFixed(1)+' | DRAW '+pct(rSorted,.95).toFixed(1)+'ms\n>33ms '+crLongFrames+' | HEAP '+((performance.memory&&performance.memory.usedJSHeapSize)?(performance.memory.usedJSHeapSize/1048576).toFixed(1)+'MB':'n/d')+'\nCANVAS '+(cv.width*cv.height*4/1048576).toFixed(1)+'MB | CALLBACKS RETARD '+(crNativeStats.nativeDelayedCallbacks||0)+'\nÉCRAN '+(crNativeStats.targetHz||hz||0).toFixed(1)+'Hz | MONITORING ACTIF · F3 = MASQUER\nWEBVIEW '+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).webViewPxWidth||'?')+'×'+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).webViewPxHeight||'?')+'px | CSS '+Math.round(innerWidth)+'×'+Math.round(innerHeight)+' | DPR '+(devicePixelRatio||1).toFixed(2);crHudAt=t;}
+   if(crHud&&t-crHudAt>=450){crHud.textContent='WEB FPS '+crFps.toFixed(1)+' | RAF '+rafAvg.toFixed(1)+' / '+rafMax.toFixed(1)+'ms\nANDROID '+(crNativeStats.bridge==='ok'?'BRIDGE OK':'BRIDGE ABSENT')+' | CALLBACKS '+(crNativeStats.nativeCallbacks||0)+'\nCHOREO '+(crNativeStats.nativeFps||0).toFixed(1)+' FPS | '+(crNativeStats.nativeAvgMs||0).toFixed(1)+'ms\nJS '+crUpdateMs.toFixed(1)+' | DRAW '+crRenderMs.toFixed(1)+' | PAD '+crPollMs.toFixed(1)+'ms\nP95 FRAME '+pct(sorted,.95).toFixed(1)+'ms | JS '+pct(uSorted,.95).toFixed(1)+' | DRAW '+pct(rSorted,.95).toFixed(1)+'ms\n>33ms '+crLongFrames+' | HEAP '+((performance.memory&&performance.memory.usedJSHeapSize)?(performance.memory.usedJSHeapSize/1048576).toFixed(1)+'MB':'n/d')+'\nCANVAS '+(cv.width*cv.height*4/1048576).toFixed(1)+'MB | CALLBACKS RETARD '+(crNativeStats.nativeDelayedCallbacks||0)+'\nÉCRAN '+(crNativeStats.targetHz||hz||0).toFixed(1)+'Hz | MONITORING ACTIF · F3 = MASQUER\nSURFACE '+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).renderSurfacePxWidth||((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).webViewPxWidth||'?'))+'×'+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).renderSurfacePxHeight||((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).webViewPxHeight||'?'))+'px | SCALE '+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).webViewScale||1).toFixed(2)+'x | SORTIE '+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).screenPxWidth||'?')+'×'+((window.__COAST_RUSH_NATIVE_DISPLAY__||{}).screenPxHeight||'?')+' | CSS '+Math.round(innerWidth)+'×'+Math.round(innerHeight)+' | DPR '+(devicePixelRatio||1).toFixed(2);crHudAt=t;}
    crFrames=1;crWindowStart=t;crRafSum=0;crRafCount=0;crRafMax=0;
   }
  }
@@ -1470,7 +1489,7 @@ function sizeCanvas(){
  // Backing store is independent from CSS size and HDMI mode.
  // Fire TV: plafonnement du backing store à 540 lignes (≈960×540, sous 720p).
  // Le WebView reste plein écran; seule la résolution de composition Canvas est plafonnée.
- const dpr=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+ const dpr=Math.max(1,Math.min(isTV?4:2,window.devicePixelRatio||1));
  const maxBackingH=isTV?540:2160;
  const wantedH=Math.round(cssH*dpr);
  const targetH=Math.max(224,Math.min(maxBackingH,wantedH));

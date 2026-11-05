@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Choreographer;
 import android.view.Display;
+import android.view.Gravity;
+import android.widget.FrameLayout;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -20,6 +22,10 @@ import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private WebView webView;
+    private FrameLayout rootView;
+    private int renderSurfaceWidth = 960;
+    private int renderSurfaceHeight = 540;
+    private float renderSurfaceScale = 1f;
     private WebViewAssetLoader assetLoader;
     private final NativeFrameStats frameStats = new NativeFrameStats();
     private int remoteFocusIndex = 0;
@@ -33,8 +39,11 @@ public class MainActivity extends Activity {
             .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this))
             .build();
 
+        rootView = new FrameLayout(this);
+        rootView.setBackgroundColor(0xFF050B1B);
         webView = new WebView(this);
         webView.setBackgroundColor(0xFF050B1B);
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
         WebSettings s = webView.getSettings();
@@ -66,10 +75,42 @@ public class MainActivity extends Activity {
                 if (request.isForMainFrame()) showLoadError(error == null ? "Erreur WebView inconnue" : error.getDescription().toString());
             }
         });
-        setContentView(webView);
+        rootView.addView(webView, new FrameLayout.LayoutParams(renderSurfaceWidth, renderSurfaceHeight, Gravity.CENTER));
+        setContentView(rootView);
+        configureRenderSurface();
+        rootView.addOnLayoutChangeListener((v,l,t,rr,b,ol,ot,orr,ob) -> configureRenderSurface());
         frameStats.start();
         webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
         webView.requestFocus();
+    }
+
+    // Render into a true 960x540 Android view; the hardware compositor scales it to TV output.
+    private void configureRenderSurface() {
+        if (webView == null || rootView == null) return;
+        DisplayMetrics real = new DisplayMetrics();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getRealMetrics(real);
+        int screenW = Math.max(1, real.widthPixels);
+        int screenH = Math.max(1, real.heightPixels);
+        int targetW = Math.min(960, screenW);
+        int targetH = Math.min(540, Math.round(targetW * 9f / 16f));
+        if (targetH > screenH) {
+            targetH = screenH;
+            targetW = Math.min(960, Math.round(targetH * 16f / 9f));
+        }
+        targetW = Math.max(1, targetW);
+        targetH = Math.max(1, targetH);
+        renderSurfaceWidth = targetW;
+        renderSurfaceHeight = targetH;
+        renderSurfaceScale = Math.min(screenW / (float) targetW, screenH / (float) targetH);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(targetW, targetH, Gravity.CENTER);
+        webView.setLayoutParams(lp);
+        webView.setPivotX(targetW / 2f);
+        webView.setPivotY(targetH / 2f);
+        webView.setScaleX(renderSurfaceScale);
+        webView.setScaleY(renderSurfaceScale);
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        webView.post(this::publishDisplayInfo);
     }
 
     private void publishDisplayInfo() {
@@ -84,6 +125,9 @@ public class MainActivity extends Activity {
         String js = "window.__COAST_RUSH_NATIVE_DISPLAY__={screenPxWidth:" + real.widthPixels +
             ",screenPxHeight:" + real.heightPixels + ",webViewPxWidth:" + width +
             ",webViewPxHeight:" + height + ",density:" + density +
+            ",webViewScale:" + renderSurfaceScale +
+            ",renderSurfacePxWidth:" + renderSurfaceWidth +
+            ",renderSurfacePxHeight:" + renderSurfaceHeight +
             ",refreshRateHz:" + hz + "};";
         webView.evaluateJavascript(js, null);
     }
@@ -171,6 +215,7 @@ public class MainActivity extends Activity {
     @Override protected void onDestroy() {
         frameStats.stop();
         if (webView != null) { webView.stopLoading(); webView.destroy(); webView = null; }
+        if (rootView != null) { rootView.removeAllViews(); rootView = null; }
         super.onDestroy();
     }
 

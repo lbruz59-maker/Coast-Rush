@@ -7,8 +7,8 @@ android {
         applicationId 'fr.lbruz.coastrush'
         minSdk 23
         targetSdk 28
-        versionCode 43
-        versionName '43.0'
+        versionCode 44
+        versionName '44.0'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17

@@ -1,0 +1,398 @@
+{
+  "version": 1,
+  "atlas": "vehicles-3d.svg",
+  "sprites": {
+    "vehicle-0": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 0,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 0,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 0,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 0,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 0,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-1": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 192,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 192,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 192,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 192,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 192,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-2": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 384,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 384,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 384,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 384,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 384,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-3": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 576,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 576,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 576,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 576,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 576,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-4": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 768,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 768,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 768,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 768,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 768,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-5": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 960,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 960,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 960,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 960,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 960,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-6": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 1152,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 1152,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 1152,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 1152,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 1152,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    },
+    "vehicle-player": {
+      "views": {
+        "straight": {
+          "src": "vehicles-3d.svg",
+          "sx": 0,
+          "sy": 1344,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 192,
+          "sy": 1344,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "turn-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 384,
+          "sy": 1344,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-right": {
+          "src": "vehicles-3d.svg",
+          "sx": 576,
+          "sy": 1344,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        },
+        "drift-left": {
+          "src": "vehicles-3d.svg",
+          "sx": 768,
+          "sy": 1344,
+          "sw": 192,
+          "sh": 192,
+          "pivotX": 0.5,
+          "pivotY": 0.86
+        }
+      }
+    }
+  }
+}

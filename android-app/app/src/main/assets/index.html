@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V79 – Fire TV Sprite Scale Audit</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V80 – Fire TV Cache Optimization</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -91,7 +91,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
 <div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
 <div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v79</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v80</div><div id="hs" style="font-size:12px;opacity:.9"></div>
 <div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
@@ -650,6 +650,17 @@ const __crDecoCacheable=new Set(['p','c','t','h','l','r','bs','gs','py','cl']); 
 const __crDecoDynamic=new Set(['I','F','G','C','T','R','X','P','B','W','u','S']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
+// V80 : mémoriser la signature des sprites statiques et du thème.
+// Les sprites cacheables ne changent pas pendant une course ; on évite donc JSON.stringify à chaque frame.
+const __crDecoParamCache=new WeakMap();
+let __crDecoThemeRef=null,__crDecoThemeFT=null,__crDecoThemeWx=null,__crDecoThemeKey='';
+function __crGetDecoThemeKey(){
+ if(__crDecoThemeRef!==th||__crDecoThemeFT!==FT||__crDecoThemeWx!==wx){
+  __crDecoThemeRef=th;__crDecoThemeFT=FT;__crDecoThemeWx=wx;
+  __crDecoThemeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);
+ }
+ return __crDecoThemeKey;
+}
 function deco(sp,x,y,sc){
  const t=sp&&sp.t;
  const projected=sc*3200*H/2;
@@ -660,8 +671,9 @@ function deco(sp,x,y,sc){
  const projectedQ=qsc*3200*H/2;
  const radius=Math.ceil(projectedQ*2.7)+2;
  if(radius>108||qsc<=0){decoRaster(sp,x,y,sc);return;}
- let params='';try{params=JSON.stringify(sp)}catch(_){decoRaster(sp,x,y,sc);return;}
- const themeKey=JSON.stringify([th.n,th.d,th.glow,th.hc,th.bg,th.m,th.w,th.night,th.urb,FT,wx]);
+ let params=__crDecoParamCache.get(sp);
+ if(params===undefined){try{params=JSON.stringify(sp);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
+ const themeKey=__crGetDecoThemeKey();
  const key=[t,qsc,params,W,H,roadW,themeKey].join('|');
  const ratio=sc/qsc;
  let entry=__crDecoCache.get(key);
@@ -1382,15 +1394,3 @@ function endDuel(){if(!duelW)return;duelW.remove();duelW=null;duelF=[];$('menu')
 const DK1={ArrowLeft:'l',ArrowRight:'r',ArrowUp:'g',ArrowDown:'b'},DK2={a:'l',q:'l',d:'r',w:'g',z:'g',s:'b'};
 function duelKey(e,v){if(!duelW)return;const kk=e.key.length==1?e.key.toLowerCase():e.key;let tgt=-1,k=null;if(DK1[e.key]){tgt=0;k=DK1[e.key]}else if(DK2[kk]){tgt=1;k=DK2[kk]}
  if(k){duelPost(tgt,{t:'in',k,v});e.preventDefault();return}
- if(!v)return;if(e.code=='Space'){duelPost(0,{t:'act',a:'gear'});e.preventDefault()}else if(e.key=='Enter'){duelPost(0,{t:'act',a:'item'});duelPost(0,{t:'act',a:'ok'});duelPost(1,{t:'act',a:'ok'})}else if(e.key=='Shift'){duelPost(1,{t:'act',a:'gear'})}else if(kk=='e'){duelPost(1,{t:'act',a:'item'});duelPost(1,{t:'act',a:'ok'})}else if(e.key=='Escape')endDuel()}
-addEventListener('keydown',e=>duelKey(e,1),true);addEventListener('keyup',e=>duelKey(e,0),true);
-function duelLoop(){if(!duelW)return;const gl=navigator.getGamepads?navigator.getGamepads():[];for(let i=0;i<2;i++){const g=gl[i];if(g&&g.connected){const B=j=>g.buttons[j]&&g.buttons[j].pressed,ax=g.axes[0]||0,v=ax+(B(15)?1:0)-(B(14)?1:0);duelPost(i,{t:'pad',ax:Math.abs(v)>.15?v:0,g:B(0)||B(7)||B(12)?1:0,b:B(1)||B(6)||B(13)?1:0,item:B(2),gear:B(3)||B(5),horn:B(4),ok:B(0)||B(9)})}}requestAnimationFrame(duelLoop)}
-if(!window.DUEL)addEventListener('message',e=>{if(!duelW)return;const d=e.data;if(!d)return;if(d.t=='duelnet'){const i=duelF.findIndex(f=>f.contentWindow===e.source);if(i>=0)duelPost(1-i,d)}else if(d.t=='duelend')endDuel()});
-if(window.DUEL){addEventListener('message',e=>{const d=e.data;if(!d)return;if(d.t=='duelnet')onNet(d.m,'local');else if(d.t=='in')inp[d.k]=d.v;else if(d.t=='act'){if(d.a=='gear')toggleGear();else if(d.a=='item')useItem();else if(d.a=='horn')horn();else if(d.a=='ok')confirmAct()}else if(d.t=='pad'){padAx=d.ax;gpad.g=d.g;gpad.b=d.b;const pe=window._pe||(window._pe={});if(d.item&&!pe.item)useItem();if(d.gear&&!pe.gear)toggleGear();if(d.horn&&!pe.horn)horn();if(d.ok&&!pe.ok)confirmAct();pe.item=d.item;pe.gear=d.gear;pe.horn=d.horn;pe.ok=d.ok}});
- myName='J'+DUEL;myCol=DUEL==1?'#ff2a2a':'#2a6aff';if(DUEL==2){vm=1;musOn=0}$('menu').style.display='none';
- (function tryStart(n){if(remotes.length||n>50)startGame();else setTimeout(()=>tryStart(n+1),200)})(0)}
-$('du').onclick=startDuel;
-applyInputMode();
-try{$('go').focus()}catch(e){}
-requestAnimationFrame(loop);
-</script></body></html>

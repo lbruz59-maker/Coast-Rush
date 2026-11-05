@@ -572,38 +572,60 @@ function drawMuskCraft(x,y,w,t){
 }
 
 // Cinq sprites proceduraux par vehicule : droit, gauche, droite, drift gauche, drift droite.
+// Cache des poses du joueur : carrosserie et ombre précalculées, fumée de drift conservée en dynamique.
+const __crPlayerPoseCanvas=document.createElement('canvas');
+__crPlayerPoseCanvas.width=__crPlayerPoseCanvas.height=192;
+const __crPlayerPoseCtx=__crPlayerPoseCanvas.getContext('2d');
+const __crPlayerPoseCache=new Map();
+let __crPlayerPoseHits=0,__crPlayerPoseMisses=0;
 function drawVehPose(x,y,w,c,v,pose,ph){
- // Angles construits a partir du vrai dessin de chaque vehicule : aucune silhouette generique.
- // Le cisaillement donne une perspective arriere trois-quarts tout en conservant les details
- // propres a chaque carrosserie (Coccinelle, sportive, muscle car, pickup, van).
  if(pose===0){drawVeh(x,y,w,c,v,0,ph);return}
  const left=(pose===2||pose===4),drift=(pose===3||pose===4),dir=left?-1:1;
- const visualDir=-dir; const u=w/16, lean=visualDir*(drift?.34:.23), shift=visualDir*w*(drift?.10:.065);
- ctx.save();
- // Ombre et traces sous la voiture
- ctx.globalAlpha=.28;ctx.fillStyle="#000";
- ctx.beginPath();ctx.ellipse(x+shift,y-u*.7,w*.68,u*1.55,0,0,Math.PI*2);ctx.fill();
- ctx.globalAlpha=1;
- if(drift){
-   ctx.save();ctx.globalAlpha=.38;ctx.strokeStyle="#d9e5f2";ctx.lineWidth=Math.max(1,u*.7);
-   ctx.beginPath();ctx.moveTo(x-visualDir*w*.34,y-u*.2);ctx.lineTo(x-visualDir*w*.72,y+u*1.2);
-   ctx.moveTo(x-visualDir*w*.18,y+u*.1);ctx.lineTo(x-visualDir*w*.54,y+u*1.5);ctx.stroke();ctx.restore();
+ const visualDir=-dir,phase=ph==null?0:(Math.round((ph%1)*4)&3);
+ const cacheable=w>=7&&w<=190;
+ const key=[v,c,pose,phase,BRK?1:0,BOOSTF?1:0].join('|');
+ let entry=cacheable?__crPlayerPoseCache.get(key):null;
+ if(!entry){
+  const live=ctx;
+  try{
+   ctx=__crPlayerPoseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   const px=96,py=112,pw=96,u=pw/16,lean=visualDir*(drift?.34:.23),shift=visualDir*pw*(drift?.10:.065);
+   ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";
+   ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,pw*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
+   ctx.save();ctx.translate(px+shift,py);ctx.transform(1,0,lean,1,0,0);ctx.scale(drift?.96:.985,1);ctx.translate(-px,-py);
+   drawVeh(px,py,pw,c,v,visualDir*(drift?1.8:1.15),phase/4);ctx.restore();
+  }finally{ctx=live}
+  if(cacheable){
+   if(__crPlayerPoseCache.size>=32)__crPlayerPoseCache.delete(__crPlayerPoseCache.keys().next().value);
+   entry={};__crPlayerPoseCache.set(key,entry);__crPlayerPoseMisses++;
+  }
+ }else __crPlayerPoseMisses++;
+ const d=w/96;
+ if(cacheable&&entry)ctx.drawImage(__crPlayerPoseCanvas, x-96*d,y-112*d,192*d,192*d);
+ else {
+  // Repli sans cache pour les tailles atypiques.
+  const live=ctx;
+  try{
+   ctx=__crPlayerPoseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   const px=96,py=112,u=6,lean=visualDir*(drift?.34:.23),shift=visualDir*96*(drift?.10:.065);
+   ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,96*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
+   ctx.save();ctx.translate(px+shift,py);ctx.transform(1,0,lean,1,0,0);ctx.scale(drift?.96:.985,1);ctx.translate(-px,-py);
+   drawVeh(px,py,96,c,v,visualDir*(drift?1.8:1.15),phase/4);ctx.restore();
+  }finally{ctx=live}
+  ctx.drawImage(__crPlayerPoseCanvas,x-96*d,y-112*d,192*d,192*d);
  }
- // Perspective asymetrique : le cote interieur se comprime, l'arriere reste lisible.
- ctx.translate(x+shift,y);
- ctx.transform(1,0,lean,1,0,0);
- ctx.scale(drift?.96:.985,1);
- ctx.translate(-x,-y);
- drawVeh(x,y,w,c,v,visualDir*(drift?1.8:1.15),ph);
- // Fumee de pneus pour les deux variantes de drift.
+ if(entry)__crPlayerPoseHits++;
+ // Les traces et la fumée restent animées et ne sont jamais figées dans le cache.
  if(drift){
-   for(let i=0;i<4;i++){
-     const q=i/3, sx=x-visualDir*w*(.34+q*.15), sy=y-u*(.25+q*.35);
-     ctx.globalAlpha=.22+(1-q)*.12;ctx.fillStyle=i%2?"#dce8f5":"#ffffff";
-     ctx.beginPath();ctx.ellipse(sx,sy,u*(1.5+q),u*(.8+q*.55),visualDir*.25,0,Math.PI*2);ctx.fill();
-   }
+  const u=w/16;
+  ctx.save();ctx.globalAlpha=.38;ctx.strokeStyle="#d9e5f2";ctx.lineWidth=Math.max(1,u*.7);
+  ctx.beginPath();ctx.moveTo(x-visualDir*w*.34,y-u*.2);ctx.lineTo(x-visualDir*w*.72,y+u*1.2);
+  ctx.moveTo(x-visualDir*w*.18,y+u*.1);ctx.lineTo(x-visualDir*w*.54,y+u*1.5);ctx.stroke();ctx.restore();
+  for(let i=0;i<4;i++){const q=i/3,sx=x-visualDir*w*(.34+q*.15),sy=y-u*(.25+q*.35);
+   ctx.globalAlpha=.22+(1-q)*.12;ctx.fillStyle=i%2?"#dce8f5":"#ffffff";
+   ctx.beginPath();ctx.ellipse(sx,sy,u*(1.5+q),u*(.8+q*.55),visualDir*.25,0,Math.PI*2);ctx.fill();}
+  ctx.globalAlpha=1;
  }
- ctx.restore();ctx.globalAlpha=1;
 }
 const __crVehicleSpriteCanvas=document.createElement('canvas');
 __crVehicleSpriteCanvas.width=__crVehicleSpriteCanvas.height=192;

@@ -110,6 +110,73 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 
 /* V94 — compact 5-line diagnostic HUD. */
 #crPerfHud{font-size:10px!important;line-height:1.15!important;padding:3px 5px!important;letter-spacing:0!important;max-width:calc(100vw - 16px);transform:scale(.82);transform-origin:top left;background:rgba(0,0,0,.72)!important}
+
+/* V100 — full-bleed menu: show the supplied artwork, keep controls compact. */
+#menu{
+  background:url("menu-start.jpg") center center/cover no-repeat!important;
+  overflow:hidden!important;
+}
+#mc{
+  width:100%!important;max-width:100%!important;min-height:100%!important;
+  height:100%;box-sizing:border-box;justify-content:center;
+  padding:1.1vh 2vw!important;gap:.65vh!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+}
+#sun,#grid{display:none!important}
+#sub{margin:0!important;font-size:clamp(9px,1.35vh,14px)!important;letter-spacing:.2em!important}
+#menu h1{font-size:clamp(27px,5.2vh,54px)!important;line-height:.95!important;margin:0!important}
+#go{width:min(70%,340px)!important;font-size:clamp(16px,2.35vh,24px)!important;padding:.85vh 2vw!important;margin:.1vh 0!important}
+#mc>div:nth-of-type(2),#mc>div:nth-of-type(3),#mc>div:nth-of-type(4),
+#mc>div:nth-of-type(5),#mc>div:nth-of-type(6),#mc>div:nth-of-type(7),
+#mc>div:nth-of-type(8){display:flex!important}
+#mc .row{
+  width:min(96vw,900px)!important;max-width:900px;display:flex;flex-wrap:wrap;
+  align-items:center;justify-content:center;gap:.45vh .55vw!important;
+  padding:.25vh .35vw!important;margin:0!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;
+}
+#mc .row b{
+  min-width:0!important;width:auto!important;text-align:center!important;
+  color:#fff!important;font-size:clamp(9px,1.25vh,13px)!important;
+  text-shadow:0 2px 5px #071326,0 0 8px #071326;white-space:nowrap;
+}
+#mc .st{
+  min-height:26px!important;padding:.55vh .85vw!important;
+  font-size:clamp(9px,1.25vh,13px)!important;line-height:1.05!important;
+  border:1px solid #c8f3ff!important;border-radius:9px!important;
+  background:linear-gradient(180deg,rgba(24,66,94,.88),rgba(8,27,51,.9))!important;
+  color:#fff!important;text-shadow:0 1px 2px #00101e;
+  box-shadow:0 2px 8px #00101e88,inset 0 1px #ffffff55!important;
+}
+#mc .st.sel{background:linear-gradient(135deg,#ffb36b,#ed587f)!important;border-color:#fff!important;box-shadow:0 0 12px #ff9d9d99!important}
+#mc #go{background:linear-gradient(135deg,#ffb36b,#ed587f 55%,#914b9f)!important;border:1px solid #fff!important;font-weight:900;box-shadow:0 4px 16px #071326aa!important}
+#input-hint{font-size:9px!important;color:#fff!important;text-shadow:0 1px 4px #00101e}
+#room{width:72px!important;max-width:18vw}
+#vh{gap:4px!important;flex-wrap:wrap!important}
+#vh .st{padding:.45vh .65vw!important}
+#sw{gap:4px!important}
+#sw .st{width:23px!important;height:23px!important;min-height:23px!important;padding:0!important}
+#du,#mp2,#mr,#dg,#mc>div:last-child{display:none!important}
+#hs{font-size:clamp(9px,1.15vh,12px)!important;color:#fff!important;text-shadow:0 1px 4px #00101e;line-height:1.1!important}
+#mc>div:nth-of-type(10){display:none!important}
+@media(max-height:600px){
+  #mc{gap:.35vh!important;padding:.5vh 1vw!important}
+  #menu h1{font-size:clamp(25px,4.7vh,44px)!important}
+  #mc .row{gap:.25vh .4vw!important}
+  #mc .st{min-height:23px!important;padding:.35vh .65vw!important}
+  #go{padding:.55vh 2vw!important}
+}
+@media(max-width:600px){
+  #mc{padding:max(5px,env(safe-area-inset-top)) 7px max(5px,env(safe-area-inset-bottom))!important;gap:5px!important}
+  #mc .row{width:100%!important;gap:4px!important}
+  #mc .row b{width:100%!important}
+  #mc .st{font-size:10px!important;padding:6px 8px!important}
+  #menu h1{font-size:clamp(30px,8vw,48px)!important}
+  #go{width:min(78%,330px)!important}
+}
+
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>

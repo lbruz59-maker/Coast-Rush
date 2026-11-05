@@ -583,9 +583,9 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  const key=[v,c,pose,phase,BRK?1:0,BOOSTF?1:0].join('|');
  let entry=cacheable?__crPlayerPoseCache.get(key):null;
  if(!entry){
-  const live=ctx;
+  const live=ctx;let poseCanvas;
   try{
-   const poseCanvas=document.createElement('canvas');poseCanvas.width=poseCanvas.height=192;const poseCtx=poseCanvas.getContext('2d');ctx=poseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   poseCanvas=document.createElement('canvas');poseCanvas.width=poseCanvas.height=192;const poseCtx=poseCanvas.getContext('2d');ctx=poseCtx;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
    const px=96,py=112,pw=96,u=pw/16,lean=visualDir*(drift?.34:.23),shift=visualDir*pw*(drift?.10:.065);
    ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";
    ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,pw*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
@@ -601,9 +601,9 @@ function drawVehPose(x,y,w,c,v,pose,ph){
  if(cacheable&&entry)ctx.drawImage(entry.canvas, x-96*d,y-112*d,192*d,192*d);
  else {
   // Repli sans cache pour les tailles atypiques.
-  const live=ctx;
+  const live=ctx;let fallbackCanvas;
   try{
-   const fallbackCanvas=document.createElement('canvas');fallbackCanvas.width=fallbackCanvas.height=192;ctx=fallbackCanvas.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
+   fallbackCanvas=document.createElement('canvas');fallbackCanvas.width=fallbackCanvas.height=192;ctx=fallbackCanvas.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,192,192);
    const px=96,py=112,u=6,lean=visualDir*(drift?.34:.23),shift=visualDir*96*(drift?.10:.065);
    ctx.save();ctx.globalAlpha=.28;ctx.fillStyle="#000";ctx.beginPath();ctx.ellipse(px+shift,py-u*.7,96*.68,u*1.55,0,0,Math.PI*2);ctx.fill();ctx.restore();
    ctx.save();ctx.translate(px+shift,py);ctx.transform(1,0,lean,1,0,0);ctx.scale(drift?.96:.985,1);ctx.translate(-px,-py);

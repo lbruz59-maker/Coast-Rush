@@ -959,13 +959,8 @@ function getMountainTunnelSprite(){
  // Stone arch rim and dark inner lip, drawn only around the opening.
  g.strokeStyle='#d0b99a';g.lineWidth=10;g.beginPath();g.moveTo(25,192);g.lineTo(25,112);g.quadraticCurveTo(25,8,160,8);g.quadraticCurveTo(295,8,295,112);g.lineTo(295,192);g.stroke();
  g.strokeStyle='#28282b';g.lineWidth=5;g.beginPath();g.moveTo(34,192);g.lineTo(34,112);g.quadraticCurveTo(34,20,160,20);g.quadraticCurveTo(286,20,286,112);g.lineTo(286,192);g.stroke();
- // Petit portail sombre au fond seulement : le reste de l'ouverture reste
- // réellement transparent pour laisser voir la route et ses marquages.
- const inside=g.createLinearGradient(0,76,0,184);inside.addColorStop(0,'#151b25');inside.addColorStop(.55,'#080d16');inside.addColorStop(1,'#030509');
- g.fillStyle=inside;g.beginPath();g.moveTo(112,184);g.lineTo(112,137);g.quadraticCurveTo(112,78,160,78);g.quadraticCurveTo(208,78,208,137);g.lineTo(208,184);g.closePath();g.fill();
- g.strokeStyle='#292d32';g.lineWidth=3;g.beginPath();g.moveTo(112,184);g.lineTo(112,137);g.quadraticCurveTo(112,78,160,78);g.quadraticCurveTo(208,78,208,137);g.lineTo(208,184);g.stroke();
- // Faible lueur au fond, sans recouvrir la chaussée au premier plan.
- const exit=g.createRadialGradient(160,132,2,160,132,25);exit.addColorStop(0,'#ffe6a855');exit.addColorStop(1,'#ffe6a800');g.fillStyle=exit;g.fillRect(135,107,50,50);
+ // Pas de disque noir au centre : l'ouverture reste transparente.
+ // La profondeur est assurée par la coque intérieure du tunnel, projetée en 3D.
  __crMountainTunnelSprite=c;return c;
 }
 function getTunnelLampSprite(){
@@ -1041,14 +1036,19 @@ function render(){
   __crPoly4('#46515d',ta.x-innerA,roofTopA,ta.x+innerA,roofTopA+twA*.035,
    tb.x+innerB,tb.y-tb.w*1.045,tb.x-innerB,roofTopB);
   // Joints réguliers sur les deux murs.
-  if((ts.i-(ts.tS||0))%3===0){
+  // Les joints lointains sont espacés : à cette échelle, les nervures fines
+  // ne sont pas discernables et multiplient inutilement les appels Canvas.
+  const tunnelDetailStep=(ts.i-bs.i)>24?8:5;
+  if((ts.i-(ts.tS||0))%tunnelDetailStep===0){
    const joint='#84909a66';
    __crPoly4(joint,ta.x-innerA,roofTopA+twA*.30,ta.x-twA,ta.y-twA*.72,
     tb.x-tb.w,tb.y-tb.w*.72,tb.x-innerB,roofTopB+twB*.30);
    __crPoly4(joint,ta.x+twA,ta.y-twA*.72,ta.x+innerA,roofTopA+twA*.30,
     tb.x+innerB,roofTopB+twB*.30,tb.x+tb.w,tb.y-tb.w*.72);
   }
-  if((ts.i-(ts.tS||0))%4===0){
+  // Les lampes restent denses près du joueur, plus espacées au loin.
+  const tunnelLampStep=(ts.i-bs.i)>24?12:6;
+  if((ts.i-(ts.tS||0))%tunnelLampStep===0){
    const lampX=ta.x,lampY=roofTopA+twA*.19,lampW=Math.max(1,twA*.17),lampH=Math.max(1,twA*.05);
    ctx.fillStyle='#ffe7ad';ctx.fillRect(lampX-lampW/2,lampY,lampW,lampH);
    const glow=getTunnelLampSprite(),gs=Math.max(5,twA*.48);

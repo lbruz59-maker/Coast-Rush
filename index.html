@@ -1163,38 +1163,57 @@ function drawFinishCelebration(t,theme){
 }
 
 function drawOutrunVictoryCine(t){
- const endId=Math.max(10,Math.min(14,cid||10)),ix=endId-10;
- const scenes=[
-  {name:'LA COTE D’AZUR',sub:'LA ROUTE CONTINUE...',sky:['#f08b55','#ffd18a'],land:'#b76c45',sea:'#1687a4'},
-  {name:'LES HAUTES MONTAGNES',sub:'AU SOMMET DE LA LIBERTE',sky:['#6ca4d7','#d9e9f6'],land:'#536c82',sea:'#dcebf1'},
-  {name:'LA GRANDE METROPOLE',sub:'UNE NUIT INOUBLIABLE',sky:['#171d45','#594b83'],land:'#202b48',sea:'#111d38'},
-  {name:'LE DESERT INFINI',sub:'HORIZON SANS LIMITE',sky:['#d76f4c','#f3bd76'],land:'#a75e3d',sea:'#c98c57'},
-  {name:'LE GRAND SUNSET',sub:'LE VOYAGE DEVIENT LEGENDE',sky:['#754c83','#f1a16c'],land:'#6a435e',sea:'#9d5d67'}
- ];
- const sc=scenes[ix],pulse=(Math.sin(t*2.2)+1)/2;
- const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,sc.sky[0]);sky.addColorStop(1,sc.sky[1]);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
- ctx.fillStyle='#fff0bd';ctx.beginPath();ctx.arc(W*.78,H*.34,13+pulse*1.8,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=sc.land;ctx.beginPath();ctx.moveTo(0,H*.62);
- for(let i=0;i<=12;i++){let x=i*W/12,amp=ix===1?26:ix===2?10:ix===3?18:14;let y=H*(ix===1?.48:.59)-Math.sin(i*1.7+ix)*amp;ctx.lineTo(x,y)}
- ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.fill();
- if(ix===0||ix===4){ctx.fillStyle=sc.sea;ctx.fillRect(0,H*.68,W,H*.32);ctx.strokeStyle='#ffffff88';for(let j=0;j<5;j++){ctx.beginPath();ctx.moveTo(0,H*.73+j*5);ctx.lineTo(W,H*.73+j*5);ctx.stroke()}}
- if(ix===2){for(let i=0;i<15;i++){let x=i*23+4,h=12+(i*17%36);ctx.fillStyle=i%3?'#20283f':'#35405d';ctx.fillRect(x,H*.62-h,13,h);ctx.fillStyle='#ffe4a0';for(let y=H*.62-h+4;y<H*.62-3;y+=6)ctx.fillRect(x+4,y,2,2)}}
- if(ix===1){ctx.fillStyle='#eaf2f4';for(let i=0;i<5;i++){let x=i*78+18;ctx.beginPath();ctx.moveTo(x,H*.5);ctx.lineTo(x+22,H*.33+(i%2)*10);ctx.lineTo(x+44,H*.5);ctx.fill()}}
- if(ix===3){ctx.fillStyle='#e0a05e';for(let i=0;i<5;i++){ctx.beginPath();ctx.ellipse(i*82+24,H*.68,30,6,0,0,Math.PI*2);ctx.fill()}}
- ctx.fillStyle='#293744';ctx.beginPath();ctx.moveTo(W*.36,H);ctx.lineTo(W*.46,H*.69);ctx.lineTo(W*.54,H*.69);ctx.lineTo(W*.66,H);ctx.fill();
+ // The ending must match the actual fifth OutRun route node reached by the player.
+ const endId=Math.max(10,Math.min(14,Number.isInteger(cid)?cid:10));
+ const thm=TH[THI[endId]]||TH[10];
+ const city=({
+  10:{name:'PARIS',sub:'LA VILLE LUMIERE',kind:'paris'},
+  11:{name:'LONDRES',sub:'THE CITY NEVER SLEEPS',kind:'london'},
+  12:{name:'TOKYO',sub:'NEONS SUR LA METROPOLE',kind:'tokyo'},
+  13:{name:'NEW YORK',sub:'THE CITY THAT NEVER SLEEPS',kind:'newyork'},
+  14:{name:'ROME',sub:'LA GRANDE FINALE',kind:'rome'}
+ })[endId]||{name:thm.n,sub:'VOYAGE ACCOMPLI',kind:'city'};
+ const pulse=(Math.sin(t*2.2)+1)/2;
+ const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,thm.sky[0]);sky.addColorStop(1,thm.sky[1]);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // Sunset glow and city silhouette use the selected circuit's own theme palette.
+ ctx.fillStyle='#fff0bd';ctx.beginPath();ctx.arc(W*.78,H*.32,10+pulse*2,0,Math.PI*2);ctx.fill();
+ const horizon=H*.66;ctx.fillStyle=thm.m[1]||'#39465b';ctx.fillRect(0,horizon,W,H-horizon);
+ for(let i=0;i<24;i++){
+  const bw=7+(i*13%13),bh=12+(i*19%31),x=i*W/24;
+  ctx.fillStyle=i%3===0?(thm.m[0]||'#526078'):(thm.m[1]||'#303d52');
+  ctx.fillRect(x,horizon-bh,bw,bh);
+  if(endId>=12){ctx.fillStyle='#ffe4a0';for(let yy=horizon-bh+4;yy<horizon-3;yy+=6)ctx.fillRect(x+2,yy,1.5,1.5)}
+ }
+ // Distinctive skyline landmark for the actual route destination.
+ const lx=W*.72,base=horizon;
+ ctx.save();ctx.translate(lx,base);ctx.strokeStyle='#e9e1ce';ctx.fillStyle='#e9e1ce';ctx.lineWidth=2;
+ if(endId===10){ // Eiffel Tower
+  ctx.beginPath();ctx.moveTo(0,-43);ctx.lineTo(-12,0);ctx.moveTo(0,-43);ctx.lineTo(12,0);ctx.moveTo(-8,-14);ctx.lineTo(8,-14);ctx.moveTo(-5,-25);ctx.lineTo(5,-25);ctx.stroke();ctx.fillRect(-2,-47,4,4);
+ }else if(endId===11){ // Big Ben
+  ctx.fillRect(-5,-32,10,32);ctx.fillRect(-7,-35,14,4);ctx.beginPath();ctx.moveTo(-5,-35);ctx.lineTo(0,-42);ctx.lineTo(5,-35);ctx.fill();ctx.fillStyle='#26364a';ctx.beginPath();ctx.arc(0,-25,3,0,Math.PI*2);ctx.fill();
+ }else if(endId===12){ // Tokyo tower / pagoda
+  ctx.fillRect(-2,-35,4,35);ctx.fillRect(-8,-25,16,2);ctx.fillRect(-6,-18,12,2);ctx.fillRect(-4,-11,8,2);ctx.beginPath();ctx.moveTo(-4,-35);ctx.lineTo(0,-44);ctx.lineTo(4,-35);ctx.fill();
+ }else if(endId===13){ // New York skyscraper
+  ctx.fillRect(-8,-30,16,30);ctx.fillRect(-5,-38,10,8);ctx.fillRect(-2,-47,4,9);ctx.fillRect(-.7,-55,1.4,8);
+ }else{ // Roman Colosseum
+  ctx.beginPath();ctx.arc(0,0,14,Math.PI,0);ctx.lineTo(14,0);ctx.lineTo(-14,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle=thm.m[1]||'#303d52';for(let x=-10;x<=10;x+=5)ctx.fillRect(x,-7,2,7);
+ }
+ ctx.restore();
+ // Road and player's car remain consistent across all five possible endings.
+ ctx.fillStyle='#293744';ctx.beginPath();ctx.moveTo(W*.34,H);ctx.lineTo(W*.46,H*.69);ctx.lineTo(W*.54,H*.69);ctx.lineTo(W*.66,H);ctx.fill();
  ctx.strokeStyle='#fff1c6';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(W*.5,H*.99);ctx.lineTo(W*.5,H*.72);ctx.stroke();ctx.setLineDash([]);
  const carX=W*.5+Math.sin(t*1.4)*3,carY=H*.82;
  ctx.fillStyle='#111c2b';ctx.beginPath();ctx.ellipse(carX,carY+5,15,5,0,0,Math.PI*2);ctx.fill();
- ctx.fillStyle=ix===2?'#f1c45e':'#e34e43';ctx.beginPath();ctx.moveTo(carX-12,carY+2);ctx.lineTo(carX-8,carY-7);ctx.lineTo(carX+7,carY-7);ctx.lineTo(carX+13,carY+2);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#e34e43';ctx.beginPath();ctx.moveTo(carX-12,carY+2);ctx.lineTo(carX-8,carY-7);ctx.lineTo(carX+7,carY-7);ctx.lineTo(carX+13,carY+2);ctx.closePath();ctx.fill();
  ctx.fillStyle='#bfe4f2';ctx.fillRect(carX-5,carY-6,9,4);
  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#10243a';ctx.font='bold 13px '+FT;ctx.fillText('COAST RUSH',W/2,H*.13);
  ctx.fillStyle='#fff';ctx.font='bold 9px '+FT;ctx.fillText('VICTOIRE !',W/2,H*.23);
- ctx.font='bold 7px '+FT;ctx.fillText(sc.name,W/2,H*.31);
- ctx.font='6px '+FT;ctx.fillText(sc.sub,W/2,H*.39);
+ ctx.font='bold 7px '+FT;ctx.fillText(city.name,W/2,H*.31);
+ ctx.font='6px '+FT;ctx.fillText(city.sub,W/2,H*.39);
  drawFinishCelebration(t,'outrun');
- ctx.fillStyle='#ffffffaa';ctx.font='5px '+FT;ctx.fillText('CARTE DES 15 CIRCUITS DANS UN INSTANT',W/2,H*.96);
+ ctx.fillStyle='#ffffffaa';ctx.font='5px '+FT;ctx.fillText('DERNIER CIRCUIT : '+city.name,W/2,H*.96);
 }
-
 function drawOutrunMap(t){
  drawCoastRushRouteBackdrop();
  const visited=new Set(outrunVisited),currentId=stage*(stage-1)/2+cposk;

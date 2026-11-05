@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V82 – Fire TV Stability Repair</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V84 – Fire TV Graphics Optimization</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -91,7 +91,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
 <div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
 <div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v82</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v84</div><div id="hs" style="font-size:12px;opacity:.9"></div>
 <div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
@@ -296,10 +296,21 @@ function __crGlowSprite(color){
  __crGlowSprites.set(color,c);return c;
 }
 function __crDrawGlow(color,x,y,w,h){ctx.drawImage(__crGlowSprite(color),x,y,w,h)}
+// V84 — ombre de véhicule pré-rendue : évite de reconstruire une ellipse
+// avec beginPath/ellipse/fill pour chaque voiture à chaque image.
+let __crVehicleShadow=null;
+function __crDrawVehicleShadow(x,y,w,u){
+ if(!__crVehicleShadow){
+  const c=document.createElement('canvas');c.width=128;c.height=32;
+  const g=c.getContext('2d');g.fillStyle='#000';g.beginPath();g.ellipse(64,16,54,12,0,0,Math.PI*2);g.fill();
+  __crVehicleShadow=c;
+ }
+ ctx.save();ctx.globalAlpha*=.4;ctx.drawImage(__crVehicleShadow,x-w*.6,y-u*1.7,w*1.2,u*3);ctx.restore();
+}
 
 let BRK=0,BOOSTF=0;
 function drawCar(x,y,w,c,pl,ln,ph,po,vt){const u=w/16;
- ctx.save();ctx.globalAlpha*=.4;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y-.2*u,w*.6,u*1.5,0,0,7);ctx.fill();ctx.restore();
+ __crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.7,6.1]){rrp(x+sx*u,y-4.8*u,2.6*u,4.8*u,u*.9);ctx.fillStyle=LG(y-5*u,y,'#2c2c2c','#050505');ctx.fill();ctx.fillStyle='#ffffff18';ctx.fillRect(x+(sx+.35)*u,y-4.4*u,.5*u,3.8*u);if(ph!==undefined){ctx.fillStyle='#ffffff26';for(let i=0;i<3;i++)ctx.fillRect(x+(sx+.2)*u,y-(4.2-i*1.4-ph*.7)*u,2.2*u,.35*u)}}
  rrp(x-7.4*u,y-3.8*u,14.8*u,2*u,u*.5);ctx.fillStyle='#0c0c10';ctx.fill();ctx.fillStyle='#2a2a32';for(let i=-3;i<=3;i++)ctx.fillRect(x+(i*1.8-.15)*u,y-3.6*u,.3*u,1.5*u);
  ctx.beginPath();ctx.moveTo(x-7.9*u,y-3.4*u);ctx.lineTo(x-7.9*u,y-5.8*u);ctx.quadraticCurveTo(x-7.9*u,y-7.5*u,x-6.2*u,y-7.7*u);ctx.lineTo(x+6.2*u,y-7.7*u);ctx.quadraticCurveTo(x+7.9*u,y-7.5*u,x+7.9*u,y-5.8*u);ctx.lineTo(x+7.9*u,y-3.4*u);ctx.closePath();
@@ -327,7 +338,7 @@ function drawCar(x,y,w,c,pl,ln,ph,po,vt){const u=w/16;
   rrp(cx-5.6*u,y-9.3*u,4.4*u,1.7*u,u*.8);ctx.fillStyle='#e24a78';ctx.fill();rrp(cx+1.2*u,y-9.3*u,4.8*u,1.7*u,u*.8);ctx.fillStyle='#f4f4f8';ctx.fill();
   }ctx.fillStyle=LG(y-9.8*u,y-8.6*u,'#9cc4ec99','#1a2a4a99');ctx.fillRect(cx-6.4*u,y-9*u,12.8*u,.9*u)}}
 function drawTruck(x,y,w,c){const u=w/16;
- ctx.save();ctx.globalAlpha*=.4;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y-.2*u,w*.6,u*1.5,0,0,7);ctx.fill();ctx.restore();
+ __crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.6,6]){rrp(x+sx*u,y-4.6*u,2.6*u,4.6*u,u*.8);ctx.fillStyle=LG(y-5*u,y,'#262626','#050505');ctx.fill()}
  rrp(x-8*u,y-15.5*u,16*u,12.4*u,u*.7);ctx.fillStyle=LG(y-15.5*u,y-3*u,'#f4f4f6','#b4b6bd');ctx.fill();
  ctx.strokeStyle='#8a8c94';ctx.lineWidth=Math.max(.3,u*.15);for(let i=-3;i<=3;i++){ctx.beginPath();ctx.moveTo(x+i*2*u,y-15.2*u);ctx.lineTo(x+i*2*u,y-3.4*u);ctx.stroke()}
@@ -357,13 +368,13 @@ function drawObj(c,x,y,w){if(c.k=='g'){const bw=Math.max(w,3);ctx.fillStyle='#ff
  else if(c.k=='s'){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-w*.5,w*.55,0,7);ctx.fill();ctx.fillStyle='#2ecc40';ctx.beginPath();ctx.arc(x,y-w*.5,w*.38,0,7);ctx.fill()}
  else if(c.k=='r'){drawVeh(x,y,w,c.c,c.v|0,0,Math.floor(c.z/70)%2);if(w>12){ctx.fillStyle='#fff';ctx.font='8px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText(c.nm,x,y-w*.95)}}
  else{if(c.b){drawBandit(c,x,y,w);const ak=Math.max(w,10),bob=Math.sin(flash*6)*ak*.1,ay=y-ak*1.15+bob;poly('#ff2a2a',[x-ak*.32,ay-ak*.45,x+ak*.32,ay-ak*.45,x,ay]);ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(.6,ak*.05);ctx.beginPath();ctx.moveTo(x-ak*.32,ay-ak*.45);ctx.lineTo(x,ay);ctx.lineTo(x+ak*.32,ay-ak*.45);ctx.stroke()}else(c.T?drawTruck:drawCar)(x,y,w,c.c,0);if(c.b&&c.hp<=4){ctx.globalAlpha=.5;ctx.fillStyle='#555';ctx.beginPath();ctx.arc(x+Math.sin(flash*9)*w*.1,y-w*.7,w*.18,0,7);ctx.fill();ctx.globalAlpha=1}}}
-function drawVan(x,y,w,c){const u=w/16;ctx.save();ctx.globalAlpha*=.4;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y-.2*u,w*.6,u*1.5,0,0,7);ctx.fill();ctx.restore();
+function drawVan(x,y,w,c){const u=w/16;__crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.6,6]){rrp(x+sx*u,y-4.6*u,2.6*u,4.6*u,u*.8);ctx.fillStyle=LG(y-5*u,y,'#262626','#050505');ctx.fill()}
  rrp(x-8*u,y-15*u,16*u,11.4*u,u*1.5);ctx.fillStyle=LG(y-15*u,y-3.6*u,shade(c,.3),shade(c,-.4));ctx.fill();
  ctx.fillStyle=LG(y-13*u,y-9*u,'#7aa0c8','#0e1a2a');rrp(x-6.8*u,y-13.4*u,6.2*u,4*u,u*.6);ctx.fill();rrp(x+.6*u,y-13.4*u,6.2*u,4*u,u*.6);ctx.fill();
  ctx.fillStyle='#ffffff30';ctx.fillRect(x-.2*u,y-14.5*u,.4*u,10*u);rrp(x-8.3*u,y-5.4*u,16.6*u,1.6*u,u*.5);ctx.fillStyle='#222';ctx.fill();
  ctx.fillStyle='#ff3030';rrp(x-7.6*u,y-8.4*u,1.6*u,2.4*u,u*.3);ctx.fill();rrp(x+6*u,y-8.4*u,1.6*u,2.4*u,u*.3);ctx.fill()}
-function drawPickup(x,y,w,c){const u=w/16;ctx.save();ctx.globalAlpha*=.4;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y-.2*u,w*.6,u*1.5,0,0,7);ctx.fill();ctx.restore();
+function drawPickup(x,y,w,c){const u=w/16;__crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.6,6]){rrp(x+sx*u,y-4.8*u,2.6*u,4.8*u,u*.8);ctx.fillStyle=LG(y-5*u,y,'#262626','#050505');ctx.fill()}
  ctx.beginPath();ctx.moveTo(x-6.2*u,y-8*u);ctx.lineTo(x-5.2*u,y-12.6*u);ctx.lineTo(x+5.2*u,y-12.6*u);ctx.lineTo(x+6.2*u,y-8*u);ctx.closePath();ctx.fillStyle=LG(y-12.6*u,y-8*u,shade(c,.25),shade(c,-.3));ctx.fill();
  ctx.fillStyle=LG(y-12*u,y-9*u,'#7aa0c8','#0e1a2a');rrp(x-4.4*u,y-12*u,8.8*u,3*u,u*.5);ctx.fill();
@@ -421,7 +432,7 @@ function drawChaseVictory(t){const g=ctx.createLinearGradient(0,0,0,150);g.addCo
 const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon'],VW=[.18,.17,.2,.19,.22,.25],NOHUD=['win','over','brief','arrest','escape','podium','mega'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
 try{myV=+localStorage.getItem('cr_veh')||0}catch(e){}
 const NR=()=>15/RL,fmt=t=>t==null?'DNF':Math.floor(t/60)+':'+(t%60).toFixed(2).padStart(5,'0');
-function drawBeetle(x,y,w,c){const u=w/16;ctx.save();ctx.globalAlpha*=.4;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y-.2*u,w*.6,u*1.5,0,0,7);ctx.fill();ctx.restore();
+function drawBeetle(x,y,w,c){const u=w/16;__crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.2,5.8]){rrp(x+sx*u,y-4.6*u,2.4*u,4.6*u,u*.9);ctx.fillStyle=LG(y-5*u,y,'#2c2c2c','#050505');ctx.fill()}
  ctx.beginPath();ctx.moveTo(x-7.4*u,y-3.4*u);ctx.quadraticCurveTo(x-8*u,y-8*u,x-4.6*u,y-9.6*u);ctx.lineTo(x+4.6*u,y-9.6*u);ctx.quadraticCurveTo(x+8*u,y-8*u,x+7.4*u,y-3.4*u);ctx.closePath();ctx.fillStyle=LG(y-9.6*u,y-3.4*u,shade(c,.35),shade(c,-.35));ctx.fill();
  ctx.beginPath();ctx.moveTo(x-5.4*u,y-9*u);ctx.quadraticCurveTo(x-4.8*u,y-14.2*u,x,y-14.2*u);ctx.quadraticCurveTo(x+4.8*u,y-14.2*u,x+5.4*u,y-9*u);ctx.closePath();ctx.fillStyle=LG(y-14.2*u,y-9*u,shade(c,.3),shade(c,-.25));ctx.fill();

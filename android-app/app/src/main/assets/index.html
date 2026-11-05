@@ -178,30 +178,27 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 }
 
 
-/* V101 — artwork-first arcade menu with transparent, focusable hit areas. */
+/* V102 — exact artwork hit areas; no duplicate focus layers. */
 #menu{background:#06152a url("menu-start-v101.jpg") center/100% 100% no-repeat!important;overflow:hidden!important}
 #mc{display:none!important}
 #crMenuHotspots{position:absolute;inset:0;z-index:5;pointer-events:none}
-#crMenuHotspots button{position:absolute;display:block;pointer-events:auto;margin:0;padding:0;border:2px solid transparent;border-radius:18px;background:transparent;color:transparent;box-shadow:none;cursor:pointer;touch-action:manipulation}
-#crMenuHotspots button:focus,#crMenuHotspots button.cr-active{outline:none;border:3px solid #fff!important;box-shadow:0 0 10px #fff,0 0 25px #00eaff, inset 0 0 16px #00eaff66!important;background:#ffffff12!important}
-#crMenuHotspots button:active{background:#ffffff22!important}
-#crMenuHotspots .play{left:31%;top:29%;width:38%;height:11%}
-#crMenuHotspots .mode{left:34%;top:40%;width:32%;height:8%}
-#crMenuHotspots .options{left:35%;top:49%;width:30%;height:8%}
-#crMenuHotspots .profile{left:35%;top:58%;width:30%;height:8%}
-#crMenuHotspots .vehicle{left:35%;top:67%;width:30%;height:8%}
-#crMenuHotspots .quit{left:35%;top:77%;width:30%;height:9%}
-#crMenuHotspots .music{left:3%;top:85%;width:14%;height:10%}
-#crMenuHotspots .tilt{left:18%;top:85%;width:15%;height:10%}
-#crMenuHotspots .quality{left:34%;top:85%;width:14%;height:10%}
-#crMenuHotspots .bonus{left:49%;top:85%;width:10%;height:10%}
-#crMenuHotspots .gear{left:60%;top:85%;width:13%;height:10%}
-#crMenuHotspots .gas{left:74%;top:85%;width:13%;height:10%}
-#crMenuHotspots .difficulty{left:88%;top:85%;width:11%;height:10%}
-#crMenuHotspots button::after{content:attr(aria-label);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;font:700 12px system-ui;color:transparent}
-html.tv #crMenuHotspots button:focus::after{color:#fff;text-shadow:0 2px 5px #001}
-@media(max-aspect-ratio:4/3){#menu{background-size:cover!important}#crMenuHotspots .play{left:25%;width:50%}#crMenuHotspots .mode,#crMenuHotspots .options,#crMenuHotspots .profile,#crMenuHotspots .vehicle,#crMenuHotspots .quit{left:25%;width:50%}}
-
+#crMenuHotspots button{position:absolute;display:block;pointer-events:auto;margin:0;padding:0;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;clip-path:polygon(7% 0,95% 0,100% 78%,93% 100%,0 100%,3% 22%)}
+#crMenuHotspots button:focus,#crMenuHotspots button.cr-active{outline:none!important;background:rgba(0,238,255,.10)!important;box-shadow:inset 0 0 0 3px #fff,0 0 13px #00eaff,0 0 24px #00eaff!important}
+#crMenuHotspots .play{left:34.5%;top:29.0%;width:32.5%;height:10.5%}
+#crMenuHotspots .mode{left:35.7%;top:39.7%;width:28.7%;height:7.0%}
+#crMenuHotspots .options{left:36.2%;top:47.3%;width:28.2%;height:7.0%}
+#crMenuHotspots .profile{left:37.1%;top:55.1%;width:26.5%;height:6.8%}
+#crMenuHotspots .vehicle{left:37.7%;top:62.6%;width:25.2%;height:6.8%}
+#crMenuHotspots .quit{left:37.8%;top:70.1%;width:24.8%;height:6.8%}
+#crMenuHotspots .music{left:1.1%;top:84.3%;width:16.0%;height:9.7%}
+#crMenuHotspots .tilt{left:18.1%;top:84.3%;width:15.0%;height:9.7%}
+#crMenuHotspots .quality{left:31.5%;top:84.3%;width:14.5%;height:9.7%}
+#crMenuHotspots .bonus{left:45.1%;top:84.3%;width:13.2%;height:9.7%}
+#crMenuHotspots .gear{left:57.0%;top:84.3%;width:13.5%;height:9.7%}
+#crMenuHotspots .gas{left:69.2%;top:84.3%;width:12.7%;height:9.7%}
+#crMenuHotspots .difficulty{left:81.2%;top:84.3%;width:17.4%;height:9.7%}
+#crMenuHotspots button::after{content:"";position:absolute;inset:0;pointer-events:none}
+@media(max-aspect-ratio:4/3){#menu{background-size:100% 100%!important}}
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1314,8 +1311,9 @@ function crReadNativeFrames(){try{if(typeof CoastRushFrameStats!=='undefined'&&C
 let __crRouteMapClassState=null,__crPauseButtonVisible=null;
 function loop(t){
  
-/* V101: functional hotspots over the 1280x720 menu artwork. */
+/* V102: install one single set of menu hotspots; loop() calls this section repeatedly. */
 (function(){
+ if(document.getElementById('crMenuHotspots'))return;
  const host=document.createElement('div');host.id='crMenuHotspots';
  const defs=[
   ['play','Jouer',()=> $('go').click()],

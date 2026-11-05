@@ -101,7 +101,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true,willReadFrequently:false}),W=320,H=224;
 // Fire TV: keep a 60-segment road horizon; adaptive quality now trims distant scenery, not the road.
 // Other devices retain 64. Track generation and vehicle physics are unchanged.
-const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?60:64,drawN=14,decorDrawN=isTV?36:roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000);let roadDrawN=isTV?52:64,drawN=14,decorDrawN=isTV?36:roadDrawN,isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 if(isTV){drawN=13;}
 window.__coastRushNativePaused=false;

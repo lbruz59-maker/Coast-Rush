@@ -1063,15 +1063,11 @@ function render(){
  }
  for(let pi=endPoint-1;pi>=firstPoint;pi--){
   const p=__crWorldDecoPoints[pi];if(p.seg<bs.i||p.seg>lastSeg)continue;
-  // Un seul compositing par segment, même si ses décors occupent les deux côtés.
-  if(pi>firstPoint&&__crWorldDecoPoints[pi-1].seg===p.seg)continue;
   const seg=segs[p.seg];if(!seg||!seg.v||!seg.__crDecorVisible||seg.tun)continue;
-  // Une tuile pré-rendue regroupe tout le paysage statique de ce segment.
-  // Repli direct si la création du canvas échoue sur un WebView ancien.
-  if(!__crDrawLandscapeSegment(seg)){
-   const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
-   for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;deco(item.sp,x,y,a.sc*item.scale)}
-  }
+  // Rendu direct via le sprite-sheet partagé : évite le cache de tuiles
+  // par segment qui provoquait des évictions/reconstructions à chaque image.
+  const a=seg.a,baseX=a.x+a.sc*p.x*roadW*160,y=a.y;
+  for(let gi=0;gi<p.items.length;gi++){const item=p.items[gi],x=baseX+a.sc*item.offset*roadW*160;deco(item.sp,x,y,a.sc*item.scale)}
  }
  if(__crPerfActive)window.__COAST_RUSH_RENDER_PARTS__={road:__crRoadDrawMs,decor:performance.now()-__crDecorStart,visibleSegments:vis.length,tunnelSegments:__crTunnelVisibleCount,groupedDecorPoints:endPoint-firstPoint,zoneIndexReady:__crZoneIndexReady,landscapeTiles:__crLandscapeTiles.size,landscapeTileBuilds:__crLandscapeBuilds,landscapeBatchDrawCalls:__crLandscapeDrawCalls,vehicleCacheEntries:__crVehicleSprites.size,vehicleCacheLimit:72,vehicleCacheHits:__crVehicleCacheHits,decorSpriteHits:__crSheetHits,decorSpriteMisses:__crSheetMisses,decorSpriteEntries:__crSheetEntries.size,gradientCacheEntries:__crGradientCache.size,radialCacheEntries:__crRadialCache.size};
  // joueur

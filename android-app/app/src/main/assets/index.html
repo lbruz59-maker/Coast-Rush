@@ -1403,7 +1403,7 @@ function loop(t){
   ['profile','Profil',()=>crShowProfile()],
   ['progress','Progression carrière',()=>crShowCareer()],
   ['score','Meilleur score',()=>crShowScores()]
- ]; ];
+ ];
  const crEnsureProfile=()=>{
   try{if(!localStorage.getItem('cr_name')&&myName&&!/^J[A-Z0-9]{3}$/.test(myName))localStorage.setItem('cr_name',myName)}catch(e){}
   try{window.crTeam=localStorage.getItem('cr_team')||window.crTeam||''}catch(e){window.crTeam=window.crTeam||''}

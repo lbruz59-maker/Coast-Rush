@@ -1815,7 +1815,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if((b.k!='b'&&b.k!='o'&&b.k!='x'&&b.z<pos-segL*5)||b.z>=trackLen||(b.tt&&flash-b.tt>(b.k=='x'?.5:b.k=='g'?1.5:15)))dead=true;
   if(!dead&&(b.k=='b'||b.k=='o')){const oil=b.k=='o';for(const c of cars)if(!c.rp&&c.z>0&&!(c.hit>0)&&Math.abs(c.z-b.z)<segL*.6&&Math.abs(c.o-b.o)<(oil?.28:.2)){hitCar(c,oil?2:1);if(!oil)dead=true;break}
    if(!dead&&state=='play'&&!crash&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<segL*.8&&Math.abs(px-b.o)<(oil?.28:.17)){if(oil){if(slip<=0){slip=1.6;squeal();shake=.2}}else{crash=.9;bang();voice();shake=.3;dead=true}}}
-  if(dead)objs.splice(i,1);else __crAddSegmentCar(Math.floor(b.z/segL),b)}
+  if(dead){const last=objs.length-1;if(i!==last)objs[i]=objs[last];objs.pop()}else __crAddSegmentCar(Math.floor(b.z/segL),b)}
  const __crAudioOffRoad=offRoad();
  if(eng){const gm=gear?1:.62,rpm=Math.min(1.1,sp/gm),run=state=='play'||speed>50;eng.frequency.value=48+rpm*190;eng2.frequency.value=24+rpm*95;engB.frequency.value=48+rpm*190;ef.frequency.value=ps.tun?Math.max(420,760+rpm*1050):500+rpm*2600;if(window.__crTunnelSend)window.__crTunnelSend.gain.setTargetAtTime(ps.tun?.48:0,ac.currentTime,.12);tb.frequency.value=1800+rpm*2600;tbg.gain.value=(state=='play'&&(inp.g||gpad.g)&&sp>.15)?.015+.025*rpm:0;eg.gain.value=run?.12+.14*((inp.g||gpad.g)?1:.4)*Math.min(1,sp*2+.2):0;
   const sl=(state=='play'&&speed>MAX*.4&&crash<=0)?Math.max(0,Math.abs(ps.curve)*sp-1.6*gripF)*.15+(Math.abs(steer())>.3&&sp>.8?.08:0):0;sk.gain.value=Math.min(.35,sl+(crash>0?.2:0));if((sl>.04||crash>0)&&Math.random()<.5)__crEmitSmoke(W/2+(Math.random()<.5?-20:20),H-8,(Math.random()-.5)*24);

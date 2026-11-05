@@ -1065,12 +1065,12 @@ function loop(t){
  }else{if(crHud)crHud.style.display='none';crLastRaf=0;crWindowStart=0;crFrames=0;crRafSum=0;crRafCount=0;crRafMax=0;crFrameSampleCount=0;crFrameSampleWrite=0;crWorkSampleCount=0;crWorkSampleWrite=0;crLongFrames=0}
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
- if(crManualPaused){try{render()}catch(e){}return}
+ if(crManualPaused)return
  if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const slow=ema>(isTV?.040:.045),fast=ema<(isTV?.022:.025);__crLoadBad=slow?Math.min(3,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=2){drawN=Math.max(90,drawN-(isTV?5:12));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=3){drawN=Math.min(isTV?125:170,drawN+(isTV?3:8));__crLoadGood=0;__crLoadBad=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
-  const r0=performance.now();render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;
+  const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;
   if(state==='play'&&t-crWindowStart>=1000){
    const span=t-crWindowStart,rafAvg=crRafCount?crRafSum/crRafCount:0,rafMax=crRafMax;
    crFps=crFrames>1?(crFrames-1)*1000/span:0;

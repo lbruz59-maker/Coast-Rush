@@ -1101,7 +1101,12 @@ function render(){
      ctx.save();ctx.globalAlpha=.34;ctx.strokeStyle='#d5c4a5';ctx.lineWidth=Math.max(1,aw*.018);
      for(let r=0;r<7;r++){const yy=a.y-aw*(.28+r*.16),shift=(r%2?1:-1)*aw*.08;ctx.beginPath();ctx.moveTo(ax-aw*(1.62-r*.035),yy);ctx.lineTo(ax+shift-aw*.92,yy-aw*.06);ctx.lineTo(ax+shift-aw*.42,yy-aw*.015);ctx.stroke();ctx.beginPath();ctx.moveTo(ax+aw*.55,yy-aw*.04);ctx.lineTo(ax+aw*(1.1+r*.025),yy+aw*.025);ctx.lineTo(ax+aw*1.62,yy-aw*.09);ctx.stroke()}
      ctx.restore();ctx.strokeStyle='#d1b99a88';ctx.lineWidth=Math.max(1,aw*.025);ctx.beginPath();ctx.moveTo(ax-aw*1.48,a.y-aw*.94);ctx.lineTo(ax-aw*1.22,a.y-aw*.66);ctx.lineTo(ax-aw*1.31,a.y-aw*.38);ctx.moveTo(ax+aw*.78,a.y-aw*1.19);ctx.lineTo(ax+aw*1.03,a.y-aw*.83);ctx.lineTo(ax+aw*.91,a.y-aw*.52);ctx.stroke();
-     ctx.fillStyle='#080e18';ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.closePath();ctx.fill();ctx.strokeStyle='#b8a58e';ctx.lineWidth=Math.max(2,aw*.045);ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.stroke()}
+     // Découpe réelle de la montagne : l'ouverture laisse voir la coque du tunnel déjà dessinée derrière.
+     ctx.beginPath();
+     ctx.moveTo(ax-aw*1.78,a.y);ctx.lineTo(ax-aw*1.62,a.y-aw*.42);ctx.lineTo(ax-aw*1.48,a.y-aw*.94);ctx.lineTo(ax-aw*1.18,a.y-aw*1.22);ctx.lineTo(ax-aw*.96,a.y-aw*1.08);ctx.lineTo(ax-aw*.72,a.y-aw*1.48);ctx.lineTo(ax-aw*.42,a.y-aw*1.31);ctx.lineTo(ax-aw*.12,a.y-aw*1.62);ctx.lineTo(ax+aw*.2,a.y-aw*1.44);ctx.lineTo(ax+aw*.48,a.y-aw*1.55);ctx.lineTo(ax+aw*.78,a.y-aw*1.19);ctx.lineTo(ax+aw*1.08,a.y-aw*1.3);ctx.lineTo(ax+aw*1.42,a.y-aw*.82);ctx.lineTo(ax+aw*1.7,a.y-aw*.34);ctx.lineTo(ax+aw*1.82,a.y);ctx.closePath();
+     ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.closePath();
+     ctx.fill('evenodd');
+     ctx.strokeStyle='#b8a58e';ctx.lineWidth=Math.max(2,aw*.045);ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.stroke()}
   }
  maxY=b.y}
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
@@ -1152,18 +1157,6 @@ function render(){
  if(fk()&&state=='play'&&Math.floor((pos+playerZ)/segL)>=N-FORK){ctx.textAlign='center';ctx.font='bold 14px "Arial Black",Impact,sans-serif';T(px<0?'◀ GAUCHE':'DROITE ▶',160,60,'#3ddc6a')}
  if(msgT>0){ctx.textAlign='center';ctx.font='bold 20px "Arial Black",Impact,sans-serif';T(msg,160,90,'#ffd400')}
  }
- // HUD prioritaire V109 : panneau lisible toujours visible pendant la conduite.
-  if(['play','count','wait'].includes(state)){
-   ctx.save();ctx.globalAlpha=.94;ctx.fillStyle='#071321cc';ctx.strokeStyle='#9ddfff88';ctx.lineWidth=1;
-   if(ctx.roundRect){ctx.beginPath();ctx.roundRect(5,5,310,43,7);ctx.fill();ctx.stroke()}else{ctx.fillRect(5,5,310,43);ctx.strokeRect(5,5,310,43)}
-   ctx.globalAlpha=1;ctx.textAlign='left';ctx.font='bold 9px Arial,sans-serif';ctx.fillStyle='#ffd34f';ctx.fillText(MODE==2?'CHASE H.Q.':MP?'COURSE':'TEMPS',13,17);
-   ctx.font='bold 16px Arial,sans-serif';ctx.fillStyle='#fff';ctx.fillText(MODE==2?'POLICE':MP?fmt(raceT):String(Math.max(0,Math.ceil(time))).padStart(2,'0'),13,38);
-   ctx.font='bold 9px Arial,sans-serif';ctx.fillStyle='#ffd34f';ctx.fillText('SCORE',116,17);
-   ctx.font='bold 16px Arial,sans-serif';ctx.fillStyle='#fff';ctx.fillText(String(Math.floor(score)).padStart(7,'0'),116,38);
-   ctx.font='bold 9px Arial,sans-serif';ctx.fillStyle='#7fe0ff';ctx.fillText('STAGE '+stage,236,17);
-   ctx.font='bold 14px Arial,sans-serif';ctx.fillStyle='#fff';ctx.fillText(String(Math.floor(speed/MAX*290)).padStart(3,'0')+' km/h',236,38);
-   ctx.restore();
-  }
  if(state=='over'||state=='win'){ctx.textAlign='center';ctx.fillStyle='#000a';ctx.font='bold 22px "Arial Black",Impact,sans-serif';ctx.font='12px "Arial Black",Impact,sans-serif';T('Touche GAZ / Entrée pour rejouer',160,124,'#fff');T('MEILLEUR '+best,160,137,'#7fe0ff');if(NET()){const L=[[myName,Math.floor(score)]].concat(remotes.filter(r=>r.presence&&r.presence.sc!==undefined).map(r=>[r.presence.n,r.presence.sc])).sort((a,b)=>b[1]-a[1]);L.slice(0,4).forEach((e,i)=>T((i+1)+'. '+e[0]+'  '+e[1],100,152+i*14,'#fff'))}}ctx.restore()}
 
 // Carte finale OutRun — décor cartographique original dessiné en Canvas.
@@ -1515,11 +1508,6 @@ requestAnimationFrame(loop);
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
-  let driveDiag=document.getElementById('crDriveDiag');
-  if(!driveDiag){driveDiag=document.createElement('div');driveDiag.id='crDriveDiag';driveDiag.style.cssText='position:fixed;left:6px;top:6px;z-index:9999;max-width:calc(100vw - 12px);padding:5px 7px;border:1px solid #6deaff;border-radius:5px;background:#061323e8;color:#eaffff;font:10px/1.35 monospace;pointer-events:none;white-space:pre-wrap';document.body.appendChild(driveDiag)}
-  const diagActive=state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega';
-  driveDiag.style.display=diagActive?'block':'none';
-  if(diagActive)driveDiag.textContent='CR DIAG | '+state.toUpperCase()+' | VIT '+Math.round(speed)+' | POS '+Math.round(pos)+' | GAZ '+(inp.g?1:0)+' | PAD '+(gpad.g?1:0)+' | AUTO '+(autoGas?1:0)+' | CD '+Number(cd||0).toFixed(1);
   const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;
   if(state==='play'&&t-crWindowStart>=1000){
    const span=t-crWindowStart,rafAvg=crRafCount?crRafSum/crRafCount:0,rafMax=crRafMax;

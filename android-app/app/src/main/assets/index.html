@@ -223,6 +223,13 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
 #menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important}
 #menu #crProfileDialog{z-index:1100!important}
+/* V108 — the artwork is the only visible menu; legacy controls cannot receive pointer input. */
+#menu{isolation:isolate!important;overflow:hidden!important}
+#menu > :not(#crMenuHotspots):not(#crProfileDialog){display:none!important;visibility:hidden!important;pointer-events:none!important}
+#menu #mc,#menu #mc *{display:none!important;visibility:hidden!important;pointer-events:none!important}
+#menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
+#menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important}
+#menu #crMenuHotspots .cr-status{display:none!important}
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1430,20 +1437,15 @@ function loop(t){
   if(cls==='difficulty')return DF[dfi]?DF[dfi].n:'NORMAL';
   return '';
  };
- const statusClasses=['music','tilt','bonus','gear','gas'];
+ /* V108: no visible status badges on the artwork; keep state accessible only to assistive navigation. */
  const sync=()=>{
-  defs.forEach(([cls],i)=>{
+  defs.forEach(([cls,label],i)=>{
    const b=host.children[i];if(!b)return;
    const value=statusFor(cls);
-   if(!value)return;
-   let badge=b.querySelector('.cr-status');
-   if(!badge){badge=document.createElement('span');badge.className='cr-status';b.appendChild(badge)}
-   badge.textContent=value;
-   const active=statusClasses.includes(cls)?value!=='OFF'&&value!=='MANUEL':true;
-   badge.classList.toggle('is-on',active);
-   badge.classList.toggle('is-off',!active);
-   b.setAttribute('aria-label',defs[i][1]+' : '+value);
-   b.setAttribute('aria-pressed',active?'true':'false');
+   b.setAttribute('aria-label',value?label+' : '+value:label);
+   if(['music','tilt','bonus','gear','gas'].includes(cls)){
+    b.setAttribute('aria-pressed',value==='ON'||value==='AUTO'||value==='INVERSÉ'?'true':'false');
+   }
   });
  };
  defs.forEach(([cls,label,fn])=>{

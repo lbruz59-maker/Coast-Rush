@@ -526,6 +526,13 @@ function drawEnding(t){const g=ctx.createLinearGradient(0,0,0,130);g.addColorSto
  if(t>1.8){person(mx,208,'#4a2a12','#2b4a8a','#223',0,k*6);person(gx,208,'#ffe58a','#e04a6a','#f1c19a',1,-k*6)}
  if(t>3.9){ctx.textAlign='center';for(let i=0;i<6;i++){ctx.fillStyle='#ff2a5a';ctx.font='bold '+(10+i*2)+'px sans-serif';ctx.fillText('♥',mx+10+Math.sin(t*2+i)*22,150-((t-3.9)*30+i*20)%110)}}
  ctx.textAlign='center';ctx.font='bold 22px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';ctx.fillText('CONGRATULATIONS !',161,41);ctx.fillStyle='#fff';ctx.fillText('CONGRATULATIONS !',160,40);ctx.restore();drawFinishCelebration(t,'outrun')}
+// Faisceau commun au joueur et au trafic : même axe longitudinal et même inclinaison.
+function __crDrawHeadlightBeams(x,y,w,power){
+ const u=Math.max(1,w/16),nearY=y-11*u,reach=Math.min(H*.48,Math.max(26,w*3.15))*power,farY=nearY-reach,spread=Math.max(13,w*1.55)*power;
+ ctx.save();ctx.globalCompositeOperation='lighter';
+ const grad=ctx.createLinearGradient(0,nearY,0,farY);grad.addColorStop(0,'#fff7d98c');grad.addColorStop(.28,'#fff1c94f');grad.addColorStop(1,'#fff0c900');ctx.fillStyle=grad;
+ for(const side of[-1,1]){const bx=x+side*5.1*u,fx=bx+side*spread;ctx.beginPath();ctx.moveTo(bx-1.2*u,nearY);ctx.lineTo(bx+1.2*u,nearY);ctx.lineTo(fx+side*spread*.22,farY);ctx.lineTo(fx-side*spread*.12,farY);ctx.closePath();ctx.fill();const glow=ctx.createRadialGradient(bx,nearY,0,bx,nearY,Math.max(3,u*2.8));glow.addColorStop(0,'#fffde8');glow.addColorStop(.35,'#fff1b9bb');glow.addColorStop(1,'#fff0');ctx.fillStyle=glow;ctx.beginPath();ctx.arc(bx,nearY,Math.max(3,u*2.8),0,Math.PI*2);ctx.fill();ctx.fillStyle=grad}ctx.restore();
+}
 function drawObj(c,x,y,w){if(c.k=='g'){const bw=Math.max(w,3);ctx.fillStyle='#fff3a0';ctx.fillRect(x-bw*.15,y-bw*.9,bw*.3,bw*.9)}else if(c.k=='x'){const q=Math.min(1,(flash-c.tt)/.5);ctx.save();ctx.globalAlpha*=1-q;ctx.fillStyle='#ffb020';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.6+q*1.4),0,7);ctx.fill();ctx.fillStyle='#fff6c0';ctx.beginPath();ctx.arc(x,y-w*.5,w*(.3+q*.6),0,7);ctx.fill();ctx.restore()}else if(c.k=='o'){const ow=w*3,g=ctx.createRadialGradient(x,y-ow*.05,0,x,y-ow*.05,ow*.5);g.addColorStop(0,'#0a0a10');g.addColorStop(.7,'#12121c');g.addColorStop(1,'#12121c00');ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y-ow*.03,ow*.5,ow*.14,0,0,7);ctx.fill();ctx.fillStyle='#6a4aff33';ctx.beginPath();ctx.ellipse(x-ow*.08,y-ow*.05,ow*.2,ow*.05,0,0,7);ctx.fill();ctx.fillStyle='#22d6aa33';ctx.beginPath();ctx.ellipse(x+ow*.1,y-ow*.02,ow*.14,ow*.04,0,0,7);ctx.fill()}
  else if(c.k=='b'){ctx.strokeStyle='#ffd400';ctx.lineWidth=Math.max(1.2,w*.35);ctx.lineCap='round';ctx.beginPath();ctx.arc(x,y-w*.55,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.strokeStyle='#e0a800';ctx.lineWidth=Math.max(.6,w*.12);ctx.beginPath();ctx.arc(x,y-w*.5,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.lineCap='butt'}
  else if(c.k=='s'){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-w*.5,w*.55,0,7);ctx.fill();ctx.fillStyle='#2ecc40';ctx.beginPath();ctx.arc(x,y-w*.5,w*.38,0,7);ctx.fill()}
@@ -552,7 +559,7 @@ function drawDefeat(t){const ox=(W-320)/2,g=ctx.createLinearGradient(0,0,0,130);
  if(e>=1){for(let i=0;i<6;i++){const q=(t*.6+i/6)%1;ctx.globalAlpha=.5*(1-q);ctx.fillStyle='#bbb';ctx.beginPath();ctx.arc(cx+Math.sin(t*3+i)*5,176-q*70,8+q*14,0,7);ctx.fill()}ctx.globalAlpha=1;if(Math.floor(t*3)%2){ctx.fillStyle='#ffa000';ctx.beginPath();ctx.arc(cx-32,192,3,0,7);ctx.arc(cx+32,192,3,0,7);ctx.fill()}}
  if(t>1.6){person(cx+74,208,'#4a2a12','#2b4a8a','#223',0,-4);person(cx+116,208,'#ffe58a','#e04a6a','#f1c19a',1,5)}
  ctx.strokeStyle='#bcd0ff88';ctx.lineWidth=.8;for(let i=0;i<70;i++){const a=(i*47+t*40)%400-40,b=((i*29+t*260)%240)-10;ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(a-4,b+12);ctx.stroke()}
- ctx.restore();ctx.textAlign='center';ctx.font='bold 26px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2+1,51);ctx.fillStyle='#ff4d6d';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2,50);ctx.font='11px "Arial Black",Impact,sans-serif';ctx.fillStyle='#fff';ctx.fillText(MODE==2?'Rétrogradation à la circulation':'Le temps est écoulé…',W/2,68)}
+ ctx.restore();ctx.textAlign='center';ctx.font='bold 26px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2+1,51);ctx.fillStyle='#ff4d6d';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2,50);ctx.font='11px "Arial Black",Impact,sans-serif';ctx.fillStyle='#fff';ctx.fillText(MODE==2?'Rétrogradation à la circulation':'Le temps est écoulé…',W/2,68);if(t>4.8){ctx.font='bold 10px '+FT;ctx.fillStyle='#fff';ctx.fillText('RETOUR AU MENU…',W/2,88)}}
 function drawBandit(c,x,y,w){const v=c.vt|0;if(v==1)drawVan(x,y,w,c.c);else if(v==4)drawPickup(x,y,w,c.c);else if(v==6)drawCabrioletDuo(x,y,w,c.c,0,undefined);else drawCar(x,y,w,c.c,0,0,undefined,0,v)}
 const BL=9,VN=['un coupé sombre','un fourgon blanc','une muscle car orange','une supercar violette','un pick-up kaki'],VNm=['COUPÉ','FOURGON','MUSCLE CAR','SUPERCAR','PICK-UP'],CRIM=['Braquage de banque','Cambriolage de bijouterie','Vol de camion blindé','Évasion de prison','Trafic de diamants'],BCOL=['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'];
 let briefT=0,arT=0,arrCar=null,escT=0,escCar=null;
@@ -1099,14 +1106,14 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct);drawObj(c,cxs,sy,sc*roadW*160*c.w*(c.shr>0?.6:1))}
+  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,.78);drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));
-  if(musk>0)drawMuskCraft(cxp+slide,cyp-bump-38,sw,flash);
+  const playerSeg=segs[Math.floor((pos+playerZ)/segL)%segs.length];if((th.night||(playerSeg&&playerSeg.tun))&&musk<=0)__crDrawHeadlightBeams(cxp+slide,cyp-bump,sw,1.35);if(musk>0)drawMuskCraft(cxp+slide,cyp-bump-38,sw,flash);
   else drawVehPose(cxp+slide,cyp-bump,sw,star>0&&flash%.2<.1?'#ffd400':(MODE==2?'#f2f2f2':myCol),MODE==2?-1:myV,drift>.15?(driftSide<0?4:3):(carTurn<-.18?2:carTurn>.18?1:0),Math.floor(pos/70)%2)}if(musk>0){ctx.save();ctx.globalAlpha=.9;for(let fi=0;fi<2;fi++){const dx=fi===0?-13:13,ex=cxp+dx,ey=cyp-18;const flame=ctx.createLinearGradient(ex,ey,ex,ey+48);flame.addColorStop(0,'#dffaff');flame.addColorStop(.35,'#42dfff');flame.addColorStop(1,'#ff8a32');ctx.fillStyle=flame;ctx.beginPath();ctx.moveTo(ex-4,ey);ctx.lineTo(ex+4,ey);ctx.lineTo(ex+2+Math.sin(flash*18+dx)*3,ey+44);ctx.lineTo(ex-2,ey+44);ctx.fill()}ctx.restore()}ctx.restore();
  if(crash>0&&flash%.3<.15){ctx.fillStyle='#fff';ctx.font='bold 16px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText('CRASH!',W/2,70)}
  for(const p of driftTrail){ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
@@ -1119,7 +1126,7 @@ function render(){
   if(wx=='clear'&&!th.night){const sx=W*.72,sy=H/2-36;ctx.save();ctx.globalCompositeOperation='lighter';const flareKey=W+'x'+H;if(flareKey!==__crLensFlareKey){__crLensFlareKey=flareKey;__crLensFlareGradient=ctx.createRadialGradient(sx,sy,0,sx,sy,H*.5);__crLensFlareGradient.addColorStop(0,'#fff2c022');__crLensFlareGradient.addColorStop(1,'#fff2c000')}ctx.fillStyle=__crLensFlareGradient;ctx.fillRect(0,0,W,H);ctx.globalAlpha=.1;for(const[k2,r2,c2] of __crFlareRings){ctx.fillStyle=c2;ctx.beginPath();ctx.arc(sx+(W/2-sx)*k2*2,sy+(H/2+20-sy)*k2*2,r2,0,7);ctx.fill()}ctx.restore()}
   if(speed>MAX*.7&&state=='play'){ctx.strokeStyle='#ffffff'+(Math.min(40,(speed/MAX-.7)*160|0)+16).toString(16).padStart(2,'0');ctx.lineWidth=.8;ctx.beginPath();for(let i=0;i<20;i++){const a=i/20*6.283+Math.sin(flash*3+i)*.05;ctx.moveTo(W/2+Math.cos(a)*W*.46,H*.45+Math.sin(a)*H*.5);ctx.lineTo(W/2+Math.cos(a)*W*.64,H*.45+Math.sin(a)*H*.74)}ctx.stroke()}}
  // HUD
- if(state=='win'){if(MODE==2)drawChaseVictory(winT);else if(MODE==0){if(winT<8)drawOutrunVictoryCine(winT);else drawOutrunMap(winT);}else drawEnding(winT)}else if(state=='over'){if(MODE===0)drawOutrunMap(winT);else drawDefeat(winT)}else if(state=='podium')drawPodium(podEntries(raceNo-1),'COURSE '+raceNo+' / '+NR(),podT,false);else if(state=='mega')drawPodium(podEntries(0,true),'GRAND CHAMPION',podT,true);else if(state=='brief')drawBrief(briefT);else if(state=='arrest')drawArrest(arT);else if(state=='escape')drawEscape(escT);
+ if(state=='win'){if(MODE==2)drawChaseVictory(winT);else if(MODE==0){if(winT<8)drawOutrunVictoryCine(winT);else drawOutrunMap(winT);}else drawEnding(winT)}else if(state=='over'){drawDefeat(winT)}else if(state=='podium')drawPodium(podEntries(raceNo-1),'COURSE '+raceNo+' / '+NR(),podT,false);else if(state=='mega')drawPodium(podEntries(0,true),'GRAND CHAMPION',podT,true);else if(state=='brief')drawBrief(briefT);else if(state=='arrest')drawArrest(arT);else if(state=='escape')drawEscape(escT);
  const OXh=(W-320)/2;ctx.save();ctx.translate(OXh,0);
  const T=(t,xx,yy,c)=>{ctx.fillStyle='#000';ctx.fillText(t,xx+1,yy+1);ctx.fillStyle=c;ctx.fillText(t,xx,yy)};
  if(!NOHUD.includes(state)){
@@ -1672,7 +1679,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  for(let i=smoke.length-1;i>=0;i--){const p=smoke[i];p.t+=dt;p.y-=18*dt;p.x+=p.vx*dt;if(p.t>.7){const last=smoke.pop();if(i<smoke.length)smoke[i]=last;if(__crSmokePool.length<160)__crSmokePool.push(p)}}
  for(let i=driftTrail.length-1;i>=0;i--){const p=driftTrail[i];p.t+=dt;if(p.t>1.25){const last=driftTrail.pop();if(i<driftTrail.length)driftTrail[i]=last;if(__crDriftPool.length<240)__crDriftPool.push(p)}}
  if((state=='over'||state=='win')&&!saved){saved=1;saveScore()}
- if(state=='win'||state=='over')winT+=dt;
+ if(state=='win'||state=='over')winT+=dt;if(state=='over'&&winT>=7.2){toMenu();return}
  if(state=='brief'){briefT+=dt;if(briefT>BL){state=MODE==2?'play':'count';if(MODE!=2)cd=3.9;else{speed=MAX*.35;msg='POURSUITE !';msgT=2}}}
  if(state=='arrest'){arT+=dt;if(arT>3.8){state='play';endCourse()}}
  if(state=='escape'){escT+=dt;if(escT>3.6){bnd.hp=0;state='over';winT=0;msg='RETOUR À LA CIRCULATION';sayF('Échec de mission. Vous êtes rétrogradé à la circulation.')}}
@@ -1702,7 +1709,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     if(px*allowed<.12)px=allowed*(.12+nearFork*.24);
     pxVel=0;
    }if(fk()&&!forkSaid&&ps.i>=N-FORK){forkSaid=1;say('Left or right?',1.6,1.1)}if(time<10&&!lowSaid){lowSaid=1;say('Hurry up!',1.3,1.25)}if(time>12)lowSaid=0}
- if(state=='play'&&MP){raceT=mpRaceStartAt>0?Math.max(0,(Date.now()-mpRaceStartAt)/1000):raceT+dt;time=99}else if(state=='play'&&MODE!=2){time-=dt;if(time<=0){time=0;state='over';winT=0;say('Time up!',1.4,1.1)}}
+ if(state=='play'&&MP){raceT=mpRaceStartAt>0?Math.max(0,(Date.now()-mpRaceStartAt)/1000):raceT+dt;time=99}else if(state=='play'&&MODE!=2){time-=dt;if(time<=0){time=0;speed=0;crClearDriveInput();state='over';winT=0;say('Time up!',1.4,1.1)}}
  if(crash>0){crash-=dt;ang+=dt*12;speed=Math.max(0,speed-MAX*2*dt);if(crash<=0){ang=0;px=Math.max(-.8,Math.min(.8,px))}}
  else{const gm=gear?1:.62,accelRate=gear?.2:.36;
   if(state=='play'&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm)speed+=MAX*accelRate*(1-sp*.55)*dt;else speed-=MAX*.15*dt}

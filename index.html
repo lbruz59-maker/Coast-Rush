@@ -223,13 +223,13 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
 #menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important}
 #menu #crProfileDialog{z-index:1100!important}
-/* V108 — the artwork is the only visible menu; legacy controls cannot receive pointer input. */
-#menu{isolation:isolate!important;overflow:hidden!important}
+/* V109 — restore the correct artwork URL and remove every leftover status badge. */
+#menu{position:fixed!important;inset:0!important;isolation:isolate!important;overflow:hidden!important;background:#06152a url("android-app/app/src/main/assets/menu-start.jpg") center center/100% 100% no-repeat!important}
 #menu > :not(#crMenuHotspots):not(#crProfileDialog){display:none!important;visibility:hidden!important;pointer-events:none!important}
 #menu #mc,#menu #mc *{display:none!important;visibility:hidden!important;pointer-events:none!important}
 #menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
-#menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important}
-#menu #crMenuHotspots .cr-status{display:none!important}
+#menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important;appearance:none!important;-webkit-appearance:none!important}
+#menu #crMenuHotspots .cr-status{display:none!important;visibility:hidden!important}
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1439,6 +1439,7 @@ function loop(t){
  };
  /* V108: no visible status badges on the artwork; keep state accessible only to assistive navigation. */
  const sync=()=>{
+  host.querySelectorAll('.cr-status').forEach(node=>node.remove());
   defs.forEach(([cls,label],i)=>{
    const b=host.children[i];if(!b)return;
    const value=statusFor(cls);

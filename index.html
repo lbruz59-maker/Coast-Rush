@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V105 – Mobile Menu Fix</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V106 – Tunnel & Arch Render Fix</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -309,8 +309,12 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  loopS=-1;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
- // Tunnels désactivés : aucun segment n'est converti en tunnel.
- segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
+ // V106 — vrai tunnel de 10 km, placé sur une zone libre hors looping et hors fourche.
+ const TUNNEL_LENGTH_METERS=10000,TUNNEL_SEGMENTS=Math.ceil(TUNNEL_LENGTH_METERS/segL);
+ let tunnelStart=-1;const tunnelCandidates=[];const tunnelPreferred=Math.floor(N*.58);
+ for(let d=0;d<N;d++){const a=tunnelPreferred+d,b=tunnelPreferred-d;if(a>=90)tunnelCandidates.push(a);if(b>=90)tunnelCandidates.push(b)}
+ for(const c of tunnelCandidates){if(c+TUNNEL_SEGMENTS>=N-FORK-20)continue;let clear=true;for(let j=c;j<c+TUNNEL_SEGMENTS;j++){if(segs[j].loop){clear=false;break}}if(clear){tunnelStart=c;break}}
+ segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
@@ -320,7 +324,11 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
  
- [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
+ // V106 — deux corridors d'arches réellement espacées de 10 m (position fractionnaire rendue en profondeur).
+ const ARCH_GROUP_METERS=3000,ARCH_SPACING_METERS=10,ARCH_GROUP_SEGMENTS=Math.ceil(ARCH_GROUP_METERS/segL);
+ function addArchCorridor(preferredStart){let start=-1;for(let d=0;d<N;d++){const candidates=[preferredStart+d,preferredStart-d];for(const c of candidates){if(c<90||c+ARCH_GROUP_SEGMENTS>=N-FORK-12)continue;let clear=true;for(let j=c;j<c+ARCH_GROUP_SEGMENTS;j++){if(segs[j].loop||segs[j].tun){clear=false;break}}if(clear){start=c;break}}if(start>=0)break}
+  if(start<0)return;for(let j=0;j<ARCH_GROUP_SEGMENTS;j++){const seg=segs[start+j];for(let meters=0;meters<segL&&j*segL+meters<ARCH_GROUP_METERS;meters+=ARCH_SPACING_METERS)seg.sp.push({t:'A',o:0,f:meters/segL})}}
+ addArchCorridor(Math.floor(N*.22));addArchCorridor(Math.floor(N*.76));
  segs.forEach(s=>{if(s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
@@ -949,8 +957,9 @@ function deco(sp,x,y,sc){
 const __crDecoGroupCache=new Map();
 let __crDecoGroupBytes=0,__crDecoGroupHits=0,__crDecoGroupMisses=0,__crDecoGroupDrawCalls=0;
 let __crDecoGroupFallbacks=0,__crDecoGroupSprites=0;
-function __crDrawDecoGroup(seg,baseX,baseY,sc){
- const sprites=seg.sp||[];
+function __crDrawDecoGroup(seg,baseX,baseY,sc,endX,endY,endSc){
+ const allSprites=seg.sp||[];if(!allSprites.length)return;const sprites=[];
+ for(const sp of allSprites){if(Number.isFinite(sp.f)){const f=Math.max(0,Math.min(.999,sp.f)),ex=endX==null?baseX:endX,ey=endY==null?baseY:endY,es=endSc==null?sc:endSc,fs=lerp(sc,es,f);deco(sp,lerp(baseX,ex,f)+fs*sp.o*roadW*160,lerp(baseY,ey,f),fs)}else sprites.push(sp)}
  if(!sprites.length)return;
  const qsc=Math.round(sc*64)/64; // quantification plus large = réutilisation du cache entre images
  if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
@@ -1071,12 +1080,20 @@ function render(){
   if(d){const l1=aw*.025,l2=bw*.025;ctx.fillStyle=fg('#fff',ft);ctx.beginPath();const markCount=fF?2:4;for(let mi=0;mi<markCount;mi++){const o=fF?(mi===0?-.5:.5):(mi===0?-.34:mi===1?.34:mi===2?-.96:.96);ctx.moveTo(ax+aw*o-l1,a.y);ctx.lineTo(ax+aw*o+l1,a.y);ctx.lineTo(bx+bw*o+l2,by);ctx.lineTo(bx+bw*o-l2,by);ctx.closePath()}ctx.fill()}
   if(s.shd&&!fF&&th.d!='h'){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}
+  // V106 — coque du tunnel, murs latéraux et éclairages intérieurs puissants.
+  if(s.tun){const ax=a.x,bx=b.x,aw=a.w,bw=b.w,roofA=a.y-aw*.66,roofB=b.y-bw*.66;
+   __crPoly4(fg('#172231',ft),ax-aw*1.14,roofA,ax+aw*1.14,roofA,bx+bw*1.14,roofB,bx-bw*1.14,roofB);
+   __crPoly4(fg('#303b49',ft),ax-aw*1.14,roofA,ax-aw*.98,a.y,bx-bw*.98,b.y,bx-bw*1.14,roofB);
+   __crPoly4(fg('#303b49',ft),ax+aw*.98,a.y,ax+aw*1.14,roofA,bx+bw*1.14,roofB,bx+bw*.98,b.y);
+   if(s.tunIndex%2===0){const lx=(ax+bx)*.5,ly=(roofA+roofB)*.5+((aw+bw)*.5)*.12,lw=Math.max(2,((aw+bw)*.5)*.22);ctx.fillStyle='#fff0b8';ctx.fillRect(lx-lw*.5,ly,lw,Math.max(1,lw*.12));ctx.globalAlpha=.24;ctx.fillStyle='#ffe9a0';ctx.fillRect(lx-lw*1.8,ly-lw*.35,lw*3.6,lw*.8);ctx.globalAlpha=1}
+   if(s.tunStart){ctx.fillStyle=fg('#65594e',ft);ctx.beginPath();ctx.moveTo(ax-aw*1.75,a.y);ctx.lineTo(ax-aw*1.55,a.y-aw*1.05);ctx.lineTo(ax-aw*.95,a.y-aw*1.42);ctx.lineTo(ax-aw*.45,a.y-aw*1.56);ctx.lineTo(ax+aw*.48,a.y-aw*1.55);ctx.lineTo(ax+aw*1.12,a.y-aw*1.22);ctx.lineTo(ax+aw*1.72,a.y);ctx.closePath();ctx.fill();ctx.fillStyle='#080e18';ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.closePath();ctx.fill();ctx.strokeStyle='#b8a58e';ctx.lineWidth=Math.max(2,aw*.045);ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.stroke()}
+  }
  maxY=b.y}
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  __crDrawDecoGroup(s,a.x,a.y,a.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
+  __crDrawDecoGroup(s,a.x,a.y,a.sc,b.x,b.y,b.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
    const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;
    deco(__crForkBlockSprite,bx0,a.y,a.sc);

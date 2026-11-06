@@ -1,3 +1,4 @@
+// Coast Rush V106 Fire TV build
 plugins { id 'com.android.application' }
 
 android {

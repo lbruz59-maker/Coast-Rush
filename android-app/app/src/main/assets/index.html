@@ -230,6 +230,35 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
 #menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important;appearance:none!important;-webkit-appearance:none!important}
 #menu #crMenuHotspots .cr-status{display:none!important;visibility:hidden!important}
+
+/* V110 — recalage des zones tactiles sur les boutons réellement dessinés dans menu-start.jpg. */
+#menu #crMenuHotspots{position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
+#menu #crMenuHotspots button{
+ position:absolute!important;display:block!important;pointer-events:auto!important;
+ margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+ outline:0!important;background:transparent!important;box-shadow:none!important;
+ color:transparent!important;clip-path:none!important;filter:none!important;
+ -webkit-tap-highlight-color:transparent!important;touch-action:manipulation!important;
+}
+#menu #crMenuHotspots button:focus,
+#menu #crMenuHotspots button:focus-visible,
+#menu #crMenuHotspots button.cr-active,
+#menu #crMenuHotspots button:active{
+ outline:0!important;border:0!important;box-shadow:none!important;background:transparent!important;
+}
+#menu #crMenuHotspots .music{left:81.5%!important;top:3.0%!important;width:17.0%!important;height:5.8%!important}
+#menu #crMenuHotspots .tilt{left:81.5%!important;top:8.5%!important;width:17.0%!important;height:5.8%!important}
+#menu #crMenuHotspots .gear{left:80.5%!important;top:19.0%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .mode{left:80.5%!important;top:28.5%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .vehicle{left:80.5%!important;top:38.0%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .bonus{left:80.5%!important;top:47.5%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .quality{left:80.5%!important;top:57.0%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .options{left:80.5%!important;top:66.5%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .quit{left:80.5%!important;top:76.0%!important;width:18.5%!important;height:7.3%!important}
+#menu #crMenuHotspots .profile{left:13.0%!important;top:82.0%!important;width:22.0%!important;height:15.0%!important}
+#menu #crMenuHotspots .play{left:37.5%!important;top:82.0%!important;width:29.0%!important;height:15.0%!important}
+#menu #crMenuHotspots .difficulty{left:69.0%!important;top:82.0%!important;width:23.5%!important;height:15.0%!important}
+#menu #crMenuHotspots .gas{display:none!important;pointer-events:none!important}
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1398,15 +1427,15 @@ function loop(t){
  const defs=[
   ['play','Jouer',()=>safeClick('go')],
   ['mode','Mode de jeu',()=>safeClick('md')],
-  ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
+  ['options','Commandes',()=>safeClick('ui-touch')],
   ['profile','Profil',()=>{crShowProfile()}],
   ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
   ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
   ['music','Musique',()=>safeClick('mm')],
-  ['tilt','Inclinaison',()=>safeClick('gy')],
-  ['quality','Qualité',()=>safeClick('ql')],
-  ['bonus','Bonus',()=>safeClick('bn')],
-  ['gear','Boîte',()=>safeClick('ag')],
+  ['tilt','Sons',()=>safeClick('sf')],
+  ['quality','Classement',()=>{const h=$('hs');if(h)toast(h.textContent||'Classement')}],
+  ['bonus','Carrière',()=>safeClick('md')],
+  ['gear','Multijoueur',()=>safeClick('du')],
   ['gas','Gaz',()=>safeClick('gz')],
   ['difficulty','Difficulté',()=>safeClick('df')]
  ];

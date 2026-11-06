@@ -330,7 +330,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(start<0)return;for(let j=0;j<ARCH_GROUP_SEGMENTS;j++){const seg=segs[start+j];for(let meters=0;meters<segL&&j*segL+meters<ARCH_GROUP_METERS;meters+=ARCH_SPACING_METERS)seg.sp.push({t:'A',o:0,f:meters/segL})}}
  addArchCorridor(Math.floor(N*.22));addArchCorridor(Math.floor(N*.76));
  segs.forEach(s=>{if(s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
- cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
+ cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:900+R()*(trackLen-(FORK+60)*segL-900),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
@@ -1575,7 +1575,7 @@ function saveScore(){try{const a=JSON.parse(localStorage.getItem('cr_scores')||'
 showHS();
 $('md').onclick=()=>{MODE=(MODE+1)%5;if(MODE!==3)MODE0=MODE;$('md').textContent='Mode : '+['OUTRUN (5 étapes, fourches)','GRAND TOUR (15 circuits)','CHASE H.Q. (police)','COURSE LIBRE','TOUR DU MONDE (10 capitales)'][MODE];if(window.__crSyncMenuArtwork)window.__crSyncMenuArtwork()};
 if($('pn')){$('pn').value=/^J[A-Z0-9]{3}$/.test(myName)?'':myName;$('pn').oninput=()=>{const v=$('pn').value.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase().slice(0,10);if(v){myName=v;try{localStorage.setItem('cr_name',v)}catch(e){}}}}
-let autoG=isTV?1:0,autoGas=isTV?1:0,tapAx=0,tapT=0;$('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE');$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL');$('gz').onclick=()=>{autoGas^=1;$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL')};
+let autoG=isTV?1:0,autoGas=1,tapAx=0,tapT=0;$('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE');$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL');$('gz').onclick=()=>{autoGas^=1;$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL')};
 $('ag').onclick=()=>{autoG^=1;$('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE')};
 $('mr').onclick=()=>{mpRaces^=1;$('mr').textContent='Multi : '+(mpRaces?'COURSES + PODIUMS (bêta)':'COURSE LIBRE')};
 $('bn').onclick=()=>{useItems^=1;$('bn').textContent='Bonus : '+(useItems?'ON':'OFF');if(!useItems)item=0};
@@ -1732,7 +1732,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(state=='play'&&MP){raceT=mpRaceStartAt>0?Math.max(0,(Date.now()-mpRaceStartAt)/1000):raceT+dt;time=99}else if(state=='play'&&MODE!=2){time-=dt;if(time<=0){time=0;speed=0;crClearDriveInput();state='over';winT=0;say('Time up!',1.4,1.1)}}
  if(crash>0){crash-=dt;ang+=dt*12;speed=Math.max(0,speed-MAX*2*dt);if(crash<=0){ang=0;px=Math.max(-.8,Math.min(.8,px))}}
  else{const gm=gear?1:.62,accelRate=gear?.2:.36;
-  if(state=='play'&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm)speed+=MAX*accelRate*(1-sp*.55)*dt;else speed-=MAX*.15*dt}
+  if(state=='play'&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm)speed+=MAX*accelRate*(1-sp*.55)*dt;else speed-=MAX*.15*dt}if(state=='play'&&autoGas&&!(inp.b||gpad.b)&&speed<MAX*.08)speed=Math.min(MAX*.08,speed+MAX*.18*dt);
   else speed-=MAX*(.09+(state!='play'?.3:0))*dt;
   const st=steer(),accelerating=!!(inp.g||gpad.g||autoGas),braking=!!(inp.b||gpad.b);
    if(MODE===2&&braking){boost=0;star=0;}

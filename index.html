@@ -261,7 +261,7 @@ window.__coastRushLifecycle=function(kind){
  else if(kind==='resume'){window.__coastRushNativePaused=false;try{if(ac&&ac.state==='suspended'&&document.visibilityState!=='hidden')ac.resume()}catch(e){}}
 };
  document.addEventListener('visibilitychange',()=>window.__coastRushLifecycle(document.hidden?'pause':'resume'));
-let inputMode=isTV?'controller':(('ontouchstart' in window||navigator.maxTouchPoints>0)?'touch':'keyboard');
+let inputMode=isTV?'controller':((/Android|iPhone|iPad|iPod|Mobile/i.test(UA)||('ontouchstart' in window)||navigator.maxTouchPoints>0)?'touch':'keyboard');
 function applyInputMode(){const touch=inputMode==='touch';document.querySelectorAll('.drive-control').forEach(el=>{el.classList.toggle('input-touch',touch);el.style.display=touch?'flex':'none'});[['ui-key','keyboard'],['ui-pad','controller'],['ui-touch','touch']].forEach(([id,m])=>{const el=document.getElementById(id);if(el)el.classList.toggle('sel',inputMode===m)});const hint=document.getElementById('input-hint');if(hint)hint.textContent=inputMode==='keyboard'?'Clavier : flèches / WASD':inputMode==='controller'?'Manette : stick gauche, gâchette / boutons':'Tactile : commandes affichées à l’écran'}
 
 window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=1000,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
@@ -353,8 +353,8 @@ addEventListener('blur',()=>{for(const k in inp)inp[k]=0;document.querySelectorA
 document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in inp)inp[k]=0}});
 
 document.querySelectorAll('[data-k]').forEach(b=>{const k=b.dataset.k;
- b.addEventListener('pointerdown',e=>{if(inputMode!=='touch')return;e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(x){}inp[k]=1;b.classList.add('on')});
- ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{inp[k]=0;b.classList.remove('on')}))});
+ b.addEventListener('pointerdown',e=>{if(inputMode!=='touch'&&e.pointerType!=='touch')return;e.preventDefault();inp[k]=1;b.classList.add('on');try{b.setPointerCapture(e.pointerId)}catch(x){}});
+ ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>{inp[k]=0;b.classList.remove('on')}));b.addEventListener('touchstart',e=>{e.preventDefault();inp[k]=1;b.classList.add('on')},{passive:false});b.addEventListener('touchend',()=>{inp[k]=0;b.classList.remove('on')});b.addEventListener('touchcancel',()=>{inp[k]=0;b.classList.remove('on')})});
 $('it').addEventListener('pointerdown',e=>{if(inputMode!=='touch')return;e.preventDefault();useItem()});addEventListener('keydown',e=>{if(e.key=='x'||e.key=='X')useItem()});
 $('gr').addEventListener('pointerdown',e=>{if(inputMode!=='touch')return;e.preventDefault();toggleGear()});$('hn').addEventListener('pointerdown',e=>{if(inputMode!=='touch')return;e.preventDefault();horn()});['pointerdown','touchend','click','keydown'].forEach(ev=>addEventListener(ev,()=>{unlockIOS();if(ac&&ac.state==='suspended'&&ac.resume)ac.resume().catch(()=>{})},true));
 $('tvhide').addEventListener('click',()=>{const ids=['l','r','g','br','gr','it','hn'];const hide=$('tvhide').dataset.hidden!=='1';ids.forEach(id=>{const el=$(id);if(el&&inputMode==='touch')el.style.display=hide?'none':'flex'});$('tvhide').dataset.hidden=hide?'1':'0';$('tvhide').textContent=hide?'⌄':'⌃'});

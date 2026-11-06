@@ -1515,6 +1515,11 @@ requestAnimationFrame(loop);
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
+  let driveDiag=document.getElementById('crDriveDiag');
+  if(!driveDiag){driveDiag=document.createElement('div');driveDiag.id='crDriveDiag';driveDiag.style.cssText='position:fixed;left:6px;top:6px;z-index:9999;max-width:calc(100vw - 12px);padding:5px 7px;border:1px solid #6deaff;border-radius:5px;background:#061323e8;color:#eaffff;font:10px/1.35 monospace;pointer-events:none;white-space:pre-wrap';document.body.appendChild(driveDiag)}
+  const diagActive=state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega';
+  driveDiag.style.display=diagActive?'block':'none';
+  if(diagActive)driveDiag.textContent='CR DIAG | '+state.toUpperCase()+' | VIT '+Math.round(speed)+' | POS '+Math.round(pos)+' | GAZ '+(inp.g?1:0)+' | PAD '+(gpad.g?1:0)+' | AUTO '+(autoGas?1:0)+' | CD '+Number(cd||0).toFixed(1);
   const r0=performance.now();if(state!=='menu')render();crRenderMs=performance.now()-r0;crUpdateSamples[crWorkSampleWrite]=crUpdateMs;crRenderSamples[crWorkSampleWrite]=crRenderMs;crWorkSampleWrite=(crWorkSampleWrite+1)%180;if(crWorkSampleCount<180)crWorkSampleCount++;
   if(state==='play'&&t-crWindowStart>=1000){
    const span=t-crWindowStart,rafAvg=crRafCount?crRafSum/crRafCount:0,rafMax=crRafMax;

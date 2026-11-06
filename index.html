@@ -309,7 +309,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  loopS=-1;for(let k=0;k<32;k++){road(10+R()*15|0,20+R()*30|0,10+R()*15|0,R()<Math.max(.05,.3-.015*stage)?0:Math.round((R()-.5)*12*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
- const tl=600;let tS=-1;if(R()<.85){tS=(N*(.3+R()*.3))|0;if(loopS>=0&&tS+tl>loopS-40&&tS<loopE+40)tS=loopE+45;if(tS+tl>N-FORK-60)tS=-1}segs.forEach(s=>{s.tun=tS>=0&&s.i>=tS&&s.i<tS+tl;s.tS=tS});
+ // Tunnels désactivés : aucun segment n'est converti en tunnel.
  segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:-.8});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.5+R()*.9),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
@@ -319,9 +319,9 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(Math.abs(s.curve)>3.5&&i%5==0)s.sp.push({t:'S',o:-Math.sign(s.curve)*1.3,txt:s.curve>0?'▶':'◀',bg:'#ffd400'});
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
- segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tS+tl-1,k:s.i}]}});
- [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.tun&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
- segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
+ 
+ [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
+ segs.forEach(s=>{if(s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
@@ -927,7 +927,7 @@ function deco(sp,x,y,sc){
  const projected=sc*3200*H/2;
  // Le LOD existant reste maître : aucun objet visible n'est supprimé par ce cache.
  
- const largeStatic=t==='T'||t==='sm'||t==='ap'||t==='sc'||t==='bs'||t==='gs'||t==='rt'||t==='cf'||t==='ht'||t==='ho'||t==='ec'||t==='sk';
+ const largeStatic=t==='sm'||t==='ap'||t==='sc'||t==='bs'||t==='gs'||t==='rt'||t==='cf'||t==='ht'||t==='ho'||t==='ec'||t==='sk';
  if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)){decoRaster(sp,x,y,sc);return;}
  const qsc=Math.round(sc*256)/256;
  const projectedQ=qsc*3200*H/2;
@@ -1066,10 +1066,10 @@ function render(){
  for(let n=0;n<drawN&&bs.i+n<N;n++){const s=segs[bs.i+n],lz=0,z1=s.i*segL+lz-pos,z2=z1+segL,cx=px*roadW;
   const a=__crProjectPoint(s.__crA||(s.__crA={}),0,s.y1,z1,cx-x,cy),b=__crProjectPoint(s.__crB||(s.__crB={}),0,s.y2,z2,cx-x-dx,cy);x+=dx;dx+=s.curve;
   s.clip=maxY;s.v=0;if(z1<=camD||b.y>=a.y||b.y>=maxY)continue;
-  s.v=1;s.a=a;s.b=b;fogC=s.tun?'#0a0a12':curSky[1];s.ft=Math.min(1,(n/drawN)**2*FM+(s.tun?.4:0));vis.push(s);const ft=s.ft,by=b.y-.6;const d=(s.i/3|0)%2;
+  s.v=1;s.a=a;s.b=b;fogC=curSky[1];s.ft=Math.min(1,(n/drawN)**2*FM);vis.push(s);const ft=s.ft,by=b.y-.6;const d=(s.i/3|0)%2;
  __crPoly4(fg(curG[d?0:1],ft),0,by,W,by,W,a.y,0,a.y);
  if(s.sea){const l1=a.x-a.w*1.8,l2=b.x-b.w*1.8;__crPoly4(fg(d?'#1f8fe0':'#2a9cef',ft),0,a.y,l1,a.y,l2,by,0,by);__crPoly4('#fff8',l1,a.y,l1+a.w*.12,a.y,l2+b.w*.12,by,l2,by)}
- const fF=forkActive&&s.i>=N-FORK,fa=fF?Math.min(1,(s.i-(N-FORK))/FORK):0,fb=fF?Math.min(1,(s.i+1-(N-FORK))/FORK):0,rl=!fF&&!s.tun&&((s.i/90|0)%3==1);
+ const fF=forkActive&&s.i>=N-FORK,fa=fF?Math.min(1,(s.i-(N-FORK))/FORK):0,fb=fF?Math.min(1,(s.i+1-(N-FORK))/FORK):0,rl=!fF&&((s.i/90|0)%3==1);
  if(fF)__crPoly4(fg('#2f9a3a',ft),a.x-a.w*.9*fa,a.y,a.x+a.w*.9*fa,a.y,b.x+b.w*.9*fb,by,b.x-b.w*.9*fb,by);
  for(let sideIndex=0;sideIndex<(fF?2:1);sideIndex++){const sd=fF?(sideIndex===0?-1:1):0,ax=a.x+a.w*sd*(.5+.9*fa),bx=b.x+b.w*sd*(.5+.9*fb),k2=fF?.5:1,aw=a.w*k2,bw=b.w*k2,r1=aw*.14,r2=bw*.14,rc=fg((s.i/2|0)%2?'#e8203a':'#fff',ft);
   ctx.fillStyle=rc;ctx.beginPath();ctx.moveTo(ax-aw-r1,a.y);ctx.lineTo(ax-aw,a.y);ctx.lineTo(bx-bw,by);ctx.lineTo(bx-bw-r2,by);ctx.closePath();ctx.moveTo(ax+aw+r1,a.y);ctx.lineTo(ax+aw,a.y);ctx.lineTo(bx+bw,by);ctx.lineTo(bx+bw+r2,by);ctx.closePath();ctx.fill();
@@ -1079,7 +1079,7 @@ function render(){
   for(let oi=0;oi<2;oi++){const o=oi===0?-.45:.45;ctx.moveTo(ax+aw*(o-.13),a.y);ctx.lineTo(ax+aw*(o+.13),a.y);ctx.lineTo(bx+bw*(o+.13),by);ctx.lineTo(bx+bw*(o-.13),by);ctx.closePath()}
   ctx.fill();
   if(d){const l1=aw*.025,l2=bw*.025;ctx.fillStyle=fg('#fff',ft);ctx.beginPath();const markCount=fF?2:4;for(let mi=0;mi<markCount;mi++){const o=fF?(mi===0?-.5:.5):(mi===0?-.34:mi===1?.34:mi===2?-.96:.96);ctx.moveTo(ax+aw*o-l1,a.y);ctx.lineTo(ax+aw*o+l1,a.y);ctx.lineTo(bx+bw*o+l2,by);ctx.lineTo(bx+bw*o-l2,by);ctx.closePath()}ctx.fill()}
-  if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
+  if(s.shd&&!fF&&th.d!='h'){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}
  maxY=b.y}
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
@@ -1106,7 +1106,7 @@ function render(){
  ctx.restore();
  {const vk=W+'x'+H;if(vk!==__crVignetteKey){__crVignetteKey=vk;__crVignette=ctx.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.62);__crVignette.addColorStop(0,'#0000');__crVignette.addColorStop(1,'#0007')}ctx.fillStyle=__crVignette;ctx.fillRect(0,0,W,H)}
  // Tunnel interior is lit by its own ceiling fixtures; no full-screen black overlay.
- if(!ps.tun){if(wx=='rain'){ctx.strokeStyle='#cfe0ffaa';ctx.lineWidth=.7;ctx.beginPath();for(let i=0,n=isTV?58:150;i<n;i++){const x=(i*61+flash*40)%(W+40)-20,y=((i*37+flash*320)%(H+30))-10;ctx.moveTo(x,y);ctx.lineTo(x-3,y+10)}ctx.stroke();ctx.fillStyle='#10203a22';ctx.fillRect(0,0,W,H)}
+ {if(wx=='rain'){ctx.strokeStyle='#cfe0ffaa';ctx.lineWidth=.7;ctx.beginPath();for(let i=0,n=isTV?58:150;i<n;i++){const x=(i*61+flash*40)%(W+40)-20,y=((i*37+flash*320)%(H+30))-10;ctx.moveTo(x,y);ctx.lineTo(x-3,y+10)}ctx.stroke();ctx.fillStyle='#10203a22';ctx.fillRect(0,0,W,H)}
   else if(wx=='snow'){ctx.fillStyle='#ffffffcc';ctx.beginPath();for(let i=0,n=isTV?52:140;i<n;i++){const x=(i*53+Math.sin(flash*.7+i)*14+flash*8)%(W+20)-10,y=((i*29+flash*(30+i%5*8))%(H+10))-5;ctx.moveTo(x+.9+(i%3)*.5,y);ctx.arc(x,y,.9+(i%3)*.5,0,7)}ctx.fill()}
   else if(wx=='fog'){ctx.fillStyle=curSky[1]+'33';ctx.fillRect(0,0,W,H)}
   if(wx=='clear'&&!th.night){const sx=W*.72,sy=H/2-36;ctx.save();ctx.globalCompositeOperation='lighter';const flareKey=W+'x'+H;if(flareKey!==__crLensFlareKey){__crLensFlareKey=flareKey;__crLensFlareGradient=ctx.createRadialGradient(sx,sy,0,sx,sy,H*.5);__crLensFlareGradient.addColorStop(0,'#fff2c022');__crLensFlareGradient.addColorStop(1,'#fff2c000')}ctx.fillStyle=__crLensFlareGradient;ctx.fillRect(0,0,W,H);ctx.globalAlpha=.1;for(const[k2,r2,c2] of __crFlareRings){ctx.fillStyle=c2;ctx.beginPath();ctx.arc(sx+(W/2-sx)*k2*2,sy+(H/2+20-sy)*k2*2,r2,0,7);ctx.fill()}ctx.restore()}

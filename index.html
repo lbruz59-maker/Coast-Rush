@@ -1496,7 +1496,12 @@ function loop(t){
  defs.forEach(([cls,label,fn])=>{
   const b=document.createElement('button');b.type='button';b.className=cls;
   b.setAttribute('aria-label',label);b.title=label;
-  b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();try{fn()}catch(err){toast('Action indisponible : '+(err&&err.message||err))}sync()});
+  let pointerHandledAt=0;
+  const activate=e=>{e.preventDefault();e.stopPropagation();try{fn()}catch(err){toast('Action indisponible : '+(err&&err.message||err))}sync()};
+  if(cls==='play'){
+   b.addEventListener('pointerup',e=>{pointerHandledAt=Date.now();activate(e)});
+   b.addEventListener('click',e=>{if(Date.now()-pointerHandledAt<700){e.preventDefault();e.stopPropagation();return}activate(e)});
+  }else b.addEventListener('click',activate);
   host.appendChild(b);
  });
  $('menu').appendChild(host);

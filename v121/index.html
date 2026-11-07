@@ -1232,7 +1232,7 @@ function __crDrawSkyMountains(){
    // Les étoiles nocturnes sont statiques par pas de défilement : elles rejoignent
    // la couche de ciel pré-rendue au lieu de générer 45 rectangles à chaque frame.
    if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
-   for(let L=0;L<(th.bg?0:2);L++){const base=H/2,depth=L?13:22,shift=off*(L?1.6:1)+L*90;const shade=L?'#46566a':'#34465b',grad=ctx.createLinearGradient(0,base-depth-12,0,base);grad.addColorStop(0,shade);grad.addColorStop(1,th.m[L]||shade);ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,base);for(let x=0;x<=W;x+=4){const u=(x+shift)*.012,peak=Math.pow(Math.max(0,Math.sin(u*1.7)+.28*Math.sin(u*3.1)),1.35);ctx.lineTo(x,base-depth*(.25+peak*.75)-Math.abs(Math.sin(u*.55))*4)}ctx.lineTo(W,base);ctx.closePath();ctx.fill()}
+   for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
   }finally{ctx=live}
   __crSkyLayerKey=key;
  }

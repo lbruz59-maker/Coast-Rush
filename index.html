@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V107 – Crowd & Flag Marshal</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V108 – Tunnel Occlusion Fix</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
 :root{box-sizing:border-box}
@@ -314,7 +314,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  let tunnelStart=-1;const tunnelCandidates=[];const tunnelPreferred=Math.floor(N*.58);
  for(let d=0;d<N;d++){const a=tunnelPreferred+d,b=tunnelPreferred-d;if(a>=90)tunnelCandidates.push(a);if(b>=90)tunnelCandidates.push(b)}
  for(const c of tunnelCandidates){if(c+TUNNEL_SEGMENTS>=N-FORK-20)continue;let clear=true;for(let j=c;j<c+TUNNEL_SEGMENTS;j++){if(segs[j].loop){clear=false;break}}if(clear){tunnelStart=c;break}}
- segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:1.9});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.48+(k%2)*.34+R()*.12;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
+ segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2)&&!(tunnelStart>=0&&s.i>=tunnelStart-18&&s.i<tunnelStart+TUNNEL_SEGMENTS+18);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==15)s.sp.push({t:'F',o:1.9});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.48+(k%2)*.34+R()*.12;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
@@ -1068,7 +1068,7 @@ function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
  renderBackdrop();
  const bs=segs[Math.floor(pos/segL)%segs.length],bp=(pos%segL)/segL,ps=segs[Math.floor((pos+playerZ)/segL)%segs.length],pp=((pos+playerZ)%segL)/segL;
- const cy=camH+lerp(ps.y1,ps.y2,pp);let x=0,dx=-bs.curve*bp,maxY=H;const N=segs.length,vis=__crRenderVisible,forkActive=fk();vis.length=0;
+ const cy=camH+lerp(ps.y1,ps.y2,pp);let x=0,dx=-bs.curve*bp,maxY=H,tunnelEntry=null;const N=segs.length,vis=__crRenderVisible,forkActive=fk();vis.length=0;
  for(let n=0;n<drawN&&bs.i+n<N;n++){const s=segs[bs.i+n],lz=0,z1=s.i*segL+lz-pos,z2=z1+segL,cx=px*roadW;
   const a=__crProjectPoint(s.__crA||(s.__crA={}),0,s.y1,z1,cx-x,cy),b=__crProjectPoint(s.__crB||(s.__crB={}),0,s.y2,z2,cx-x-dx,cy);x+=dx;dx+=s.curve;
   s.clip=maxY;s.v=0;if(z1<=camD||b.y>=a.y||b.y>=maxY)continue;
@@ -1094,6 +1094,12 @@ function render(){
    __crPoly4(fg('#303b49',ft),ax-aw*1.14,roofA,ax-aw*.98,a.y,bx-bw*.98,b.y,bx-bw*1.14,roofB);
    __crPoly4(fg('#303b49',ft),ax+aw*.98,a.y,ax+aw*1.14,roofA,bx+bw*1.14,roofB,bx+bw*.98,b.y);
    if(s.tunIndex%2===0){const lx=(ax+bx)*.5,ly=(roofA+roofB)*.5+((aw+bw)*.5)*.12,lw=Math.max(2,((aw+bw)*.5)*.22);ctx.save();ctx.globalCompositeOperation='screen';const amber=ctx.createRadialGradient(lx,ly,0,lx,ly,lw*3.4);amber.addColorStop(0,'#fff1c9cc');amber.addColorStop(.22,'#ffb34788');amber.addColorStop(.62,'#ff8a2638');amber.addColorStop(1,'#ff7a2400');ctx.fillStyle=amber;ctx.fillRect(lx-lw*3.5,ly-lw*3.5,lw*7,lw*7);ctx.fillStyle='#fff0c2';ctx.fillRect(lx-lw*.5,ly,lw,Math.max(1,lw*.12));ctx.restore()}
+   if(s.tunStart)tunnelEntry={a,b,ft};
+  }
+ maxY=b.y}
+ // V108 — le relief de l'entrée est dessiné après toutes les portions de route :
+ // les segments lointains ne peuvent plus repeindre les parois sur la montagne.
+ if(tunnelEntry){ctx.save();ctx.globalAlpha=1;const a=tunnelEntry.a,b=tunnelEntry.b,ft=tunnelEntry.ft,ax=a.x,bx=b.x,aw=a.w,bw=b.w;
    if(s.tunStart){
      // Entrée rocheuse facettée : reliefs irréguliers, strates et ombres au lieu d'un bloc beige uniforme.
      const rock=ctx.createLinearGradient(ax-aw*1.7,a.y-aw*1.5,ax+aw*1.7,a.y);rock.addColorStop(0,'#343b46');rock.addColorStop(.28,'#77736b');rock.addColorStop(.52,'#a18b72');rock.addColorStop(.78,'#625e59');rock.addColorStop(1,'#292f3a');
@@ -1107,8 +1113,7 @@ function render(){
      ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.closePath();
      ctx.fill('evenodd');
      ctx.strokeStyle='#b8a58e';ctx.lineWidth=Math.max(2,aw*.045);ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.stroke()}
-  }
- maxY=b.y}
+ ctx.restore()}
  for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.

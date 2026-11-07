@@ -1241,10 +1241,14 @@ function __crDrawSkyMountains(){
 function renderBackdrop(){
  const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);
  {const sx=W*.72,sy=H/2-36,sr=th.night?9:15,sgk=W+'x'+H+'|'+(th.night?'n':'d');if(sgk!==__crSunGlowKey){__crSunGlowKey=sgk;__crSunGlow=ctx.createRadialGradient(sx,sy,2,sx,sy,sr*5);__crSunGlow.addColorStop(0,th.night?'#dfe8ff88':'#fff2b0cc');__crSunGlow.addColorStop(1,'#fff0')}const gl=__crSunGlow;ctx.globalAlpha=wx=='clear'?1:wx=='cloud'?.45:0;ctx.fillStyle=gl;ctx.fillRect(sx-sr*5,sy-sr*5,sr*10,sr*10);ctx.fillStyle=th.night?'#eef2ff':'#fffbe0';ctx.beginPath();ctx.arc(sx,sy,sr,0,7);ctx.fill();ctx.globalAlpha=1;
+  // Nuages animés restaurés depuis V41 : couches de nuages selon la météo.
+  for(let i=0;i<(wx=='clear'?6:12);i++){const cxk=(((i*97+skyOff*.8)%(W+120))+W+120)%(W+120)-60,cyk=12+(i*13)%46;ctx.fillStyle=th.night?'#8aa0ff22':wx=='rain'||wx=='cloud'?'#9aa2acaa':'#ffffff66';for(let j=0;j<4;j++){ctx.beginPath();ctx.ellipse(cxk+j*9,cyk+(j%2)*2,14,5,0,0,7);ctx.fill()}}
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
  __crDrawSkyMountains();
  if(th.bg)drawBgCached(th.bg);
+ // Oiseaux, avions, hélicoptères, drones, dirigeables et montgolfières.
+ drawSkyObjs();
  {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
 }
 // Projection caméra : les enregistrements de projection sont réutilisés par segment.

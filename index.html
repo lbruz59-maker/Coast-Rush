@@ -314,7 +314,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  let tunnelStart=-1;const tunnelCandidates=[];const tunnelPreferred=Math.floor(N*.58);
  for(let d=0;d<N;d++){const a=tunnelPreferred+d,b=tunnelPreferred-d;if(a>=90)tunnelCandidates.push(a);if(b>=90)tunnelCandidates.push(b)}
  for(const c of tunnelCandidates){if(c+TUNNEL_SEGMENTS>=N-FORK-20)continue;let clear=true;for(let j=c;j<c+TUNNEL_SEGMENTS;j++){if(segs[j].loop){clear=false;break}}if(clear){tunnelStart=c;break}}
- segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2)&&!(tunnelStart>=0&&s.i>=tunnelStart-20&&s.i<tunnelStart+TUNNEL_SEGMENTS+20);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==7)s.sp.push({t:'F',o:-1.12});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.16+(k%2)*.22+R()*.08;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
+ segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2)&&!(tunnelStart>=0&&s.i>=tunnelStart-20&&s.i<tunnelStart+TUNNEL_SEGMENTS+20);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==4)s.sp.push({t:'F',o:-1.12});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.16+(k%2)*.22+R()*.08;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
@@ -1046,7 +1046,7 @@ function __crDrawSkyMountains(){
    // Les étoiles nocturnes sont statiques par pas de défilement : elles rejoignent
    // la couche de ciel pré-rendue au lieu de générer 45 rectangles à chaque frame.
    if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
-   for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
+   for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?16:25)-(L?18:28)*Math.abs(Math.sin((x+o)*.025))-9*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
   }finally{ctx=live}
   __crSkyLayerKey=key;
  }
@@ -1139,7 +1139,7 @@ function render(){
   for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,1.0);drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur
- ctx.save();const cxp=W/2,cyp=H-48,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
+ ctx.save();const cxp=W/2,cyp=H-48,sw=320*(MODE==2?.18:VW[myV])*1.0*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));

@@ -1280,8 +1280,8 @@ function __crDrawSkyMountains(){
    // Les étoiles nocturnes sont statiques par pas de défilement : elles rejoignent
    // la couche de ciel pré-rendue au lieu de générer 45 rectangles à chaque frame.
    if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
-   // Montagne élargie de 50 % supplémentaires, hauteur conservée à +50 %.
-   ctx.save();ctx.translate(-W,-H*.25);ctx.scale(3,1.5);
+   // Montagne agrandie de 50 % en largeur et 20 % en hauteur par rapport au réglage précédent.
+   ctx.save();ctx.translate(-W*1.25,-H*.30);ctx.scale(4.5,1.8);
    for(let L=0;L<(th.bg?0:2);L++){ctx.fillStyle=th.m[L];ctx.beginPath();ctx.moveTo(0,H/2);for(let x=0;x<=W;x+=2){const o=off*(L?1.6:1)+L*90;ctx.lineTo(x,H/2-(L?8:14)-(L?10:18)*Math.abs(Math.sin((x+o)*.025))-6*Math.sin((x+o)*.1))}ctx.lineTo(W,H/2);ctx.fill()}
    ctx.restore();
   }finally{ctx=live}

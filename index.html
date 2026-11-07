@@ -1090,7 +1090,7 @@ function render(){
   // V109 — avant l'entrée, toute la coque du tunnel est limitée à l'ouverture rocheuse.
   if(s.tun){
    if(s.tunStart)tunnelEntry={a,b,ft};
-   const outsideTunnel=tunnelStart>=0&&Math.floor(pos/segL)<tunnelStart;
+   const playerSegment=segs[Math.floor(pos/segL)%segs.length];const outsideTunnel=!playerSegment.tun;
    if(outsideTunnel&&tunnelEntry){
     const ea=tunnelEntry.a,ex=ea.x,ey=ea.y,ew=ea.w;
     ctx.save();ctx.beginPath();ctx.moveTo(ex-ew,ey);ctx.lineTo(ex-ew*.94,ey-ew*.55);ctx.quadraticCurveTo(ex,ey-ew*1.22,ex+ew*.94,ey-ew*.55);ctx.lineTo(ex+ew,ey);ctx.closePath();ctx.clip();
@@ -1102,7 +1102,6 @@ function render(){
    __crPoly4(fg('#303b49',ft),ax+aw*.98,a.y,ax+aw*1.14,roofA,bx+bw*1.14,roofB,bx+bw*.98,b.y);
    if(s.tunIndex%2===0){const lx=(ax+bx)*.5,ly=(roofA+roofB)*.5+((aw+bw)*.5)*.12,lw=Math.max(2,((aw+bw)*.5)*.22);ctx.save();ctx.globalCompositeOperation='screen';const amber=ctx.createRadialGradient(lx,ly,0,lx,ly,lw*3.4);amber.addColorStop(0,'#fff1c9cc');amber.addColorStop(.22,'#ffb34788');amber.addColorStop(.62,'#ff8a2638');amber.addColorStop(1,'#ff7a2400');ctx.fillStyle=amber;ctx.fillRect(lx-lw*3.5,ly-lw*3.5,lw*7,lw*7);ctx.fillStyle='#fff0c2';ctx.fillRect(lx-lw*.5,ly,lw,Math.max(1,lw*.12));ctx.restore()}
    if(outsideTunnel&&tunnelEntry)ctx.restore();
-  }
   }
  maxY=b.y}
  // V108 — le relief de l'entrée est dessiné après toutes les portions de route :

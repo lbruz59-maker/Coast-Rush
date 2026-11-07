@@ -1151,7 +1151,7 @@ function render(){
      // Découpe réelle de la montagne : l'ouverture laisse voir la coque du tunnel déjà dessinée derrière.
      ctx.beginPath();
      ctx.moveTo(ax-aw*1.78,a.y);ctx.lineTo(ax-aw*1.62,a.y-aw*.42);ctx.lineTo(ax-aw*1.48,a.y-aw*.94);ctx.lineTo(ax-aw*1.18,a.y-aw*1.22);ctx.lineTo(ax-aw*.96,a.y-aw*1.08);ctx.lineTo(ax-aw*.72,a.y-aw*1.48);ctx.lineTo(ax-aw*.42,a.y-aw*1.31);ctx.lineTo(ax-aw*.12,a.y-aw*1.62);ctx.lineTo(ax+aw*.2,a.y-aw*1.44);ctx.lineTo(ax+aw*.48,a.y-aw*1.55);ctx.lineTo(ax+aw*.78,a.y-aw*1.19);ctx.lineTo(ax+aw*1.08,a.y-aw*1.3);ctx.lineTo(ax+aw*1.42,a.y-aw*.82);ctx.lineTo(ax+aw*1.7,a.y-aw*.34);ctx.lineTo(ax+aw*1.82,a.y);ctx.closePath();
-     ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.closePath();
+     ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.58,ax+aw*.94,a.y-aw*.82);ctx.lineTo(ax+aw,a.y);ctx.closePath();
      ctx.fill('evenodd');
      ctx.strokeStyle='#b8a58e';ctx.lineWidth=Math.max(3,aw*.10);ctx.beginPath();ctx.moveTo(ax-aw,a.y);ctx.lineTo(ax-aw*.94,a.y-aw*.55);ctx.quadraticCurveTo(ax,a.y-aw*1.22,ax+aw*.94,a.y-aw*.55);ctx.lineTo(ax+aw,a.y);ctx.stroke()
  ctx.restore()}

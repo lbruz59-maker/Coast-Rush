@@ -46,6 +46,10 @@ public class MainActivity extends Activity {
         webView.setFocusable(true);
         webView.setFocusableInTouchMode(true);
         WebSettings s = webView.getSettings();
+        // Vider le cache WebView à chaque lancement, sans toucher au DOM storage
+        // qui contient les scores, le pseudo et la progression du joueur.
+        webView.clearCache(true);
+        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setDatabaseEnabled(true);

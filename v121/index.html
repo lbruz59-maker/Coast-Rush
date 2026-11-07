@@ -1320,7 +1320,7 @@ function render(){
  if(fF)__crPoly4(fg('#2f9a3a',ft),a.x-a.w*.9*fa,a.y,a.x+a.w*.9*fa,a.y,b.x+b.w*.9*fb,by,b.x-b.w*.9*fb,by);
  for(let sideIndex=0;sideIndex<(fF?2:1);sideIndex++){const sd=fF?(sideIndex===0?-1:1):0,ax=a.x+a.w*sd*(.5+.9*fa),bx=b.x+b.w*sd*(.5+.9*fb),k2=fF?.5:1,aw=a.w*k2,bw=b.w*k2,r1=aw*.14,r2=bw*.14,rc=fg((s.i/2|0)%2?'#e8203a':'#fff',ft);
   ctx.fillStyle=rc;ctx.beginPath();ctx.moveTo(ax-aw-r1,a.y);ctx.lineTo(ax-aw,a.y);ctx.lineTo(bx-bw,by);ctx.lineTo(bx-bw-r2,by);ctx.closePath();ctx.moveTo(ax+aw+r1,a.y);ctx.lineTo(ax+aw,a.y);ctx.lineTo(bx+bw,by);ctx.lineTo(bx+bw+r2,by);ctx.closePath();ctx.fill();
-  __crPoly4(fg(s.loop?(d?'#2a6aff':'#2050d0'):wx=='snow'?(d?'#a9abb4':'#9fa1ab'):wx=='rain'?(d?'#4f525b':'#494c55'):d?'#6e6e72':'#65656a',ft),ax-aw,a.y,ax+aw,a.y,bx+bw,by,bx-bw,by);
+  __crPoly4(fg(s.loop?(d?'#2a6aff':'#2050d0'):s.tun?(d?'#383d48':'#303641'):wx=='snow'?(d?'#a9abb4':'#9fa1ab'):wx=='rain'?(d?'#4f525b':'#494c55'):d?'#6e6e72':'#65656a',ft),ax-aw,a.y,ax+aw,a.y,bx+bw,by,bx-bw,by);
   // Batch same-colour road details into one Canvas path instead of many fills.
   ctx.fillStyle='#00000012';ctx.beginPath();
   for(let oi=0;oi<2;oi++){const o=oi===0?-.45:.45;ctx.moveTo(ax+aw*(o-.13),a.y);ctx.lineTo(ax+aw*(o+.13),a.y);ctx.lineTo(bx+bw*(o+.13),by);ctx.lineTo(bx+bw*(o-.13),by);ctx.closePath()}
@@ -1652,7 +1652,8 @@ const crHud=document.getElementById('crPerfHud');
 function crReadNativeFrames(){try{if(typeof CoastRushFrameStats!=='undefined'&&CoastRushFrameStats&&typeof CoastRushFrameStats.getStats==='function')crNativeStats=JSON.parse(CoastRushFrameStats.getStats()||'{}');else crNativeStats={bridge:'absent'}}catch(e){crNativeStats={bridge:'error',bridgeError:String(e&&e.message||e)}}}
 let __crRouteMapClassState=null,__crPauseButtonVisible=null;
 function drawWeather(){
- if(wx!=='rain'&&wx!=='snow')return;
+ // Aucune précipitation ne doit être dessinée une fois dans un tunnel.
+ if(inTunnel|| (wx!=='rain'&&wx!=='snow'))return;
  ctx.save();
  if(wx==='rain'){ctx.strokeStyle='#cfe3ffaa';ctx.lineWidth=.8;ctx.beginPath();for(let i=0;i<90;i++){const x=((i*97+flash*60)%(W+40))-20,y=((i*61+flash*420)%(H+30))-15;ctx.moveTo(x,y);ctx.lineTo(x-3,y+9)}ctx.stroke()}
  else{ctx.fillStyle='#fff';for(let i=0;i<80;i++){const x=(((i*89+Math.sin(flash+i)*14)%W)+W)%W,y=((i*53+flash*45)%(H+10))-5;ctx.fillRect(x,y,1.6,1.6)}}

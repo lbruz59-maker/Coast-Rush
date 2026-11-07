@@ -1037,9 +1037,41 @@ const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1);if('
   // Alternating safety blocks at the two feet of the portal.
   for(let side of[-1,1])for(let n=0;n<4;n++){ctx.fillStyle=n%2?'#e7e2d6':'#c83c42';ctx.fillRect(x+side*(k*.78+n*w*.18),y-w*.16,w*.15,w*.16)}
  }
- // Ne pas repeindre le sol au premier plan : la chaussée et ses marquages
- // restent ceux du rendu routier, visibles jusque dans le tunnel.
- // L'éclairage du plafond est conservé sans couche opaque sur la route.
+ // Décor intérieur du tunnel : ventilateurs au plafond et équipements muraux.
+ // Les éléments sont espacés en profondeur pour rester lisibles sans surcharger le rendu.
+ if(sp.k%24===7){
+  const fy=y-hh-k*.84,fw=Math.max(2,w*.34);
+  ctx.save();ctx.translate(x,fy);ctx.rotate(Math.sin(flash*.7+sp.k)*.06);
+  ctx.strokeStyle='#526071';ctx.lineWidth=Math.max(1,fw*.055);ctx.beginPath();ctx.arc(0,0,fw*.24,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle='#c7d2df';ctx.beginPath();ctx.arc(0,0,fw*.075,0,Math.PI*2);ctx.fill();
+  for(let q=0;q<4;q++){ctx.save();ctx.rotate(q*Math.PI/2+flash*.8);ctx.fillStyle='#9eafc2';ctx.beginPath();ctx.ellipse(fw*.22,0,fw*.23,fw*.065,0,0,Math.PI*2);ctx.fill();ctx.restore()}
+  ctx.restore();
+ }
+ if(sp.k%31===11||sp.k%31===25){
+  for(const side of[-1,1]){
+   const wx=x+side*k*.78,wy=y-hh*.53,dw=Math.max(2,w*.22),dh=Math.max(3,w*.56);
+   ctx.fillStyle='#303b4b';ctx.fillRect(wx-dw/2,wy-dh/2,dw,dh);
+   ctx.fillStyle='#6e8298';ctx.fillRect(wx-dw*.42,wy-dh*.46,dw*.84,dh*.92);
+   ctx.fillStyle='#263547';ctx.fillRect(wx-dw*.34,wy-dh*.38,dw*.68,dh*.76);
+   ctx.fillStyle='#e5c66d';ctx.fillRect(wx+side*dw*.25,wy-dh*.03,Math.max(.7,dw*.06),Math.max(.7,dh*.06));
+   // Panneau de sécurité fixé au mur, à côté de la porte.
+   if(sp.k%31===11){
+    const sy=wy-dh*.78,sw=Math.max(2,dw*.72),sh=Math.max(2,dh*.28),sx=wx-side*dw*.78;
+    ctx.fillStyle='#e8edf2';ctx.fillRect(sx-sw/2,sy-sh/2,sw,sh);
+    ctx.fillStyle='#d92e38';ctx.fillRect(sx-sw*.42,sy-sh*.34,sw*.84,sh*.68);
+    ctx.fillStyle='#fff';ctx.fillRect(sx-sw*.05,sy-sh*.25,sw*.1,sh*.5);
+   }
+  }
+ }
+ if(sp.k%19===5){
+  for(const side of[-1,1]){
+   const bx=x+side*k*.91,by=y-w*.11,bw=Math.max(1.5,w*.085),bh=Math.max(3,w*.28);
+   ctx.fillStyle='#e8e6dc';ctx.fillRect(bx-bw/2,by-bh,bw,bh);
+   ctx.fillStyle='#d52f3b';ctx.fillRect(bx-bw/2,by-bh*.72,bw,bh*.25);
+   ctx.fillStyle='#d52f3b';ctx.fillRect(bx-bw/2,by-bh*.25,bw,bh*.25);
+  }
+ }
+ // Le sol reste rendu par la chaussée projetée : aucun panneau mural ne le recouvre.
  if(sp.k%5==0){const ly=y-hh-k+w*.12,gl=ctx.createRadialGradient(x,ly,0,x,ly,w*.5);gl.addColorStop(0,'#ffe9a099');gl.addColorStop(1,'#ffe9a000');ctx.fillStyle=gl;ctx.fillRect(x-w*.5,ly-w*.5,w,w);ctx.fillStyle='#fff6c8';ctx.beginPath();ctx.arc(x,ly,Math.max(1,w*.06),0,7);ctx.fill()}}
  else if(t=='A'){const w=sc*roadW*160*1.2,hh=w*.62,pw=w*.2,lh=w*.2,X0=x-w-pw,X1=x+w,sg=ctx.createLinearGradient(X0,0,x+w+pw,0);sg.addColorStop(0,'#e2d2ae');sg.addColorStop(.5,'#cdbb94');sg.addColorStop(1,'#a89468');
   ctx.fillStyle=sg;ctx.fillRect(X0,y-hh,pw,hh);ctx.fillRect(X1,y-hh,pw,hh);ctx.fillRect(X0-pw*.15,y-hh-lh,w*2+pw*2.3,lh);
@@ -1293,7 +1325,7 @@ function render(){
   ctx.fillStyle='#00000012';ctx.beginPath();
   for(let oi=0;oi<2;oi++){const o=oi===0?-.45:.45;ctx.moveTo(ax+aw*(o-.13),a.y);ctx.lineTo(ax+aw*(o+.13),a.y);ctx.lineTo(bx+bw*(o+.13),by);ctx.lineTo(bx+bw*(o-.13),by);ctx.closePath()}
   ctx.fill();
-  if(d||s.tun){const l1=aw*(s.tun?.038:.025),l2=bw*(s.tun?.038:.025);ctx.fillStyle=s.tun?'#fff8df':fg('#fff',ft);ctx.beginPath();const marks=fF?[-.5,.5]:(s.tun?[-.34,.34,-.96,.96]:[-.34,.34,-.96,.96]);for(const o of marks){ctx.moveTo(ax+aw*o-l1,a.y);ctx.lineTo(ax+aw*o+l1,a.y);ctx.lineTo(bx+bw*o+l2,by);ctx.lineTo(bx+bw*o-l2,by);ctx.closePath()}ctx.fill()}
+  if(d){const l1=aw*(s.tun?.038:.025),l2=bw*(s.tun?.038:.025);ctx.fillStyle=fg(s.tun?'#fff8df':'#fff',ft);ctx.beginPath();const marks=fF?[-.5,.5]:(s.tun?[-.34,.34]:[-.34,.34,-.96,.96]);for(const o of marks){ctx.moveTo(ax+aw*o-l1,a.y);ctx.lineTo(ax+aw*o+l1,a.y);ctx.lineTo(bx+bw*o+l2,by);ctx.lineTo(bx+bw*o-l2,by);ctx.closePath()}ctx.fill()}
   if(s.shd&&!fF&&th.d!='h'&&!s.tun){ctx.fillStyle='#00000024';ctx.beginPath();for(let ei=0;ei<2;ei++){const e=ei===0?-1:1;ctx.moveTo(ax+e*aw,a.y);ctx.lineTo(ax+e*(aw-aw*s.shd),a.y);ctx.lineTo(bx+e*(bw-bw*s.shd),by);ctx.lineTo(bx+e*bw,by);ctx.closePath()}ctx.fill()}
   if(rl)for(let ei=0;ei<2;ei++){const e=ei===0?-1:1,xa=ax+e*(aw+r1*1.6),xb=bx+e*(bw+r2*1.6),ha=aw*.1,hb=bw*.1;__crPoly4(fg('#aeb4c0',ft),xa,a.y,xa,a.y-ha,xb,by-hb,xb,by);__crPoly4(fg('#eef2f8',ft),xa,a.y-ha,xa,a.y-ha*.8,xb,by-hb*.8,xb,by-hb)}}
  maxY=b.y}

@@ -448,6 +448,20 @@ const TH=[{n:'COAST',sky:['#2b6cff','#9fe0ff'],g:['#e8c47a','#dcb66c'],w:1,d:'p'
 {n:'SYDNEY',sky:['#3aa4f4','#dcf6ff'],g:['#d9c88e','#cdbc82'],w:1,d:'a',bg:'sydney',urb:1,cv:1.2,hl:.8},
 {n:'MOSCOU',sky:['#8aa0c4','#eaf0f8'],g:['#e9eef5','#dce4ee'],d:'t',hc:['#e8d8c0','#c84a3a','#e0c060','#d8d0c0'],bg:'moscow',urb:1,cv:.9,hl:.6,snowy:1},
 {n:'DUBAÏ',sky:['#f2a354','#fff1cc'],g:['#e8c98f','#dcbd83'],d:'sk',bg:'dubai',urb:1,cv:1,hl:.6}];
+// Chaque circuit possède une paire de reliefs utilisable par les cinématiques,
+// même lorsque son décor urbain ou spécial ne définit pas de montagnes.
+TH.forEach((theme,index)=>{
+ if(!Array.isArray(theme.m)||theme.m.length<2){
+  const land=Array.isArray(theme.g)?theme.g:[];
+  const virtualPairs={
+   PARIS:['#a9a99a','#697487'],LONDRES:['#8795a5','#566477'],TOKYO:['#62547e','#352e59'],
+   'NEW YORK':['#75849a','#45536b'],ROME:['#b7a783','#77694f'],
+   'LE CAIRE':['#d3a66f','#9c754e'],RIO:['#4d8b82','#285f59'],
+   SYDNEY:['#9aa9a1','#657c7c'],MOSCOU:['#cbd5e2','#8191a8'],DUBAÏ:['#c8a777','#92734f']
+  };
+  theme.m=virtualPairs[theme.n]||[land[0]||'#68798d',land[1]||'#46566d'];
+ }
+});
 const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,10,11,12,13,14,15,16,17,18,19],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 let loopS=-1,loopE=-1,loopA=0,inLoop=0,item=0,boost=0,star=0;const objs=[];
 let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[],outrunTurnChoices=[];const fk=()=>!MODE&&stage<5,isLast=()=>stage>=(MODE==1||MODE==3?15:MODE==4?10:5);

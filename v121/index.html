@@ -999,12 +999,12 @@ function decoRaster(sp,x,y,sc){
  const t=sp.t;
  // Lampadaires, bateaux et planches à voile : agrandissement uniforme de 50 %.
  if(t==='l'||t==='W'||t==='ws')sc*=1.5;
- const proj=sc*3200*H/2;
+ const cactusScale=t==='c'?3:1;const proj=sc*3200*H/2;
  // LOD Firestick : silhouette conservee tant que l'objet est visible.
  // Seuls les objets sous-pixel sont culles; la route/horizon ne changent pas.
  if(isTV&&proj<.85)return;
  if(isTV&&proj<7){
-  const ww=Math.max(1,proj*.15),hh=Math.max(1,proj*.48);
+  const ww=Math.max(1,proj*.15*cactusScale),hh=Math.max(1,proj*.48*cactusScale);
   let col='#61765a';
   if(t==='p'||t==='c'||t==='t')col='#347b42';
   else if(t==='h'||t==='B'||t==='A')col=sp.c||'#68758a';
@@ -1019,7 +1019,7 @@ function decoRaster(sp,x,y,sc){
  }
 // Echelle monde normalisee : le cactus doit rester nettement plus petit qu'un batiment.
 // Le sprite 'h' de hauteur hh=1 sert de reference : le cactus vise ~45% de cette hauteur.
-const s=sc*(t==='c'?73600:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1);if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.05,y,s*.16,s*.025,0,0,7);ctx.fill();ctx.restore()}
+const s=sc*(t==='c'?73600*3:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1);if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.05,y,s*.16,s*.025,0,0,7);ctx.fill();ctx.restore()}
  if(t=='p')palm(x,y,s,sc);
  else if(t=='c'){ctx.fillStyle='#2e8b3a';const w=Math.max(1,s*.06);ctx.fillRect(x-w/2,y-s*.7,w,s*.7);ctx.fillRect(x-w*3,y-s*.45,w*3,w*.8);ctx.fillRect(x-w*3,y-s*.55,w*.8,s*.12);ctx.fillRect(x,y-s*.35,w*3,w*.8);ctx.fillRect(x+w*2.2,y-s*.45,w*.8,s*.12)}
  else if(t=='t'){ctx.fillStyle='#5a3a1a';ctx.fillRect(x-s*.02,y-s*.12,s*.04,s*.12);for(let i=0;i<3;i++){const yy=y-s*.12-i*s*.18,ww=s*(.24-i*.06);poly('#1b6a3a',[x-ww,yy,x+ww,yy,x,yy-s*.3])}}
@@ -1191,7 +1191,7 @@ function deco(sp,x,y,sc){
  if(!__crDecoCacheable.has(t)||__crDecoDynamic.has(t)){decoRaster(sp,x,y,sc);return;}
  const qsc=Math.round(sc*256)/256;
  const projectedQ=qsc*3200*H/2;
- const radius=Math.ceil(projectedQ*2.7)+2;
+ const radius=Math.ceil(projectedQ*2.7*(t==='c'?3:1))+2;
  if(radius>320||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
  if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}

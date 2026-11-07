@@ -256,6 +256,27 @@ body.cr-menu-active #pauseBtn,
 body.cr-menu-active #crPerfHud{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.cr-menu-active #menu{display:block!important;visibility:visible!important}
 #menu #crMenuHotspots{display:block!important;visibility:visible!important}
+
+/* V111 — hitboxes alignées sur le visuel menu-start.jpg (1664×936). */
+#menu{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;padding:0!important;margin:0!important;background-size:100% 100%!important;background-position:center center!important;overflow:hidden!important}
+#menu #crMenuHotspots{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:1200!important;pointer-events:none!important}
+#menu #crMenuHotspots button{position:absolute!important;display:block!important;pointer-events:auto!important;clip-path:none!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important;touch-action:manipulation!important}
+#menu #crMenuHotspots .play{left:35%!important;top:81%!important;width:30.5%!important;height:13%!important}
+#menu #crMenuHotspots .multiplayer{left:79.8%!important;top:18%!important;width:18.8%!important;height:8.2%!important}
+#menu #crMenuHotspots .mode{left:79.8%!important;top:26.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .garage{left:79.8%!important;top:35.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .career{left:79.8%!important;top:44.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .leaderboard{left:79.8%!important;top:53.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .controls{left:79.8%!important;top:62.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .quit{left:79.8%!important;top:71.5%!important;width:18.8%!important;height:8.5%!important}
+#menu #crMenuHotspots .music{left:80%!important;top:2%!important;width:18%!important;height:6%!important}
+#menu #crMenuHotspots .sounds{left:80%!important;top:8.5%!important;width:18%!important;height:6%!important}
+#menu #crMenuHotspots .profile{left:9%!important;top:81%!important;width:22.5%!important;height:7.2%!important}
+#menu #crMenuHotspots .vehicle{left:9%!important;top:89%!important;width:22.5%!important;height:6%!important}
+#menu #crMenuHotspots .careerBottom{left:67.5%!important;top:81%!important;width:24.5%!important;height:13%!important}
+#menu #crMenuHotspots button:focus-visible{outline:3px solid #fff!important;background:rgba(0,238,255,.12)!important}
+#menu #crMenuHotspots button:active{background:rgba(0,238,255,.16)!important}
+#menu #crLegacyMenuCompat{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style></head><body class="cr-menu-active"><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -1475,19 +1496,19 @@ function loop(t){
  const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[
   ['play','Jouer',()=>safeClick('go')],
+  ['multiplayer','Multijoueur',()=>safeClick('mp')],
   ['mode','Mode de jeu',()=>safeClick('md')],
-  ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
+  ['garage','Garage',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}else toast('Garage indisponible')}],
+  ['career','Carrière',()=>toast('Carrière : étape '+stage+' · meilleur score '+best)],
+  ['leaderboard','Classement',()=>{showHS();toast('Meilleur score : '+best)}],
+  ['controls','Commandes',()=>toast(inputMode==='keyboard'?'Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon':inputMode==='controller'?'Commandes manette':'Commandes tactiles affichées pendant la course')],
+  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.')}],
+  ['music','Musique',()=>safeClick('mm')],
+  ['sounds','Sons',()=>safeClick('sf')],
   ['profile','Profil',()=>{crShowProfile()}],
   ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
-  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
-  ['music','Musique',()=>safeClick('mm')],
-  ['tilt','Inclinaison',()=>safeClick('gy')],
-  ['quality','Qualité',()=>safeClick('ql')],
-  ['bonus','Bonus',()=>safeClick('bn')],
-  ['gear','Boîte',()=>safeClick('ag')],
-  ['gas','Gaz',()=>safeClick('gz')],
-  ['difficulty','Difficulté',()=>safeClick('df')]
- ];
+  ['careerBottom','Carrière',()=>toast('Progression : étape '+stage+' · meilleur score '+best)]
+ ];;
  const crShowProfile=()=>{
   let layer=document.getElementById('crProfileDialog');
   if(layer){layer.remove();return}

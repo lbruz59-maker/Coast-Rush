@@ -250,7 +250,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #menu #crMenuHotspots .cr-status{display:none!important;visibility:hidden!important}
 
 /* V110 CLEAN MENU — old menu markup stays hidden only as compatibility nodes for existing game logic. */
-#crLegacyMenuCompat{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
 body.cr-menu-active .b,
 body.cr-menu-active #pauseBtn,
 body.cr-menu-active #crPerfHud{display:none!important;visibility:hidden!important;pointer-events:none!important}
@@ -276,25 +276,28 @@ body.cr-menu-active #menu{display:block!important;visibility:visible!important}
 #menu #crMenuHotspots .careerBottom{left:67.5%!important;top:81%!important;width:24.5%!important;height:13%!important}
 #menu #crMenuHotspots button:focus-visible{outline:3px solid #fff!important;background:rgba(0,238,255,.12)!important}
 #menu #crMenuHotspots button:active{background:rgba(0,238,255,.16)!important}
-#menu #crLegacyMenuCompat{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+
+/* V112 — le menu legacy est supprimé du HTML. Contrôles techniques minimaux hors écran. */
+#crRuntimeControls[hidden]{display:none!important}
 </style></head><body class="cr-menu-active"><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
 <div class="b drive-control" id="g" data-k="g">GAZ</div><div class="b drive-control" id="br" data-k="b">FREIN</div>
 <div class="b drive-control" id="it">?</div><div class="b" id="sf">🔊</div><div class="b drive-control" id="hn">📯</div><div class="b drive-control" id="gr">LO/HI</div><div class="b" id="fs">⛶</div><div class="b" id="tvhide" aria-label="Masquer les commandes">⌃</div><div class="b" id="mu">♪</div>
-<div id="menu"><div id="crLegacyMenuCompat" hidden aria-hidden="true"><div id="sun"></div><div id="grid"></div><div id="mc"><div id="sub">★ ARCADE RACING ★</div><h1>COAST RUSH</h1>
-<button class="st" id="go">▶ DÉMARRER</button>
-
-<div class="row"><b>🎮 Interface</b><button class="st" id="ui-key">⌨ CLAVIER</button><button class="st" id="ui-pad">🎮 MANETTE</button><button class="st" id="ui-touch">📱 TACTILE</button><span id="input-hint" style="font:10px monospace;color:#7fe0ff;width:100%"></span></div>
-<div class="row"><b>🏁 Course</b><button class="st" id="md">Mode : OUTRUN (5 étapes, fourches)</button><button class="st" id="df">Difficulté : NORMAL</button><button class="st" id="du">⚔ DUEL 2 joueurs (écran partagé)</button></div>
-<div class="row"><b>🎛 Options</b><button class="st" id="mm">♪ Musique : ON</button><button class="st" id="gy">📱 Inclinaison : OFF</button><button class="st" id="ql">Qualité : AUTO</button><button class="st" id="bn">Bonus : ON</button><button class="st" id="ag">Boîte : MANUELLE</button><button class="st" id="gz">Gaz : MANUEL</button></div>
-<div class="row"><b>👤 Pseudo</b><input id="pn" class="st" maxlength="10" placeholder="Ton pseudo" style="width:170px;text-align:center"></div>
-<div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
-<div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
-<div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
-<div style="font:10px monospace;opacity:.6">Coast Rush v84</div><div id="hs" style="font-size:12px;opacity:.9"></div>
-<div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div></div>
+<div id="crRuntimeControls" hidden aria-hidden="true">
+<button id="go" type="button"></button>
+<button id="ui-key" type="button"></button><button id="ui-pad" type="button"></button><button id="ui-touch" type="button"></button>
+<span id="input-hint"></span>
+<button id="md" type="button"></button><button id="df" type="button"></button><button id="du" type="button"></button>
+<button id="mm" type="button"></button><button id="gy" type="button"></button><button id="ql" type="button"></button>
+<button id="bn" type="button"></button><button id="ag" type="button"></button><button id="gz" type="button"></button>
+<input id="pn" type="text" maxlength="10"><div id="vh"></div><div id="sw"></div>
+<input id="room" type="text" value="ARCADE" maxlength="12"><button id="mp" type="button"></button><button id="mp2" type="button"></button><button id="mr" type="button"></button>
+<div id="dg"></div><div id="hs"></div>
+</div>
+<div id="menu"></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>

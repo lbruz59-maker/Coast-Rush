@@ -180,7 +180,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 
 /* V102 — exact artwork hit areas; no duplicate focus layers. */
 #menu{background:#06152a url("android-app/app/src/main/assets/menu-start.jpg") center/100% 100% no-repeat!important;overflow:hidden!important}
-#mc{display:flex!important;position:relative!important;z-index:6!important;width:min(96vw,900px)!important;max-width:900px!important;min-height:100%!important;height:auto!important;box-sizing:border-box!important;margin:0 auto!important;padding:2vh 2vw 4vh!important;gap:1vh!important;justify-content:flex-start!important;overflow:visible!important;background:rgba(4,15,35,.72)!important;border:1px solid #9cecff66!important;border-radius:16px!important;backdrop-filter:blur(8px)!important}
+#mc{display:none!important}
 #crMenuHotspots{position:absolute;inset:0;z-index:5;pointer-events:none}
 #crMenuHotspots button{position:absolute;display:block;pointer-events:auto;margin:0;padding:0;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;clip-path:polygon(7% 0,95% 0,100% 78%,93% 100%,0 100%,3% 22%)}
 #crMenuHotspots button:focus,#crMenuHotspots button.cr-active{outline:none!important;background:rgba(0,238,255,.10)!important;box-shadow:inset 0 0 0 3px #fff,0 0 13px #00eaff,0 0 24px #00eaff!important}
@@ -230,31 +230,6 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #menu #crMenuHotspots{display:block!important;visibility:visible!important;position:absolute!important;inset:0!important;z-index:1000!important;pointer-events:none!important}
 #menu #crMenuHotspots button{display:block!important;visibility:visible!important;pointer-events:auto!important;appearance:none!important;-webkit-appearance:none!important}
 #menu #crMenuHotspots .cr-status{display:none!important;visibility:hidden!important}
-
-/* V111 — hitboxes alignées sur le visuel menu-start.jpg (1664×936). */
-#menu{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;padding:0!important;margin:0!important;background-size:100% 100%!important;background-position:center center!important;overflow:hidden!important}
-#menu #crMenuHotspots{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:1200!important;pointer-events:none!important}
-#menu #crMenuHotspots button{position:absolute!important;display:block!important;pointer-events:auto!important;clip-path:none!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;transform:none!important;touch-action:manipulation!important}
-#menu #crMenuHotspots .play{left:35%!important;top:81%!important;width:30.5%!important;height:13%!important}
-#menu #crMenuHotspots .multiplayer{left:79.8%!important;top:18%!important;width:18.8%!important;height:8.2%!important}
-#menu #crMenuHotspots .mode{left:79.8%!important;top:26.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .garage{left:79.8%!important;top:35.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .career{left:79.8%!important;top:44.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .leaderboard{left:79.8%!important;top:53.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .controls{left:79.8%!important;top:62.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .quit{left:79.8%!important;top:71.5%!important;width:18.8%!important;height:8.5%!important}
-#menu #crMenuHotspots .music{left:80%!important;top:2%!important;width:18%!important;height:6%!important}
-#menu #crMenuHotspots .sounds{left:80%!important;top:8.5%!important;width:18%!important;height:6%!important}
-#menu #crMenuHotspots .profile{left:9%!important;top:81%!important;width:22.5%!important;height:7.2%!important}
-#menu #crMenuHotspots .vehicle{left:9%!important;top:89%!important;width:22.5%!important;height:6%!important}
-#menu #crMenuHotspots .careerBottom{left:67.5%!important;top:81%!important;width:24.5%!important;height:13%!important}
-#menu #crMenuHotspots button:focus-visible{outline:3px solid #fff!important;background:rgba(0,238,255,.12)!important}
-#menu #crMenuHotspots button:active{background:rgba(0,238,255,.16)!important}
-
-
-/* V112 — le menu legacy est supprimé du HTML. Contrôles techniques minimaux hors écran. */
-#crRuntimeControls[hidden]{display:none!important}
-
 </style></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
@@ -289,7 +264,7 @@ window.__coastRushLifecycle=function(kind){
 let inputMode=isTV?'controller':((/Android|iPhone|iPad|iPod|Mobile/i.test(UA)||('ontouchstart' in window)||navigator.maxTouchPoints>0)?'touch':'keyboard');
 function applyInputMode(){const touch=inputMode==='touch';document.querySelectorAll('.drive-control').forEach(el=>{el.classList.toggle('input-touch',touch);el.style.display=touch?'flex':'none'});[['ui-key','keyboard'],['ui-pad','controller'],['ui-touch','touch']].forEach(([id,m])=>{const el=document.getElementById(id);if(el)el.classList.toggle('sel',inputMode===m)});const hint=document.getElementById('input-hint');if(hint)hint.textContent=inputMode==='keyboard'?'Clavier : flèches / WASD':inputMode==='controller'?'Manette : stick gauche, gâchette / boutons':'Tactile : commandes affichées à l’écran'}
 
-window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=900,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
+window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=1000,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
 const lerp=(a,b,p)=>a+(b-a)*p,eIn=(a,b,p)=>a+(b-a)*p*p,eOut=(a,b,p)=>a+(b-a)*(1-(1-p)*(1-p)),eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+.5);
 const segs=[];let trackLen;
 // Reuse only segments that actually received cars/objects this frame.
@@ -339,7 +314,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  let tunnelStart=-1;const tunnelCandidates=[];const tunnelPreferred=Math.floor(N*.58);
  for(let d=0;d<N;d++){const a=tunnelPreferred+d,b=tunnelPreferred-d;if(a>=90)tunnelCandidates.push(a);if(b>=90)tunnelCandidates.push(b)}
  for(const c of tunnelCandidates){if(c+TUNNEL_SEGMENTS>=N-FORK-20)continue;let clear=true;for(let j=c;j<c+TUNNEL_SEGMENTS;j++){if(segs[j].loop){clear=false;break}}if(clear){tunnelStart=c;break}}
- segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2)&&!(tunnelStart>=0&&s.i>=tunnelStart-20&&s.i<tunnelStart+TUNNEL_SEGMENTS+20);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==20)s.sp.push({t:'F',o:-1.12});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.16+(k%2)*.22+R()*.08;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
+ segs.forEach(s=>{s.tun=tunnelStart>=0&&s.i>=tunnelStart&&s.i<tunnelStart+TUNNEL_SEGMENTS;s.tunStart=s.tun&&s.i===tunnelStart;s.tunIndex=s.tun?s.i-tunnelStart:-1;s.sea=th.w&&((s.i/400|0)%3!=2)&&!(tunnelStart>=0&&s.i>=tunnelStart-20&&s.i<tunnelStart+TUNNEL_SEGMENTS+20);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==7)s.sp.push({t:'F',o:-1.12});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.65+R()*.3)});if(i>=3&&i%2==0)for(let k=0;k<4;k++){const side=k<2?-1:1,offset=1.16+(k%2)*.22+R()*.08;s.sp.push({t:'C',o:side*offset,c:cols[R()*7|0],ph:R()*6})}}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
@@ -349,7 +324,11 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
  
- [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.tun&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
+ // V106 — deux corridors d'arches réellement espacées de 10 m (position fractionnaire rendue en profondeur).
+ const ARCH_GROUP_METERS=3000,ARCH_SPACING_METERS=10,ARCH_GROUP_SEGMENTS=Math.ceil(ARCH_GROUP_METERS/segL);
+ function addArchCorridor(preferredStart){let start=-1;for(let d=0;d<N;d++){const candidates=[preferredStart+d,preferredStart-d];for(const c of candidates){if(c<90||c+ARCH_GROUP_SEGMENTS>=N-FORK-12)continue;let clear=true;for(let j=c;j<c+ARCH_GROUP_SEGMENTS;j++){if(segs[j].loop||segs[j].tun){clear=false;break}}if(clear){start=c;break}}if(start>=0)break}
+  if(start<0)return;for(let j=0;j<ARCH_GROUP_SEGMENTS;j++){const seg=segs[start+j];for(let meters=0;meters<segL&&j*segL+meters<ARCH_GROUP_METERS;meters+=ARCH_SPACING_METERS)seg.sp.push({t:'A',o:0,f:meters/segL})}}
+ addArchCorridor(Math.floor(N*.22));addArchCorridor(Math.floor(N*.76));
  segs.forEach(s=>{if(s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:900+R()*(trackLen-(FORK+60)*segL-900),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
@@ -1157,10 +1136,10 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1)*.94;if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,1.0);drawObj(c,cxs,sy,cw)}
+  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,1.0);drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur
- ctx.save();const cxp=W/2,cyp=H-18,sw=320*(MODE==2?.18:VW[myV])*1.12*(mini>0?.62:1);
+ ctx.save();const cxp=W/2,cyp=H-48,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));
@@ -1457,23 +1436,23 @@ function loop(t){
  
 /* V104: one accessible, interactive hit layer over the menu artwork. */
 (function(){
- if(document.getElementById('crMenuHotspots'))return; return;
+ if(document.getElementById('crMenuHotspots'))return;
  const host=document.createElement('div');host.id='crMenuHotspots';
  const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[
-  ['play','Jouer',()=>safeClick('go')],
-  ['multiplayer','Multijoueur',()=>safeClick('mp')],
+  ['play','Jouer',()=>{if(typeof startGame==='function')startGame();else toast('Lancement indisponible : recharge la page.')}],
   ['mode','Mode de jeu',()=>safeClick('md')],
-  ['garage','Garage',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}else toast('Garage indisponible')}],
-  ['career','Carrière',()=>toast('Carrière : étape '+stage+' · meilleur score '+best)],
-  ['leaderboard','Classement',()=>{showHS();toast('Meilleur score : '+best)}],
-  ['controls','Commandes',()=>toast(inputMode==='keyboard'?'Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon':inputMode==='controller'?'Commandes manette':'Commandes tactiles affichées pendant la course')],
-  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.')}],
-  ['music','Musique',()=>safeClick('mm')],
-  ['sounds','Sons',()=>safeClick('sf')],
+  ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
   ['profile','Profil',()=>{crShowProfile()}],
   ['vehicle','Véhicule',()=>{const list=$('vh')?Array.from($('vh').querySelectorAll('button')):[];if(list.length){const n=(myV+1)%list.length;list[n].click();toast('Véhicule : '+list[n].textContent)}}],
-  ['careerBottom','Carrière',()=>toast('Progression : étape '+stage+' · meilleur score '+best)]
+  ['quit','Quitter',()=>{try{if(window.CoastRushFrameStats&&typeof CoastRushFrameStats.exitApp==='function'){CoastRushFrameStats.exitApp();return}}catch(e){}toast('Utilise le bouton Retour Android pour quitter.') }],
+  ['music','Musique',()=>safeClick('mm')],
+  ['tilt','Inclinaison',()=>safeClick('gy')],
+  ['quality','Qualité',()=>safeClick('ql')],
+  ['bonus','Bonus',()=>safeClick('bn')],
+  ['gear','Boîte',()=>safeClick('ag')],
+  ['gas','Gaz',()=>safeClick('gz')],
+  ['difficulty','Difficulté',()=>safeClick('df')]
  ];
  const crShowProfile=()=>{
   let layer=document.getElementById('crProfileDialog');

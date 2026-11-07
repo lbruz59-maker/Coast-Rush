@@ -180,7 +180,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 
 /* V102 — exact artwork hit areas; no duplicate focus layers. */
 #menu{background:#06152a url("android-app/app/src/main/assets/menu-start.jpg") center/100% 100% no-repeat!important;overflow:hidden!important}
-#mc{display:none!important}
+#mc{display:flex!important;position:relative!important;z-index:6!important;width:min(96vw,900px)!important;max-width:900px!important;min-height:100%!important;height:auto!important;box-sizing:border-box!important;margin:0 auto!important;padding:2vh 2vw 4vh!important;gap:1vh!important;justify-content:flex-start!important;overflow:visible!important;background:rgba(4,15,35,.72)!important;border:1px solid #9cecff66!important;border-radius:16px!important;backdrop-filter:blur(8px)!important}
 #crMenuHotspots{position:absolute;inset:0;z-index:5;pointer-events:none}
 #crMenuHotspots button{position:absolute;display:block;pointer-events:auto;margin:0;padding:0;border:0!important;border-radius:0!important;background:transparent!important;color:transparent!important;box-shadow:none!important;cursor:pointer;touch-action:manipulation;clip-path:polygon(7% 0,95% 0,100% 78%,93% 100%,0 100%,3% 22%)}
 #crMenuHotspots button:focus,#crMenuHotspots button.cr-active{outline:none!important;background:rgba(0,238,255,.10)!important;box-shadow:inset 0 0 0 3px #fff,0 0 13px #00eaff,0 0 24px #00eaff!important}
@@ -261,18 +261,18 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
 <div class="b drive-control" id="g" data-k="g">GAZ</div><div class="b drive-control" id="br" data-k="b">FREIN</div>
 <div class="b drive-control" id="it">?</div><div class="b" id="sf">🔊</div><div class="b drive-control" id="hn">📯</div><div class="b drive-control" id="gr">LO/HI</div><div class="b" id="fs">⛶</div><div class="b" id="tvhide" aria-label="Masquer les commandes">⌃</div><div class="b" id="mu">♪</div>
-<div id="crRuntimeControls" hidden aria-hidden="true">
-<button id="go" type="button"></button>
-<button id="ui-key" type="button"></button><button id="ui-pad" type="button"></button><button id="ui-touch" type="button"></button>
-<span id="input-hint"></span>
-<button id="md" type="button"></button><button id="df" type="button"></button><button id="du" type="button"></button>
-<button id="mm" type="button"></button><button id="gy" type="button"></button><button id="ql" type="button"></button>
-<button id="bn" type="button"></button><button id="ag" type="button"></button><button id="gz" type="button"></button>
-<input id="pn" type="text" maxlength="10"><div id="vh"></div><div id="sw"></div>
-<input id="room" type="text" value="ARCADE" maxlength="12"><button id="mp" type="button"></button><button id="mp2" type="button"></button><button id="mr" type="button"></button>
-<div id="dg"></div><div id="hs"></div>
-</div>
-<div id="menu"></div>
+<div id="menu"><div id="sun"></div><div id="grid"></div><div id="mc"><div id="sub">★ ARCADE RACING ★</div><h1>COAST RUSH</h1>
+<button class="st" id="go">▶ DÉMARRER</button>
+
+<div class="row"><b>🎮 Interface</b><button class="st" id="ui-key">⌨ CLAVIER</button><button class="st" id="ui-pad">🎮 MANETTE</button><button class="st" id="ui-touch">📱 TACTILE</button><span id="input-hint" style="font:10px monospace;color:#7fe0ff;width:100%"></span></div>
+<div class="row"><b>🏁 Course</b><button class="st" id="md">Mode : OUTRUN (5 étapes, fourches)</button><button class="st" id="df">Difficulté : NORMAL</button><button class="st" id="du">⚔ DUEL 2 joueurs (écran partagé)</button></div>
+<div class="row"><b>🎛 Options</b><button class="st" id="mm">♪ Musique : ON</button><button class="st" id="gy">📱 Inclinaison : OFF</button><button class="st" id="ql">Qualité : AUTO</button><button class="st" id="bn">Bonus : ON</button><button class="st" id="ag">Boîte : MANUELLE</button><button class="st" id="gz">Gaz : MANUEL</button></div>
+<div class="row"><b>👤 Pseudo</b><input id="pn" class="st" maxlength="10" placeholder="Ton pseudo" style="width:170px;text-align:center"></div>
+<div class="row"><b>🚗 Véhicule</b><span id="vh" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></span></div>
+<div class="row"><b>🎨 Ma couleur</b><span id="sw" style="display:flex;gap:6px"></span></div>
+<div class="row"><b>🌐 En ligne</b><input id="room" class="st" value="ARCADE" maxlength="12" style="width:110px;text-align:center"><button class="st" id="mp" style="border-color:#3ddc6a">REJOINDRE LA SALLE</button><button class="st" id="mp2">🔗 P2P manuel</button><button class="st" id="mr">Multi : COURSE LIBRE</button></div><div id="dg" style="font:11px monospace;text-align:left;width:100%;white-space:pre-wrap;color:#7fe0ff"></div>
+<div style="font:10px monospace;opacity:.6">Coast Rush v84</div><div id="hs" style="font-size:12px;opacity:.9"></div>
+<div style="font-size:11px;opacity:.75;line-height:1.5">Flèches / WASD · Espace = LO/HI · X = bonus · H = klaxon<br>Multi : même code de salle sur chaque appareil, puis chacun appuie sur DÉMARRER</div></div></div>
 <div id="p2p" style="display:none;position:fixed;inset:0;background:#000e;color:#fff;z-index:10;overflow:auto;padding:14px;font:14px monospace"><b>🔗 Multi P2P — 2 à 4 joueurs, sans compte</b><div id="ps" style="color:#7fe0ff;margin:6px 0">Hôte : crée la partie et envoie le code. Invité : colle ce code.</div>
 <button class="st" id="h1">1) Je crée la partie (hôte)</button><br>Code à envoyer :<br><textarea id="o1" rows="3" style="width:95%"></textarea><br><button class="st" id="c1">Copier</button><br>Réponse de l'ami :<br><textarea id="a1" rows="3" style="width:95%"></textarea><br><button class="st" id="k1">Connecter ce joueur</button><hr>
 <b>Je rejoins</b> : colle le code de l'hôte<br><textarea id="o2" rows="3" style="width:95%"></textarea><br><button class="st" id="j2">Générer ma réponse</button><br><textarea id="a2" rows="3" style="width:95%"></textarea><br><button class="st" id="c2">Copier ma réponse</button><br><button class="st" id="x1" style="background:#157a4a">Fermer (puis DÉMARRER)</button></div>
@@ -289,7 +289,7 @@ window.__coastRushLifecycle=function(kind){
 let inputMode=isTV?'controller':((/Android|iPhone|iPad|iPod|Mobile/i.test(UA)||('ontouchstart' in window)||navigator.maxTouchPoints>0)?'touch':'keyboard');
 function applyInputMode(){const touch=inputMode==='touch';document.querySelectorAll('.drive-control').forEach(el=>{el.classList.toggle('input-touch',touch);el.style.display=touch?'flex':'none'});[['ui-key','keyboard'],['ui-pad','controller'],['ui-touch','touch']].forEach(([id,m])=>{const el=document.getElementById(id);if(el)el.classList.toggle('sel',inputMode===m)});const hint=document.getElementById('input-hint');if(hint)hint.textContent=inputMode==='keyboard'?'Clavier : flèches / WASD':inputMode==='controller'?'Manette : stick gauche, gâchette / boutons':'Tactile : commandes affichées à l’écran'}
 
-window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=1000,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
+window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=900,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
 const lerp=(a,b,p)=>a+(b-a)*p,eIn=(a,b,p)=>a+(b-a)*p*p,eOut=(a,b,p)=>a+(b-a)*(1-(1-p)*(1-p)),eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+.5);
 const segs=[];let trackLen;
 // Reuse only segments that actually received cars/objects this frame.
@@ -349,11 +349,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
  
- // V106 — deux corridors d'arches réellement espacées de 10 m (position fractionnaire rendue en profondeur).
- const ARCH_GROUP_METERS=3000,ARCH_SPACING_METERS=10,ARCH_GROUP_SEGMENTS=Math.ceil(ARCH_GROUP_METERS/segL);
- function addArchCorridor(preferredStart){let start=-1;for(let d=0;d<N;d++){const candidates=[preferredStart+d,preferredStart-d];for(const c of candidates){if(c<90||c+ARCH_GROUP_SEGMENTS>=N-FORK-12)continue;let clear=true;for(let j=c;j<c+ARCH_GROUP_SEGMENTS;j++){if(segs[j].loop||segs[j].tun){clear=false;break}}if(clear){start=c;break}}if(start>=0)break}
-  if(start<0)return;for(let j=0;j<ARCH_GROUP_SEGMENTS;j++){const seg=segs[start+j];for(let meters=0;meters<segL&&j*segL+meters<ARCH_GROUP_METERS;meters+=ARCH_SPACING_METERS)seg.sp.push({t:'A',o:0,f:meters/segL})}}
- addArchCorridor(Math.floor(N*.22));addArchCorridor(Math.floor(N*.76));
+ [Math.floor(N*.17),Math.floor(N*.5),Math.floor(N*.78)].forEach(i0=>{for(let q=0;q<6;q++){const g=segs[i0+q*3];if(g&&!g.tun&&!g.loop&&g.i<N-FORK-12&&g.i>90)g.sp.push({t:'A',o:0})}});
  segs.forEach(s=>{if(s.loop||s.i>=N-FORK||s.i<80)return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*.5),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:3.4+R()*2.4,ph:R()*6})}if(i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:900+R()*(trackLen-(FORK+60)*segL-900),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
@@ -1161,10 +1157,10 @@ function render(){
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,1.0);drawObj(c,cxs,sy,cw)}
+  for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1)*.94;if(th.night||s.tun)__crDrawHeadlightBeams(cxs,sy,cw,1.0);drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
  // joueur
- ctx.save();const cxp=W/2,cyp=H-18,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
+ ctx.save();const cxp=W/2,cyp=H-18,sw=320*(MODE==2?.18:VW[myV])*1.12*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
  const bump=speed>0?(Math.floor(pos/90)%2):0;BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));
@@ -1461,7 +1457,7 @@ function loop(t){
  
 /* V104: one accessible, interactive hit layer over the menu artwork. */
 (function(){
- if(document.getElementById('crMenuHotspots'))return;
+ if(document.getElementById('crMenuHotspots'))return; return;
  const host=document.createElement('div');host.id='crMenuHotspots';
  const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[

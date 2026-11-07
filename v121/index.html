@@ -1502,8 +1502,8 @@ function drawOutrunMap(t){
  const visited=new Set(outrunVisited),currentId=stage*(stage-1)/2+cposk;
  const currentProgress=Math.max(0,Math.min(1,(pos+playerZ)/(trackLen||1)));
  const completed=state==='win';
- const cardW=42,cardH=18,top=48,bottom=138;
- const colX=s=>W*.06+(s-1)*(W*.22); // V108: spread all five route stages across the adaptive canvas width
+ const cardW=56,cardH=23,top=50,bottom=176;
+ const colX=s=>W*.08+(s-1)*(W*.21); // Répartition adaptative avec marges régulières pour les cinq étapes
  const node=(s,k)=>({id:s*(s-1)/2+k,x:colX(s),y:s===1?(top+bottom)/2:top+k*(bottom-top)/(s-1)});
  const themeFor=id=>TH[THI[id]]||TH[0];
 
@@ -1588,8 +1588,8 @@ function drawOutrunMap(t){
  }
 
  // Panneau de synthèse et en-têtes.
- ctx.save();ctx.fillStyle='#06182beF';ctx.fillRect(3,28,W-6,117);ctx.strokeStyle='#9bc5df55';ctx.lineWidth=1;ctx.strokeRect(3.5,28.5,W-7,116);
- ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 7px '+FT;ctx.fillStyle='#d9f1ff';
+ ctx.save();ctx.fillStyle='#06182beF';ctx.fillRect(3,25,W-6,163);ctx.strokeStyle='#9bc5df55';ctx.lineWidth=1;ctx.strokeRect(3.5,25.5,W-7,162);
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 7.5px '+FT;ctx.fillStyle='#d9f1ff';
  for(let s=1;s<=5;s++)ctx.fillText('ÉTAPE '+s,colX(s),30);
 
  // Arborescence routière : uniquement segments horizontaux et verticaux à angle droit.
@@ -1605,7 +1605,7 @@ function drawOutrunMap(t){
  }
 
  // Quinze circuits : miniatures paysagères rasterisées une seule fois puis réutilisées.
- const thumbW=cardW-4,thumbH=cardH-7;
+ const thumbW=cardW-4,thumbH=cardH-8;
  if(!window.__crRouteThumbs)window.__crRouteThumbs=new Map();
  function getRouteThumb(id){
    let c=window.__crRouteThumbs.get(id);
@@ -1624,7 +1624,7 @@ function drawOutrunMap(t){
    ctx.strokeStyle=isCurrent?'#ffe47b':isVisited?'#70edac':'#91abc4';ctx.lineWidth=isCurrent?2:1;
    ctx.beginPath();ctx.roundRect(p.x-cardW/2,p.y-cardH/2,cardW,cardH,3);ctx.stroke();
    ctx.fillStyle=isCurrent?'#fff0b2':isVisited?'#caffdf':'#e2edf7';
-   ctx.font='bold 4.8px '+FT;ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.font='bold 5.5px '+FT;ctx.textAlign='center';ctx.textBaseline='middle';
    ctx.fillText(thm.n,p.x,p.y+cardH/2-2.2);
    if(isCurrent){
      ctx.fillStyle='#fff5ca';ctx.beginPath();ctx.arc(p.x,p.y-cardH/2-2.5,2,0,Math.PI*2);ctx.fill();
@@ -1633,16 +1633,16 @@ function drawOutrunMap(t){
  ctx.restore();
 
  // Bandeau bas : progression précise, y compris si la partie s'arrête avant le dernier circuit.
- ctx.fillStyle='#06182bf5';ctx.fillRect(3,158,W-6,21);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,158.5,W-7,20);
+ ctx.fillStyle='#06182bf5';ctx.fillRect(3,191,W-6,29);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,191.5,W-7,28);
  ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='bold 6.3px '+FT;ctx.fillStyle='#ffe078';
- ctx.fillText(state==='win'?'COAST RUSH  •  SYNTHÈSE — VICTOIRE':'COAST RUSH  •  SYNTHÈSE — PARCOURS INTERROMPU',8,166);
+ ctx.fillText(state==='win'?'COAST RUSH  •  SYNTHÈSE — VICTOIRE':'COAST RUSH  •  SYNTHÈSE — PARCOURS INTERROMPU',8,199);
  ctx.font='5.5px '+FT;ctx.fillStyle='#d9e9f2';
- ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,174);
+ ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,207);
  const pct=completed?100:Math.round(currentProgress*100);
- ctx.fillStyle='#20364a';ctx.fillRect(8,176,W-16,2);
- ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,176,(W-16)*pct/100,2);
+ ctx.fillStyle='#20364a';ctx.fillRect(8,213,W-16,2);
+ ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,213,(W-16)*pct/100,2);
  ctx.textAlign='right';ctx.font='bold 5.8px '+FT;ctx.fillStyle='#fff';
- ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,175);
+ ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,212);
 }
 // ---- LOGIQUE + DIAGNOSTIC DE CADENCE NATIF/WEBVIEW
 let last=0,ema=.016,perfT=0,__crLoadBad=0,__crLoadGood=0,crFrames=0,crWindowStart=0,crFps=0,crUpdateMs=0,crRenderMs=0,crPollMs=0,crHudAt=0,crLastRaf=0,crRafSum=0,crRafCount=0,crRafMax=0,crNativeStats={},crFrameSamples=new Array(180),crFrameSampleCount=0,crFrameSampleWrite=0,crUpdateSamples=new Array(180),crRenderSamples=new Array(180),crWorkSampleCount=0,crWorkSampleWrite=0,crLongFrames=0;

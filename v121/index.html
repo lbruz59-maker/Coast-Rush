@@ -447,7 +447,27 @@ const TH=[{n:'COAST',sky:['#2b6cff','#9fe0ff'],g:['#e8c47a','#dcb66c'],w:1,d:'p'
 {n:'RIO',sky:['#2c9af2','#bff0ff'],g:['#f1dc9e','#e8d08e'],w:1,d:'p',hc:['#e84a4a','#f0c040','#40a8e8','#58c878','#f08040'],bg:'rio',urb:1,cv:1.4,hl:1.1},
 {n:'SYDNEY',sky:['#3aa4f4','#dcf6ff'],g:['#d9c88e','#cdbc82'],w:1,d:'a',bg:'sydney',urb:1,cv:1.2,hl:.8},
 {n:'MOSCOU',sky:['#8aa0c4','#eaf0f8'],g:['#e9eef5','#dce4ee'],d:'t',hc:['#e8d8c0','#c84a3a','#e0c060','#d8d0c0'],bg:'moscow',urb:1,cv:.9,hl:.6,snowy:1},
-{n:'DUBAÏ',sky:['#f2a354','#fff1cc'],g:['#e8c98f','#dcbd83'],d:'sk',bg:'dubai',urb:1,cv:1,hl:.6}];
+{n:'DUBAÏ',sky:['#f2a354','#fff1cc'],g:['#e8c98f','#dcbd83'],d:'sk',bg:'dubai',urb:1,cv:1,hl:.6},
+{n:'LOS ANGELES',sky:['#f28c58','#ffe0a8'],g:['#c5a16e','#a98258'],d:'sk',bg:'la',urb:1,cv:1.1,hl:.7},
+{n:'MEXICO',sky:['#f29b65','#f9dfb4'],g:['#b58a62','#92704e'],d:'h',bg:'mexico',urb:1,cv:1.1,hl:.7},
+{n:'TORONTO',sky:['#7ba9d8','#e2edf5'],g:['#708c72','#59775d'],d:'sk',bg:'toronto',urb:1,cv:1.1,hl:.7},
+{n:'BUENOS AIRES',sky:['#7eb8df','#f2e3c7'],g:['#a8a18a','#8f8b78'],d:'h',bg:'buenosaires',urb:1,cv:1.1,hl:.7},
+{n:'VANCOUVER',sky:['#6da9d2','#d9eff4'],g:['#66896c','#4b7055'],d:'t',bg:'vancouver',urb:1,cv:1.1,hl:.7},
+{n:'BERLIN',sky:['#778ca5','#e4d7c7'],g:['#8d9a83','#74816d'],d:'h',bg:'berlin',urb:1,cv:1.1,hl:.7},
+{n:'MADRID',sky:['#ed9a62','#ffe0aa'],g:['#c49b70','#a47d59'],d:'h',bg:'madrid',urb:1,cv:1.1,hl:.7},
+{n:'AMSTERDAM',sky:['#7ba5c4','#e9e3d4'],g:['#799078','#61785f'],d:'h',bg:'amsterdam',urb:1,cv:1.1,hl:.7},
+{n:'ISTANBUL',sky:['#d58b68','#f4d5a8'],g:['#9a8a75','#776b60'],d:'h',bg:'istanbul',urb:1,cv:1.1,hl:.7},
+{n:'ATHENES',sky:['#5f9dd3','#f6e3bd'],g:['#c1b18c','#9e8d6d'],d:'h',bg:'athens',urb:1,cv:1.1,hl:.7},
+{n:'SEOUL',sky:['#5d6eaa','#e6a6ae'],g:['#727c83','#59646e'],d:'sk',bg:'seoul',urb:1,cv:1.1,hl:.7},
+{n:'PEKIN',sky:['#bd7867','#e9c4a1'],g:['#9c866f','#786957'],d:'sk',bg:'beijing',urb:1,cv:1.1,hl:.7},
+{n:'SINGAPOUR',sky:['#42a8b0','#d6f0d9'],g:['#388b69','#246b50'],d:'sk',bg:'singapore',urb:1,cv:1.1,hl:.7},
+{n:'BANGKOK',sky:['#e58b62','#f6d4a1'],g:['#8c8b67','#6f7556'],d:'sk',bg:'bangkok',urb:1,cv:1.1,hl:.7},
+{n:'MUMBAI',sky:['#d58d62','#f2d1a1'],g:['#b49a73','#927a5c'],d:'h',bg:'mumbai',urb:1,cv:1.1,hl:.7},
+{n:'LE CAP',sky:['#68a8cf','#d7edf2'],g:['#79a078','#567b5a'],d:'h',bg:'capetown',urb:1,cv:1.1,hl:.7},
+{n:'MARRAKECH',sky:['#e99a62','#f5d3a0'],g:['#c68c59','#a96f46'],d:'h',bg:'marrakech',urb:1,cv:1.1,hl:.7},
+{n:'AUCKLAND',sky:['#4aa8c0','#d8f0ed'],g:['#57936d','#397650'],d:'p',bg:'auckland',urb:1,cv:1.1,hl:.7},
+{n:'LIMA',sky:['#9a9a9c','#e2d6c6'],g:['#b6a17e','#927d60'],d:'h',bg:'lima',urb:1,cv:1.1,hl:.7},
+{n:'HONG KONG',sky:['#4b6f9e','#d7b6a2'],g:['#657d79','#4c6563'],d:'sk',bg:'hongkong',urb:1,cv:1.1,hl:.7}];
 // Chaque circuit possède une paire de reliefs utilisable par les cinématiques,
 // même lorsque son décor urbain ou spécial ne définit pas de montagnes.
 TH.forEach((theme,index)=>{
@@ -462,7 +482,7 @@ TH.forEach((theme,index)=>{
   theme.m=virtualPairs[theme.n]||[land[0]||'#68798d',land[1]||'#46566d'];
  }
 });
-const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,10,11,12,13,14,15,16,17,18,19],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
+const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 let loopS=-1,loopE=-1,loopA=0,inLoop=0,item=0,boost=0,star=0;const objs=[];
 let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[],outrunTurnChoices=[];const fk=()=>!MODE&&stage<5,isLast=()=>stage>=(MODE==1||MODE==3?15:MODE==4?10:5);
 const FORK=125;let th=TH[0],cid=0,cposk=0;

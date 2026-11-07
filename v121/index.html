@@ -1603,7 +1603,7 @@ function drawOutrunMap(t){
  // Bandeau bas : progression précise, y compris si la partie s'arrête avant le dernier circuit.
  ctx.fillStyle='#06182bf5';ctx.fillRect(3,158,W-6,21);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,158.5,W-7,20);
  ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='bold 6.3px '+FT;ctx.fillStyle='#ffe078';
- ctx.fillText('COAST RUSH  •  15 CIRCUITS',8,166);
+ ctx.fillText(state==='win'?'COAST RUSH  •  SYNTHÈSE — VICTOIRE':'COAST RUSH  •  SYNTHÈSE — PARCOURS INTERROMPU',8,166);
  ctx.font='5.5px '+FT;ctx.fillStyle='#d9e9f2';
  ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,174);
  const pct=completed?100:Math.round(currentProgress*100);
@@ -1642,7 +1642,7 @@ function renderScene(){
  render();drawWeather();
 }
 // Toucher l'écran passe les écrans de fin (les boutons tactiles sont masqués sur la carte).
-cv.addEventListener('pointerdown',()=>{if(state==='brief')briefT=99;else if(state==='podium')podT=99;else if(state==='mega'&&podT>3)toMenu();else if((state==='over'||state==='win')&&winT>1.2)toMenu()});
+cv.addEventListener('pointerdown',()=>{if(state==='brief')briefT=99;else if(state==='podium')podT=99;else if(state==='mega'&&podT>3)toMenu();else if(MODE===0&&((state==='win'&&winT>=8)||(state==='over'&&winT>=3.5)))toMenu()});
 
 function loop(t){
  
@@ -1856,7 +1856,7 @@ function loop(t){
 })();
 
 requestAnimationFrame(loop);
- const routeMapActive=MODE===0&&(state==='over'||(state==='win'&&winT>=8));
+ const routeMapActive=MODE===0&&((state==='over'&&winT>=3.5)||(state==='win'&&winT>=8));
  if(routeMapActive!==__crRouteMapClassState){document.body.classList.toggle('route-map-active',routeMapActive);__crRouteMapClassState=routeMapActive;}
  const paused=document.hidden||window.__coastRushNativePaused===true;
  if(paused){last=t;crLastRaf=0;crRafSum=0;crRafCount=0;crRafMax=0;if(crHud)crHud.style.display='none';return}

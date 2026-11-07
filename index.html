@@ -1440,7 +1440,7 @@ function loop(t){
  const host=document.createElement('div');host.id='crMenuHotspots';
  const safeClick=id=>{const el=$(id);if(el&&typeof el.click==='function')el.click()};
  const defs=[
-  ['play','Jouer',()=>safeClick('go')],
+  ['play','Jouer',()=>{if(typeof startGame==='function')startGame();else toast('Lancement indisponible : recharge la page.')}],
   ['mode','Mode de jeu',()=>safeClick('md')],
   ['options','Options',()=>{if(window.__crMenuFocus)window.__crMenuFocus(6)}],
   ['profile','Profil',()=>{crShowProfile()}],

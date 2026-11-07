@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V110 – Cylindrical Tunnel & Sprite Restore</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- Nettoyage du cache applicatif web au démarrage. Les sauvegardes localStorage ne sont jamais touchées. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+(function(){
+  try {
+    if ('caches' in window) {
+      caches.keys().then(function(keys){ return Promise.all(keys.map(function(key){ return caches.delete(key); })); }).catch(function(){});
+    }
+    if ('serviceWorker' in navigator && navigator.serviceWorker.getRegistrations) {
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all(regs.map(function(reg){ return reg.unregister(); }));
+      }).catch(function(){});
+    }
+  } catch (_) {}
+})();
+</script>
 <style>
 :root{box-sizing:border-box}
 html,body{-webkit-text-size-adjust:100%;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none;margin:0;height:100%;background:radial-gradient(circle at 50% 40%,#3a0a5a,#0a0218 72%);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;font-family:monospace}

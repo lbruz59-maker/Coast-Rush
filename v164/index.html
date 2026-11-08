@@ -648,27 +648,30 @@ function crInitTrafficAudio(){
 function crUpdateTrafficAudio(){
  if(!ac||!crTrafficVoices.length)return;
  const now=ac.currentTime,active=state==='play';
- const nearby=active?cars.filter(c=>c&&c.z>=0&&!c.rp&&!(c.hit>0))
+ // Cherche les véhicules réellement proches devant OU derrière le joueur.
+ const range=segL*34;
+ const nearby=active?cars.filter(c=>c&&Number.isFinite(c.z)&&c.z>=0&&!c.rp&&!(c.hit>0))
   .map(c=>({c,dz:c.z-(pos+playerZ)}))
-  .filter(x=>Math.abs(x.dz)<segL*20)
+  .filter(x=>Math.abs(x.dz)<range)
   .sort((a,b)=>Math.abs(a.dz)-Math.abs(b.dz)).slice(0,2):[];
  for(let i=0;i<crTrafficVoices.length;i++){
   const v=crTrafficVoices[i],item=nearby[i];
-  let level=0,freq=72,pan=0,cut=650;
+  let level=0,freq=88,pan=0,cut=900;
   if(item){
-   const c=item.c,dist=Math.abs(item.dz)/(segL*20);
+   const c=item.c,dist=Math.abs(item.dz)/range;
    const proximity=Math.max(0,1-dist);
    const relative=(c.sp-speed)/Math.max(1,MAX);
-   level=(.008+.052*proximity*proximity)*(1-Math.min(.55,Math.abs(relative)*.22));
-   freq=Math.max(48,Math.min(230,72+Math.max(0,c.sp)/MAX*112+relative*24));
+   // Volume nettement plus présent à proximité, sans devenir agressif.
+   level=(.025+.19*proximity*proximity)*(1-Math.min(.35,Math.abs(relative)*.12));
+   freq=Math.max(55,Math.min(260,88+Math.max(0,c.sp)/MAX*125+relative*24));
    pan=Math.max(-.95,Math.min(.95,(c.o-px)*1.5));
-   cut=520+Math.min(1,proximity)*2300;
+   cut=850+Math.min(1,proximity)*3000;
   }
-  v.osc.frequency.setTargetAtTime(freq,now,.09);
-  v.harm.frequency.setTargetAtTime(freq*2.01,now,.09);
-  v.filter.frequency.setTargetAtTime(cut,now,.12);
-  v.gain.gain.setTargetAtTime(level,now,.12);
-  v.pan.pan.setTargetAtTime(pan,now,.12);
+  v.osc.frequency.setTargetAtTime(freq,now,.08);
+  v.harm.frequency.setTargetAtTime(freq*2.01,now,.08);
+  v.filter.frequency.setTargetAtTime(cut,now,.1);
+  v.gain.gain.setTargetAtTime(level,now,.1);
+  v.pan.pan.setTargetAtTime(pan,now,.1);
  }
 }
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+d+.05)}

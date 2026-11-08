@@ -637,10 +637,12 @@ function crInitTrafficAudio(){
  if(!ac||crTrafficVoices.length)return;
  for(let i=0;i<2;i++){
   const osc=ac.createOscillator(),harm=ac.createOscillator(),filter=ac.createBiquadFilter(),gain=ac.createGain(),pan=ac.createStereoPanner();
-  osc.type='sawtooth';harm.type='triangle';harm.detune.value=7;
-  filter.type='lowpass';filter.frequency.value=850;filter.Q.value=.8;
+  osc.type='sawtooth';harm.type='triangle';harm.detune.value=9;
+  filter.type='lowpass';filter.frequency.value=2400;filter.Q.value=.65;
   gain.gain.value=0;
-  osc.connect(filter);harm.connect(filter);filter.connect(gain);gain.connect(pan);pan.connect(SFX||master);
+  osc.connect(filter);harm.connect(filter);filter.connect(gain);gain.connect(pan);
+  // Connexion directe au master : le trafic ne dépend plus du bus SFX.
+  pan.connect(master);
   osc.start();harm.start();
   crTrafficVoices.push({osc,harm,filter,gain,pan});
  }
@@ -648,30 +650,27 @@ function crInitTrafficAudio(){
 function crUpdateTrafficAudio(){
  if(!ac||!crTrafficVoices.length)return;
  const now=ac.currentTime,active=state==='play';
- // Cherche les véhicules réellement proches devant OU derrière le joueur.
- const range=segL*34;
- const nearby=active?cars.filter(c=>c&&Number.isFinite(c.z)&&c.z>=0&&!c.rp&&!(c.hit>0))
-  .map(c=>({c,dz:c.z-(pos+playerZ)}))
+ const range=segL*42,player=pos+playerZ;
+ const nearby=active?cars.filter(c=>c&&Number.isFinite(c.z)&&c.z>0&&!c.rp&&!(c.hit>0))
+  .map(c=>({c,dz:c.z-player}))
   .filter(x=>Math.abs(x.dz)<range)
   .sort((a,b)=>Math.abs(a.dz)-Math.abs(b.dz)).slice(0,2):[];
  for(let i=0;i<crTrafficVoices.length;i++){
   const v=crTrafficVoices[i],item=nearby[i];
-  let level=0,freq=88,pan=0,cut=900;
+  let level=0,freq=95,pan=0,cut=1200;
   if(item){
-   const c=item.c,dist=Math.abs(item.dz)/range;
-   const proximity=Math.max(0,1-dist);
+   const c=item.c,proximity=Math.max(0,1-Math.abs(item.dz)/range);
    const relative=(c.sp-speed)/Math.max(1,MAX);
-   // Volume nettement plus présent à proximité, sans devenir agressif.
-   level=(.025+.19*proximity*proximity)*(1-Math.min(.35,Math.abs(relative)*.12));
-   freq=Math.max(55,Math.min(260,88+Math.max(0,c.sp)/MAX*125+relative*24));
-   pan=Math.max(-.95,Math.min(.95,(c.o-px)*1.5));
-   cut=850+Math.min(1,proximity)*3000;
+   level=(.10+.30*proximity*proximity)*(1-Math.min(.25,Math.abs(relative)*.08));
+   freq=Math.max(58,Math.min(280,95+Math.max(0,c.sp)/MAX*145+relative*25));
+   pan=Math.max(-.9,Math.min(.9,(c.o-px)*1.35));
+   cut=1400+proximity*3600;
   }
-  v.osc.frequency.setTargetAtTime(freq,now,.08);
-  v.harm.frequency.setTargetAtTime(freq*2.01,now,.08);
-  v.filter.frequency.setTargetAtTime(cut,now,.1);
-  v.gain.gain.setTargetAtTime(level,now,.1);
-  v.pan.pan.setTargetAtTime(pan,now,.1);
+  v.osc.frequency.setTargetAtTime(freq,now,.07);
+  v.harm.frequency.setTargetAtTime(freq*2.015,now,.07);
+  v.filter.frequency.setTargetAtTime(cut,now,.08);
+  v.gain.gain.setTargetAtTime(level,now,.08);
+  v.pan.pan.setTargetAtTime(pan,now,.08);
  }
 }
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+d+.05)}

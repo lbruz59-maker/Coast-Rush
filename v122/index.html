@@ -561,7 +561,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
    let __type=__pool[__variant];
    if(__type==='h'&&(__crSlot%3!==0))__type=__regional?__crRegional[(__variant+1)%__crRegional.length]:'t';
    const __palette=(th.hc||HC||['#718b72','#b18b58','#74849a']);
-   __sg.sp.push({t:__type,o:__side*(1.72+((__ri+id)%3)*.10),c:__palette[(__variant+(__side>0?1:0))%__palette.length],hh:__type==='h'?1.45+((__ri+id)%3)*.18:1,sz:__type==='h'?1.8:3.0});
+   __sg.sp.push({t:__type,o:__side*(2.15+((__ri+id)%3)*.12),c:__palette[(__variant+(__side>0?1:0))%__palette.length],hh:__type==='h'?1.45+((__ri+id)%3)*.18:1,sz:__type==='h'?.46:__type==='fh'?.62:__type==='t'?.58:__type==='sk'?.48:__type==='py'?.62:__type==='cl'?.58:__type==='ws'?.72:.68});
    __crSlot++;
   }
  }
@@ -577,8 +577,8 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   const __sg=segs[__li];if(!__sg||__sg.tun||__sg.loop)continue;
   const __side=(Math.floor(__li/31)+id)%2?1:-1;
   const __animal=__crFauna[(Math.floor(__li/31)+id)%__crFauna.length];
-  __sg.sp.push({t:'npc',o:__side*1.65,c:['#2877a8','#d06b42','#4d8a55','#8a65aa'][(Math.floor(__li/31)+id)%4],skin:['#d9a078','#8b573c','#edc49b'][(Math.floor(__li/31)+id)%3],sz:1.35,ph:__li*.13});
-  if(__li%62===55)__sg.sp.push({t:__animal,o:-__side*1.75,c:__animal==='a_flamingo'?'#e58caa':__animal==='a_camel'?'#bd8b52':'#806044',sz:1.25,ph:__li*.17});
+  __sg.sp.push({t:'npc',o:__side*2.05,c:['#2877a8','#d06b42','#4d8a55','#8a65aa'][(Math.floor(__li/31)+id)%4],skin:['#d9a078','#8b573c','#edc49b'][(Math.floor(__li/31)+id)%3],sz:1.0,ph:__li*.13});
+  if(__li%62===55)__sg.sp.push({t:__animal,o:-__side*2.15,c:__animal==='a_flamingo'?'#e58caa':__animal==='a_camel'?'#bd8b52':'#806044',sz:.68,ph:__li*.17});
  }
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.

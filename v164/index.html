@@ -2132,7 +2132,7 @@ function useItem(){if(!useItems||state!='play'||!item||crash>0)return;const I=it
  else if(I==3){let t=null;for(const c of cars)if(c.z>p&&!(c.hit>0)&&(!t||c.z<t.z))t=c;if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t,born:flash,life:2.4});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}else{star=6;boostSfx();say('Invincible!',1.5,1.1)}}
 
-const DF=[{n:'FACILE',t:84,k:28,b:45,s:45.5},{n:'NORMAL',t:63,k:40,b:60,s:38.5},{n:'DIFFICILE',t:45.5,k:56,b:80,s:31.5}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,countShown=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftHold=0,brakeWasDown=0,driftMarkClock=0,driftTrail=[];
+const DF=[{n:'FACILE',t:89,k:28,b:45,s:45.5},{n:'NORMAL',t:68,k:40,b:60,s:38.5},{n:'DIFFICILE',t:50.5,k:56,b:80,s:31.5}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,countShown=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftHold=0,brakeWasDown=0,driftMarkClock=0,driftTrail=[];
 const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 // Pools de particules : réutilisation des objets pour limiter le garbage collector.
 const __crSmokePool=[],__crDriftPool=[];

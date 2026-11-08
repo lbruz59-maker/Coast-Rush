@@ -1083,7 +1083,7 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,hy*.3);ctx.scale
   honolulu:[['bird',.2,.65],['crab',.8,.8]],
   auckland:[['bird',.22,.7],['deer',.78,.85]]
  };
- const fauna=wild[k];if(fauna)fauna.forEach(([kind,px,scale])=>{const screenX=W*px,screenY=H*.58;const localX=(screenX+W*.15)/1.5,localY=(screenY-hy*.3)/1.5;wildlife(localX,localY,Math.max(1.35,scale*2.15),kind,kind==='fox'?'#b75d35':kind==='camel'?'#b68b54':kind==='crab'?'#b94b43':'#263d32')});
+ const fauna=wild[k];if(fauna)fauna.forEach(([kind,px,scale])=>{const screenX=W*px,screenY=H*.88;const localX=(screenX+W*.15)/1.5,localY=(screenY-hy*.3)/1.5;wildlife(localX,localY,Math.max(1.8,scale*2.55),kind,kind==='fox'?'#b75d35':kind==='camel'?'#b68b54':kind==='crab'?'#b94b43':'#263d32')});
  ctx.restore()}
 
 // Fire TV: cache the static skyline/background layer. It is rebuilt only when

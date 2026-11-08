@@ -541,12 +541,12 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
  };
  const __crSet=__crRoadsideSets[th.bg]||['t','h','l'];
  const __crPalette=(th.hc||HC||['#718b72','#b18b58','#74849a']);
- for(let __ri=92;__ri<N-FORK;__ri+=23){
+ for(let __ri=42;__ri<N-FORK;__ri+=13){
   const __sg=segs[__ri];if(!__sg||__sg.tun||__sg.loop)continue;
-  const __variant=(Math.floor(__ri/23)+id)%__crSet.length;
+  const __variant=(Math.floor(__ri/13)+id)%__crSet.length;
   for(let __side of [-1,1]){
    const __type=__crSet[(__variant+(__side>0?1:0))%__crSet.length];
-   __sg.sp.push({t:__type,o:__side*(2.15+((__ri+id)%4)*.12),c:__crPalette[(__variant+(__side>0?1:0))%__crPalette.length],hh:__type==='h'?1.35+((__ri+id)%4)*.22:1,sz:__type==='p'||__type==='c'?1.15:1});
+   __sg.sp.push({t:__type,o:__side*(1.72+((__ri+id)%3)*.10),c:__crPalette[(__variant+(__side>0?1:0))%__crPalette.length],hh:__type==='h'?1.8+((__ri+id)%4)*.25:1,sz:2.25});
   }
  }
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
@@ -1184,7 +1184,7 @@ function decoRaster(sp,x,y,sc){
  // Seuls les objets sous-pixel sont culles; la route/horizon ne changent pas.
  if(isTV&&proj<.85)return;
  if(isTV&&proj<7){
-  const ww=Math.max(1,proj*.15*cactusScale),hh=Math.max(1,proj*.48*cactusScale);
+  const lodScale=sp.sz||1;const ww=Math.max(1,proj*.15*cactusScale*lodScale),hh=Math.max(1,proj*.48*cactusScale*lodScale);
   let col='#61765a';
   if(t==='p'||t==='c'||t==='t')col='#347b42';
   else if(t==='h'||t==='B'||t==='A')col=sp.c||'#68758a';
@@ -1374,7 +1374,7 @@ function deco(sp,x,y,sc){
  const radius=Math.ceil(projectedQ*2.7*(t==='c'?3:1))+2;
  if(radius>320||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
- if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
+ if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.sz||1,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();
  const key=[t,qsc,params,W,H,roadW,themeKey].join('|');
  const ratio=sc/qsc;
@@ -1414,7 +1414,7 @@ function __crDrawDecoGroup(seg,baseX,baseY,sc){
  if(!stat.length)return;
  // Signature recalculée : supporte aussi les segments dont la liste de décors évolue.
  let sig='';
- try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';')}
+ try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.sz||1,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';')}
  catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
  const key=[seg.i,sig,qsc,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
  const ratio=sc/qsc;

@@ -505,7 +505,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   if(th.n=='SUNSET'&&i%41==23&&!f&&!s.loop)s.sp.push({t:'fa',o:(R()<.5?-1:1)*(1.38+R()*.18),k:5});
   if(th.n=='CANYON'&&i%35==17&&!f&&!s.loop)s.sp.push({t:'fa',o:(R()<.5?-1:1)*(1.38+R()*.18),k:2});
   if(th.n=='NIGHT'&&i%45==27&&!f&&!s.loop)s.sp.push({t:'fa',o:(R()<.5?-1:1)*(1.35+R()*.18),k:5});
-  if(th.n=='ALPS'&&i%59==34&&!f&&!s.loop)s.sp.push({t:'lf',o:(R()<.5?-1:1)*(2.45+R()*.2)});if(th.n=='SYDNEY'&&i%29==13&&!f&&!s.loop)s.sp.push({t:'eu',o:(R()<.5?-1:1)*(1.95+R()*.35)});if(i%47==20&&!f&&!s.loop)s.sp.push({t:'S',o:(R()<.5?-1:1)*1.25,txt:['60','90','STOP'][R()*3|0],bg:'#fff'});
+  if(th.n=='ALPS'&&i%59==34&&!f&&!s.loop)s.sp.push({t:'lf',o:(R()<.5?-1:1)*(2.45+R()*.2)});if(th.n=='SYDNEY'&&i%29==13&&!f&&!s.loop)s.sp.push({t:'eu',o:(R()<.5?-1:1)*(1.95+R()*.35)});if(i%47==20&&!f&&!s.loop)s.sp.push({t:'S',o:(R()<.5?-1:1)*1.25,txt:['60','90','110'][R()*3|0],bg:'#fff'});
   if(Math.abs(s.curve)>3.5&&i%5==0)s.sp.push({t:'S',o:-Math.sign(s.curve)*1.3,txt:s.curve>0?'▶':'◀',bg:'#ffd400'});
   if(fk()&&i==N-FORK-6){const L1=TH[THI[(stage+1)*stage/2+cposk]],R1=TH[THI[(stage+1)*stage/2+cposk+1]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});

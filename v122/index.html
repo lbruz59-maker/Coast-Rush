@@ -981,6 +981,7 @@ function drawSkyObjs(){for(const o of skyObjs){const sp=W+160,x=(((o.x+flash*o.v
  else if(o.k=='drone'){ctx.fillStyle='#1a1a22';ctx.fillRect(x-2,y-1,4,2);ctx.strokeStyle='#1a1a22';ctx.beginPath();ctx.moveTo(x-5,y-1.5);ctx.lineTo(x+5,y-1.5);ctx.stroke();ctx.fillStyle='#ffffff66';for(const dx of[-5,5]){ctx.beginPath();ctx.ellipse(x+dx,y-2,2.6,.7,0,0,7);ctx.fill()}ctx.fillStyle=Math.floor(flash*4)%2?'#f33':'#222';ctx.fillRect(x-.6,y+1,1.2,1.2)}
  else if(o.k=='blimp'){const g=ctx.createLinearGradient(0,y-7,0,y+7);g.addColorStop(0,'#fff');g.addColorStop(1,o.c);ctx.fillStyle=g;ctx.beginPath();ctx.ellipse(x,y,22,7,0,0,7);ctx.fill();poly(o.c,[x-18,y,x-26,y-7,x-22,y]);poly(o.c,[x-18,y,x-26,y+7,x-22,y]);ctx.fillStyle='#444';ctx.fillRect(x-4,y+6,8,2.4)}
  else{ctx.fillStyle=o.c;ctx.beginPath();ctx.arc(x,y,9,Math.PI,0);ctx.bezierCurveTo(x+9,y+8,x+4,y+12,x+2,y+13);ctx.lineTo(x-2,y+13);ctx.bezierCurveTo(x-4,y+12,x-9,y+8,x-9,y);ctx.fill();ctx.strokeStyle='#ffffff88';for(const dx of[-4,0,4]){ctx.beginPath();ctx.moveTo(x+dx,y-8);ctx.quadraticCurveTo(x+dx*1.2,y+4,x+dx*.4,y+13);ctx.stroke()}ctx.fillStyle='#6a4a2a';ctx.fillRect(x-2,y+14,4,3)}}}
+const __crLandmarkSpriteCache=Object.create(null);
 function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scale(1.5,1.5);const hz=(c,t)=>mixc(c,curSky[1],t==null?.5:t),bl=(x,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x,hy-h,w,h)},row=(seed,a,b,c,roof)=>{const r=rng(seed);for(let x=-10;x<W+20;){const w=14+r()*22,h=a+r()*(b-a);bl(x,w,h,c);if(roof)poly(roof,[x-1,hy-h,x+w+1,hy-h,x+w*.85,hy-h-5,x+w*.15,hy-h-5]);x+=w}},rowWide=(seed,a,b,c)=>{const r=rng(seed);for(let x=-12;x<W+20;){const w=22+r()*30,h=a+r()*(b-a);bl(x,w,h,c);ctx.fillStyle='#ffd88a66';for(let yy=hy-h+5;yy<hy-3;yy+=7)for(let xx=x+4;xx<x+w-3;xx+=7)ctx.fillRect(xx,yy,2.2,2.8);x+=w+1}},dome=(x,y,r,c)=>{ctx.fillStyle=c;ctx.beginPath();ctx.arc(x,y,r,Math.PI,0);ctx.bezierCurveTo(x+r,y+r*.2,x+r*.4,y+r*.7,x,y+r*.9);ctx.bezierCurveTo(x-r*.4,y+r*.7,x-r,y+r*.2,x-r,y);ctx.fill()};
  if(k=='paris'){row(11,18,34,hz('#e8dcc2'),hz('#7d838f'));row(12,10,22,hz('#d8c9a8'));const x=W*.46,c=hz('#5d5048',.35);poly(c,[x-24,hy,x-7,hy-44,x-3,hy-72,x-1,hy-104,x+1,hy-104,x+3,hy-72,x+7,hy-44,x+24,hy]);ctx.fillStyle=curSky[1];ctx.beginPath();ctx.ellipse(x,hy,11,26,0,Math.PI,0);ctx.fill();ctx.fillStyle=c;ctx.fillRect(x-9,hy-50,18,2.4);ctx.fillRect(x-5,hy-76,10,2)}
  else if(k=='london'){row(21,8,16,hz('#8a6a5a'));const x=W*.3;bl(x,12,70,hz('#a8987a'));poly(hz('#6a6a60'),[x-1,hy-70,x+13,hy-70,x+6,hy-92]);ctx.fillStyle='#ffe9a0';ctx.beginPath();ctx.arc(x+6,hy-58,3.4,0,7);ctx.fill();bl(x+14,40,22,hz('#9a8a6c'));const ex=W*.72,er=30;ctx.strokeStyle=hz('#7a8a9a');ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(ex,hy-er-2,er,0,7);ctx.stroke();for(let i=0;i<10;i++){const a=i*.628;ctx.beginPath();ctx.moveTo(ex,hy-er-2);ctx.lineTo(ex+Math.cos(a)*er,hy-er-2+Math.sin(a)*er);ctx.stroke()}ctx.beginPath();ctx.moveTo(ex-8,hy);ctx.lineTo(ex,hy-er-2);ctx.lineTo(ex+8,hy);ctx.stroke()}
@@ -1013,7 +1014,14 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
 
  const bridge=(x,w,h,col=stone)=>{const l=x-w*.34,r=x+w*.34,top=hy-h;ctx.fillStyle=hz(col,.1);ctx.fillRect(l-3,top,6,h);ctx.fillRect(r-3,top,6,h);poly(hz(col,.1),[l-7,top,l+7,top,l,top-8]);poly(hz(col,.1),[r-7,top,r+7,top,r,top-8]);ctx.strokeStyle=hz(col,.08);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x-w*.5,hy-3);ctx.quadraticCurveTo(x,top-5,x+w*.5,hy-3);ctx.moveTo(l,top);ctx.quadraticCurveTo(x,top+h*.7,r,top);ctx.stroke();ctx.fillStyle=hz(col,.1);ctx.fillRect(x-w*.5,hy-3,w,3)};
  const dome2=(x,w,h,col=stone)=>{ctx.fillStyle=hz(col,.12);ctx.fillRect(x-w/2,hy-h*.48,w,h*.48);ctx.beginPath();ctx.ellipse(x,hy-h*.48,w/2,h*.34,0,Math.PI,0);ctx.fill();tower(x,w*.08,h*.9,col)};
- if(k==='paris'){
+ // Each circuit's landmark artwork is rasterized once as its own cached sprite.
+  const __crLmKey=k+'|'+W+'|'+H+'|'+curSky[0]+'|'+curSky[1];
+  let __crLmSprite=__crLandmarkSpriteCache[__crLmKey];
+  if(!__crLmSprite){
+   __crLmSprite=document.createElement('canvas');__crLmSprite.width=W;__crLmSprite.height=H;
+   const __crLiveCtx=ctx;ctx=__crLmSprite.getContext('2d');
+   try{
+   if(k==='paris'){
   // Notre-Dame, Louvre, Concorde et pont Alexandre-III autour de la silhouette Eiffel.
   const x=W*.18;ctx.fillStyle=hz('#b9a98d',.18);ctx.fillRect(x-18,hy-23,36,23);
   for(const dx of[-12,12]){tower(x+dx,7,29);poly(ink,[x+dx-4,hy-29,x+dx+4,hy-29,x+dx,hy-43]);}
@@ -1069,7 +1077,12 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
  else if(k==='canyon'){poly(hz('#a54d32',.08),[W*.08,hy,W*.22,hy-64,W*.34,hy-22,W*.46,hy-78,W*.58,hy]);poly(hz('#8d432f',.08),[W*.62,hy,W*.75,hy-56,W*.88,hy]);ctx.fillStyle=hz('#4d3026',.08);ctx.fillRect(W*.43,hy-38,W*.12,38)}
  else if(k==='autumn'){for(let i=0;i<22;i++){const x=W*(.02+i*.045),h=26+(i*17%34);ctx.fillStyle=hz(['#b45d2e','#d28b36','#8b5633'][i%3],.08);ctx.fillRect(x-1,hy-h*.25,3,h*.25);ctx.beginPath();ctx.arc(x,hy-h*.48,h*.3,0,Math.PI*2);ctx.fill()}}
  else if(k==='island'){for(let i=0;i<9;i++)pine(W*(.06+i*.1),28+i%3*9,'#287b53');tower(W*.82,7,48,'#f4eee0');ctx.fillStyle='#e64b42';ctx.fillRect(W*.82-4,hy-49,8,5);wheel(W*.22,hy-17,8,'#dceef4')}
- ctx.restore()}
+ 
+   }finally{ctx=__crLiveCtx}
+   __crLandmarkSpriteCache[__crLmKey]=__crLmSprite;
+  }
+  ctx.drawImage(__crLmSprite,0,0,W,H);
+  ctx.restore()}
 
 // Fire TV: cache the static skyline/background layer. It is rebuilt only when
 // the scene theme or logical canvas dimensions change; moving road/scenery stays live.

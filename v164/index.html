@@ -1566,7 +1566,7 @@ function drawOutrunVictoryCine(t){
  const endId=Math.max(10,Math.min(14,Number.isInteger(cid)?cid:10));
  const thm=TH[THI[endId]]||TH[10];
  const skyPair=Array.isArray(thm.sky)&&thm.sky.length>1?thm.sky:TH[10].sky;
- const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:TH[10].m;
+ const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:(Array.isArray(TH[10]&&TH[10].m)&&TH[10].m.length>1?TH[10].m:['#526078','#303d52']);
  const city=({
   10:{name:'PARIS',sub:'LA VILLE LUMIERE',kind:'paris'},
   11:{name:'LONDRES',sub:'THE CITY NEVER SLEEPS',kind:'london'},

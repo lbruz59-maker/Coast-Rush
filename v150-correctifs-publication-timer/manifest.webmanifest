@@ -1,0 +1,11 @@
+{
+  "name": "Coast Rush V150",
+  "short_name": "Coast Rush",
+  "description": "Jeu de course Coast Rush",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18"
+}

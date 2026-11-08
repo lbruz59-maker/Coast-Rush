@@ -1067,23 +1067,23 @@ const s=sc*(t==='c'?73600*3:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1);if
   for(let q=0;q<4;q++){ctx.save();ctx.rotate(q*Math.PI/2+flash*.8);ctx.fillStyle='#9eafc2';ctx.beginPath();ctx.ellipse(fw*.22,0,fw*.23,fw*.065,0,0,Math.PI*2);ctx.fill();ctx.restore()}
   ctx.restore();
  }
- if(sp.k%31===11||sp.k%31===25){
+ if(sp.k%310===11||sp.k%310===25){
   for(const side of[-1,1]){
-   const wx=x+side*k*.78,wy=y-hh*.53,dw=Math.max(2,w*.22),dh=Math.max(3,w*.56);
+   const wx=x+side*k*.78,dw=Math.max(2,w*.22),dh=Math.max(3,w*.56),wy=y;
    ctx.fillStyle='#303b4b';ctx.fillRect(wx-dw/2,wy-dh/2,dw,dh);
    ctx.fillStyle='#6e8298';ctx.fillRect(wx-dw*.42,wy-dh*.46,dw*.84,dh*.92);
-   ctx.fillStyle='#263547';ctx.fillRect(wx-dw*.34,wy-dh*.38,dw*.68,dh*.76);
+   ctx.fillStyle='#263547';ctx.fillRect(wx-dw*.34,wy-dh*.92,dw*.68,dh*.92);ctx.fillStyle='#111923';ctx.fillRect(wx-dw*.40,wy-dh*.96,dw*.80,Math.max(1,dh*.045));ctx.fillStyle='#8795a8';ctx.fillRect(wx-dw*.36,wy-dh*.90,dw*.035,dh*.88);ctx.fillStyle='#111923';ctx.fillRect(wx-dw*.42,wy-Math.max(1,w*.018),dw*.84,Math.max(1,w*.018));
    ctx.fillStyle='#e5c66d';ctx.fillRect(wx+side*dw*.25,wy-dh*.03,Math.max(.7,dw*.06),Math.max(.7,dh*.06));
    // Panneau de sécurité fixé au mur, à côté de la porte.
    if(sp.k%31===11){
-    const sy=wy-dh*.78,sw=Math.max(2,dw*.72),sh=Math.max(2,dh*.28),sx=wx-side*dw*.78;
+    const sy=wy-dh*1.22,sw=Math.max(2,dw*.72),sh=Math.max(2,dh*.28),sx=wx-side*dw*.78;
     ctx.fillStyle='#e8edf2';ctx.fillRect(sx-sw/2,sy-sh/2,sw,sh);
     ctx.fillStyle='#d92e38';ctx.fillRect(sx-sw*.42,sy-sh*.34,sw*.84,sh*.68);
     ctx.fillStyle='#fff';ctx.fillRect(sx-sw*.05,sy-sh*.25,sw*.1,sh*.5);
    }
   }
  }
- if(sp.k%19===5){
+ if(sp.k%190===5){
   for(const side of[-1,1]){
    const bx=x+side*k*.91,by=y-w*.11,bw=Math.max(1.5,w*.085),bh=Math.max(3,w*.28);
    ctx.fillStyle='#e8e6dc';ctx.fillRect(bx-bw/2,by-bh,bw,bh);

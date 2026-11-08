@@ -1132,11 +1132,11 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
 
     // Circuit-specific secondary props: two local motifs per route, baked into its sprite.
     const __crLocalProps={
-     coast:['lighthouse','sail'],desert:['palm','cactus'],alps:['cablecar','pine'],meadow:['windmill','barn'],sunset:['ferris','sail'],city:['tram','clock'],night:['neon','tower'],
-     canyon:['arch','cactus'],autumn:['windmill','bridge'],island:['palm','lighthouse'],paris:['streetlamp','carousel'],london:['clock','bus'],tokyo:['torii','lantern'],ny:['taxi','ferris'],rome:['fountain','column'],cairo:['obelisk','palm'],rio:['cablecar','palm'],sydney:['sail','bridge'],moscow:['dome','tower'],dubai:['sail','tower'],la:['palm','sign'],mexico:['pyramid','cactus'],toronto:['tower','tram'],buenosaires:['obelisk','balcony'],vancouver:['pine','sail'],berlin:['gate','clock'],madrid:['fountain','balcony'],amsterdam:['windmill','canal'],istanbul:['dome','minaret'],athens:['column','olive'],seoul:['gate','lantern'],beijing:['pagoda','wall'],singapore:['garden','tower'],bangkok:['pagoda','boat'],mumbai:['arch','boat'],capetown:['lighthouse','tablemountain'],marrakech:['arch','palm'],auckland:['sail','volcano'],lima:['pyramid','balcony'],hongkong:['ferry','neon'],manila:['jeepney','palm'],lisbon:['tram','sail'],prague:['clock','bridge'],honolulu:['surf','palm'],sanfrancisco:['cablecar','bridge'],stockholm:['boat','spire']
+     coast:['lighthouse','sail'],desert:['dune','oasis'],alps:['chalet','cablecar'],meadow:['windmill','barn'],sunset:['ferris','sail'],city:['tram','clock'],night:['neon','tower'],
+     canyon:['arch','mesa'],autumn:['windmill','bridge'],island:['palm','lighthouse'],paris:['streetlamp','carousel'],london:['clock','bus'],tokyo:['torii','lantern'],ny:['taxi','ferris'],rome:['fountain','column'],cairo:['obelisk','bazaar'],rio:['cablecar','christ'],sydney:['sail','bridge'],moscow:['dome','tower'],dubai:['sail','tower'],la:['sign','filmset'],mexico:['pyramid','market'],toronto:['tower','tram'],buenosaires:['obelisk','balcony'],vancouver:['pine','harbor'],berlin:['gate','clock'],madrid:['fountain','plaza'],amsterdam:['windmill','canal'],istanbul:['dome','minaret'],athens:['column','olive'],seoul:['gate','lantern'],beijing:['pagoda','wall'],singapore:['garden','tower'],bangkok:['pagoda','boat'],mumbai:['arch','boat'],capetown:['lighthouse','tablemountain'],marrakech:['arch','riad'],auckland:['sail','volcano'],lima:['pyramid','balcony'],hongkong:['ferry','neon'],manila:['jeepney','harbor'],lisbon:['tram','sail'],prague:['clock','bridge'],honolulu:['surf','palm'],sanfrancisco:['cablecar','bridge'],stockholm:['boat','spire']
     }[k]||[];
-    const __crThirdProp=({
-     coast:'lighthouse',desert:'pyramid',alps:'cablecar',meadow:'pine',sunset:'ferris',city:'tram',night:'neon',canyon:'arch',autumn:'pine',island:'palm',
+     const __crThirdProp=({
+     coast:'lighthouse',desert:'pyramid',alps:'chalet',meadow:'pine',sunset:'ferris',city:'tram',night:'neon',canyon:'arch',autumn:'pine',island:'palm',
      paris:'fountain',london:'bridge',tokyo:'pagoda',ny:'bridge',rome:'fountain',cairo:'obelisk',rio:'palm',sydney:'sail',moscow:'dome',dubai:'tower',
      la:'sign',mexico:'pyramid',toronto:'tower',buenosaires:'balcony',vancouver:'pine',berlin:'gate',madrid:'fountain',amsterdam:'boat',istanbul:'minaret',
      athens:'column',seoul:'lantern',beijing:'pagoda',singapore:'garden',bangkok:'boat',mumbai:'arch',capetown:'lighthouse',marrakech:'palm',
@@ -1144,7 +1144,7 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
     })[k];
     if(__crThirdProp)__crLocalProps.push(__crThirdProp);
     const __crFourthProp=({
-     coast:'boat',desert:'oasis',alps:'snowpeak',meadow:'barn',sunset:'neon',city:'clock',night:'ferris',canyon:'mesa',autumn:'bridge',island:'volcano',
+     coast:'boat',desert:'oasis',alps:'cablecar',meadow:'barn',sunset:'neon',city:'clock',night:'ferris',canyon:'mesa',autumn:'bridge',island:'volcano',
      paris:'streetlamp',london:'bus',tokyo:'lantern',ny:'taxi',rome:'column',cairo:'palm',rio:'cablecar',sydney:'ferry',moscow:'spire',dubai:'neon',
      la:'palm',mexico:'wall',toronto:'tram',buenosaires:'balcony',vancouver:'boat',berlin:'gate',madrid:'olive',amsterdam:'canal',istanbul:'dome',
      athens:'olive',seoul:'gate',beijing:'wall',singapore:'garden',bangkok:'lantern',mumbai:'ferry',capetown:'tablemountain',marrakech:'arch',
@@ -1155,6 +1155,15 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
      const y=hy,ink2=hz('#26384a',.12),warm=hz('#e8c77b',.12),sea=hz('#5d9eae',.12);
      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineWidth=1.7;ctx.strokeStyle=ink2;ctx.fillStyle=warm;ctx.lineCap='round';ctx.lineJoin='round';
      if(type==='lighthouse'){ctx.fillStyle='#eee2c7';ctx.fillRect(-4,-28,8,28);ctx.fillStyle='#d95c4c';ctx.fillRect(-5,-22,10,4);ctx.fillRect(-5,-30,10,4);ctx.fillRect(-6,-33,12,4);ctx.fillStyle=warm;ctx.fillRect(-3,-38,6,5)}
+     else if(type==='chalet'){ctx.fillStyle='#8b6244';ctx.fillRect(-16,-14,32,14);ctx.fillStyle='#b9a17e';ctx.fillRect(-14,-13,28,13);ctx.fillStyle='#5a3829';ctx.beginPath();ctx.moveTo(-19,-13);ctx.lineTo(0,-29);ctx.lineTo(19,-13);ctx.closePath();ctx.fill();ctx.fillStyle='#eee1c9';ctx.fillRect(-4,-9,8,9);ctx.fillStyle='#6b9ab1';ctx.fillRect(-11,-10,5,5);ctx.fillRect(6,-10,5,5)}
+     else if(type==='dune'){ctx.fillStyle='#d9ae70';ctx.beginPath();ctx.moveTo(-20,0);ctx.quadraticCurveTo(-8,-15,3,-7);ctx.quadraticCurveTo(12,-2,20,0);ctx.closePath();ctx.fill()}
+     else if(type==='oasis'){ctx.fillStyle='#4aa5b7';ctx.beginPath();ctx.ellipse(0,0,17,4,0,0,7);ctx.fill();ctx.strokeStyle='#7c5b36';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-22);ctx.stroke();ctx.fillStyle='#287447';ctx.beginPath();ctx.ellipse(-7,-22,9,3,-.4,0,7);ctx.ellipse(7,-22,9,3,.4,0,7);ctx.fill()}
+     else if(type==='market'||type==='bazaar'){ctx.fillStyle='#b86a42';ctx.fillRect(-15,-12,30,12);ctx.fillStyle='#e7c17c';ctx.beginPath();ctx.moveTo(-17,-12);ctx.lineTo(-10,-23);ctx.lineTo(10,-23);ctx.lineTo(17,-12);ctx.closePath();ctx.fill();ctx.fillStyle='#5d4032';ctx.fillRect(-3,-9,6,9)}
+     else if(type==='riad'){ctx.fillStyle='#b97850';ctx.fillRect(-15,-18,30,18);ctx.fillStyle='#8d4938';ctx.fillRect(-18,-21,36,4);ctx.fillStyle='#f0d5ad';ctx.fillRect(-8,-12,6,7);ctx.fillRect(3,-12,6,7)}
+     else if(type==='plaza'){ctx.fillStyle='#d6b98b';ctx.fillRect(-18,-2,36,2);ctx.fillStyle='#9a6745';ctx.fillRect(-12,-13,24,11);ctx.fillStyle='#e8d8b9';ctx.fillRect(-15,-15,30,3)}
+     else if(type==='filmset'){ctx.fillStyle='#d6c5a0';ctx.fillRect(-17,-14,34,14);ctx.fillStyle='#b94b3d';ctx.fillRect(-19,-18,38,4);ctx.fillStyle='#5c7383';ctx.fillRect(-10,-10,7,10);ctx.fillRect(3,-10,7,10)}
+     else if(type==='christ'){ctx.strokeStyle='#e9e4d8';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-28);ctx.moveTo(-9,-19);ctx.lineTo(9,-19);ctx.stroke()}
+     else if(type==='harbor'){ctx.fillStyle='#4c91a8';ctx.fillRect(-18,-3,36,3);ctx.fillStyle='#eee5d4';ctx.beginPath();ctx.moveTo(-12,-7);ctx.lineTo(12,-7);ctx.lineTo(8,-2);ctx.lineTo(-8,-2);ctx.closePath();ctx.fill()}
      else if(type==='sail'||type==='surf'){ctx.strokeStyle=ink2;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-29);ctx.stroke();ctx.fillStyle=type==='surf'?warm:'#f4eee0';ctx.beginPath();ctx.moveTo(-1,-27);ctx.lineTo(-1,-5);ctx.lineTo(14,-5);ctx.closePath();ctx.fill();ctx.fillStyle=sea;ctx.fillRect(-13,1,27,2)}
      else if(type==='palm'){ctx.strokeStyle=ink2;ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(2,-15,0,-25);ctx.stroke();for(let i=0;i<5;i++){const a=Math.PI+i*.55;ctx.beginPath();ctx.moveTo(0,-24);ctx.quadraticCurveTo(Math.cos(a)*13,-32+Math.sin(a)*5,Math.cos(a)*19,-23+Math.sin(a)*8);ctx.stroke()}}
      else if(type==='cactus'){ctx.fillStyle='#4b8b62';ctx.fillRect(-3,-24,6,24);ctx.fillRect(-10,-17,7,4);ctx.fillRect(-10,-17,4,10);ctx.fillRect(3,-12,7,4);ctx.fillRect(6,-12,4,8)}

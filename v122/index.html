@@ -991,7 +991,61 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,hy*.3);ctx.scale
  else if(k=='rio'){ctx.fillStyle=hz('#5a7a5a',.4);ctx.beginPath();ctx.ellipse(W*.3,hy,32,50,0,Math.PI,0);ctx.fill();poly(hz('#4a7a52',.35),[W*.56,hy,W*.74,hy-72,W*.94,hy]);const x=W*.74;ctx.fillStyle='#f4f4f0';ctx.fillRect(x-1,hy-90,2,16);ctx.fillRect(x-8,hy-86,16,2)}
  else if(k=='sydney'){const x0=W*.3;for(let i=0;i<4;i++)poly('#f6f6fa',[x0+i*11,hy,x0+i*11+3,hy-28+i*3,x0+i*11+16,hy]);poly('#dfe2ea',[x0+4,hy,x0+8,hy-20,x0+22,hy]);ctx.fillStyle=hz('#9a8a70',.3);ctx.fillRect(x0-6,hy-4,70,4);ctx.strokeStyle=hz('#3a4a5a',.3);ctx.lineWidth=3;ctx.beginPath();ctx.arc(W*.76,hy+58,86,Math.PI*1.2,Math.PI*1.8);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*.76-84,hy-2);ctx.lineTo(W*.76+84,hy-2);ctx.stroke()}
  else if(k=='moscow'){bl(0,W,10,hz('#a8483a',.3));for(let i=0;i<5;i++){const x=W*(.28+i*.1),h=26+(i%3)*12,cs=['#d8323a','#2a8a5a','#e8b030','#2a6aff','#c03aa0'][i];bl(x-5,10,h,hz('#e8d8b8',.3));dome(x,hy-h-1,8,hz(cs,.25));poly(hz('#e8b030'),[x-.8,hy-h-14,x+.8,hy-h-14,x,hy-h-22])}}
- else if(k=='dubai'){const c=hz('#9aaec8',.35);poly(c,[W*.5-4,hy,W*.5-1,hy-120,W*.5+1,hy-120,W*.5+4,hy]);poly(hz('#8aa0bc',.35),[W*.5-8,hy,W*.5-3,hy-70,W*.5+3,hy-70,W*.5+8,hy]);row(51,18,44,hz('#8a9ab4',.35));poly(hz('#e8eef8',.3),[W*.2,hy,W*.2+4,hy-50,W*.2+22,hy-18,W*.2+4,hy]);bl(W*.82,8,60,c);bl(W*.9,10,48,c)}ctx.restore()}
+ else if(k=='dubai'){const c=hz('#9aaec8',.35);poly(c,[W*.5-4,hy,W*.5-1,hy-120,W*.5+1,hy-120,W*.5+4,hy]);poly(hz('#8aa0bc',.35),[W*.5-8,hy,W*.5-3,hy-70,W*.5+3,hy-70,W*.5+8,hy]);row(51,18,44,hz('#8a9ab4',.35));poly(hz('#e8eef8',.3),[W*.2,hy,W*.2+4,hy-50,W*.2+22,hy-18,W*.2+4,hy]);bl(W*.82,8,60,c);bl(W*.9,10,48,c)}
+ // Landmark layer: silhouettes lisibles, distinctes et peu coûteuses à dessiner.
+ const ink=hz('#27364b',.22),stone=hz('#e7d7b9',.22),gold=hz('#e8c77b',.18);
+ const tower=(x,w,h,col=ink)=>{bl(x-w/2,w,h,col);poly(col,[x-w*.58,hy-h,x+w*.58,hy-h,x+w*.28,hy-h-6,x-w*.28,hy-h-6]);};
+ const pine=(x,h,col='#24583d')=>{ctx.fillStyle=hz(col,.12);ctx.fillRect(x-1,hy-h*.22,2,h*.22);for(let j=0;j<3;j++){const y=hy-h*.18-j*h*.22,ww=h*(.23-j*.045);poly(hz(col,.12),[x-ww,y,x+ww,y,x,y-h*.28])}};
+ const wheel=(x,y,r,col=gold)=>{ctx.strokeStyle=hz(col,.08);ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();for(let j=0;j<12;j++){const a=j*Math.PI/6;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.stroke()}};
+ const bridge=(x,w,h,col=stone)=>{const l=x-w*.34,r=x+w*.34,top=hy-h;ctx.fillStyle=hz(col,.1);ctx.fillRect(l-3,top,6,h);ctx.fillRect(r-3,top,6,h);poly(hz(col,.1),[l-7,top,l+7,top,l,top-8]);poly(hz(col,.1),[r-7,top,r+7,top,r,top-8]);ctx.strokeStyle=hz(col,.08);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x-w*.5,hy-3);ctx.quadraticCurveTo(x,top-5,x+w*.5,hy-3);ctx.moveTo(l,top);ctx.quadraticCurveTo(x,top+h*.7,r,top);ctx.stroke();ctx.fillStyle=hz(col,.1);ctx.fillRect(x-w*.5,hy-3,w,3)};
+ const dome2=(x,w,h,col=stone)=>{ctx.fillStyle=hz(col,.12);ctx.fillRect(x-w/2,hy-h*.48,w,h*.48);ctx.beginPath();ctx.ellipse(x,hy-h*.48,w/2,h*.34,0,Math.PI,0);ctx.fill();tower(x,w*.08,h*.9,col)};
+ if(k==='paris'){
+  // Notre-Dame, Louvre, Concorde et pont Alexandre-III autour de la silhouette Eiffel.
+  const x=W*.18;ctx.fillStyle=hz('#b9a98d',.18);ctx.fillRect(x-18,hy-23,36,23);
+  for(const dx of[-12,12]){tower(x+dx,7,29);poly(ink,[x+dx-4,hy-29,x+dx+4,hy-29,x+dx,hy-43]);}
+  tower(W*.76,44,18,stone);for(let j=0;j<5;j++)ctx.fillRect(W*.76-18+j*9,hy-18,4,9);
+  for(const x2 of[W*.35,W*.65]){ctx.strokeStyle=gold;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x2,hy-1);ctx.lineTo(x2,hy-19);ctx.stroke();wheel(x2,hy-20,2.5)}
+ }else if(k==='ny'){
+  // Brooklyn Bridge, Manhattan skyline, Statue of Liberty et Coney Island.
+  bridge(W*.45,W*.58,72,'#c9b99e');for(let i=0;i<8;i++){const x=W*.15+i*W*.045;tower(x,5,35+(i%3)*12,ink)}
+  const sx=W*.82;dome2(sx,7,24,'#72a88b');poly(hz('#72a88b',.1),[sx-5,hy-24,sx,hy-38,sx+5,hy-24]);wheel(W*.88,hy-30,19,'#f2b95c');
+  // montagnes russes de Coney Island
+  ctx.strokeStyle=hz('#c65d54',.1);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*.68,hy);for(let i=0;i<7;i++)ctx.lineTo(W*(.68+i*.035),hy-8-(i%2?7:22));ctx.stroke();
+ }else if(k==='london'){bridge(W*.72,W*.36,44);tower(W*.27,13,70);ctx.fillStyle=gold;ctx.fillRect(W*.27-4,hy-63,8,7)}
+ else if(k==='tokyo'){pine(W*.12,54);for(let i=0;i<4;i++)tower(W*(.55+i*.09),9,26+i%2*18);tower(W*.82,5,86,'#d64b54')}
+ else if(k==='rome'){dome2(W*.78,34,40);for(let i=0;i<7;i++)ctx.fillRect(W*.2+i*7,hy-18,4,18)}
+ else if(k==='cairo'){for(let i=0;i<3;i++)poly(hz('#c99b5c',.1),[W*(.12+i*.25),hy,W*(.2+i*.25),hy-45-i*8,W*(.28+i*.25),hy])}
+ else if(k==='rio'){const x=W*.78;ctx.strokeStyle=stone;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,hy-45);ctx.lineTo(x,hy-17);ctx.moveTo(x-13,hy-34);ctx.lineTo(x+13,hy-34);ctx.moveTo(x-13,hy-34);ctx.lineTo(x-18,hy-20);ctx.moveTo(x+13,hy-34);ctx.lineTo(x+18,hy-20);ctx.stroke()}
+ else if(k==='sydney'){for(let i=0;i<4;i++){ctx.beginPath();ctx.fillStyle=stone;ctx.moveTo(W*.68+i*9,hy);ctx.quadraticCurveTo(W*.67+i*9,hy-37,W*.72+i*9,hy-29);ctx.lineTo(W*.72+i*9,hy);ctx.fill()}}
+ else if(k==='moscow'){for(let i=0;i<5;i++){const x=W*(.2+i*.13);tower(x,13,23);dome2(x,12,30,['#c64a3a','#d8b85a','#5689b4'][i%3])}}
+ else if(k==='dubai'){tower(W*.5,8,130);tower(W*.38,15,62);tower(W*.64,12,48)}
+ else if(k==='la'){for(let i=0;i<5;i++)pine(W*(.1+i*.08),25+i%3*10,'#35704c');ctx.fillStyle=stone;ctx.font='bold 13px sans-serif';ctx.fillText('HOLLYWOOD',W*.58,hy-35)}
+ else if(k==='mexico'){poly(hz('#c7a16b',.1),[W*.25,hy,W*.42,hy-47,W*.59,hy]);for(let j=0;j<4;j++)ctx.fillRect(W*.35+j*6,hy-18,3,18)}
+ else if(k==='toronto'){tower(W*.5,12,75);ctx.beginPath();ctx.arc(W*.5,hy-75,7,Math.PI,0);ctx.fillStyle=stone;ctx.fill();tower(W*.77,28,28)}
+ else if(k==='buenosaires'){tower(W*.5,7,58);tower(W*.2,32,22);tower(W*.8,32,22)}
+ else if(k==='vancouver'){for(let i=0;i<15;i++)pine(W*(.05+i*.065),34+(i*17%32),'#1f6041')}
+ else if(k==='berlin'){for(let i=0;i<6;i++)ctx.fillRect(W*.37+i*8,hy-26,4,26);poly(stone,[W*.34,hy-26,W*.68,hy-26,W*.63,hy-33,W*.39,hy-33]);tower(W*.51,8,42)}
+ else if(k==='madrid'){dome2(W*.5,38,34);tower(W*.25,9,48);tower(W*.75,9,48)}
+ else if(k==='amsterdam'){for(let i=0;i<6;i++){const x=W*(.16+i*.12);tower(x,15,25+i%3*7);poly(stone,[x-9,hy-25,x,hy-38,x+9,hy-25])}}
+ else if(k==='istanbul'){dome2(W*.5,50,35);for(const x of[W*.35,W*.65])tower(x,4,62)}
+ else if(k==='athens'){for(let i=0;i<8;i++)ctx.fillRect(W*.28+i*9,hy-28,4,28);poly(stone,[W*.25,hy-28,W*.72,hy-28,W*.66,hy-38,W*.31,hy-38])}
+ else if(k==='seoul'){for(let i=0;i<3;i++){const x=W*(.3+i*.2);poly(stone,[x-20,hy-18,x,hy-35,x+20,hy-18]);ctx.fillStyle=ink;ctx.fillRect(x-16,hy-18,32,18)}}
+ else if(k==='beijing'){for(let i=0;i<8;i++){const x=W*(.08+i*.1);ctx.strokeStyle=stone;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,hy-8);ctx.lineTo(x+10,hy-18);ctx.lineTo(x+22,hy-16);ctx.stroke()}tower(W*.75,20,45)}
+ else if(k==='singapore'){for(let i=0;i<3;i++){tower(W*(.4+i*.1),13,58);wheel(W*(.4+i*.1),hy-60,3)}}
+ else if(k==='bangkok'){for(let i=0;i<5;i++)poly(gold,[W*(.2+i*.14)-6,hy,W*(.2+i*.14)+6,hy,W*(.2+i*.14),hy-44-i%2*12])}
+ else if(k==='mumbai'){tower(W*.5,38,34);for(let i=0;i<3;i++)ctx.fillRect(W*.5-16+i*14,hy-26,4,26)}
+ else if(k==='capetown'){poly(hz('#667b72',.1),[W*.12,hy,W*.32,hy-55,W*.52,hy-55,W*.75,hy,W*.9,hy])}
+ else if(k==='marrakech'){dome2(W*.5,28,35,'#bd7851');for(let i=0;i<7;i++)pine(W*(.12+i*.12),24+i%3*7,'#39734b')}
+ else if(k==='auckland'){tower(W*.5,8,92);ctx.beginPath();ctx.arc(W*.5,hy-92,6,Math.PI,0);ctx.fillStyle=stone;ctx.fill()}
+ else if(k==='lima'){for(let i=0;i<4;i++)ctx.fillRect(W*.28+i*12,hy-16-i%2*8,9,16+i%2*8)}
+ else if(k==='hongkong'){for(let i=0;i<9;i++)tower(W*(.12+i*.09),8+i%3*3,32+i%4*17);bridge(W*.78,W*.28,34)}
+ else if(k==='manila'){tower(W*.5,26,34);for(let i=0;i<4;i++)tower(W*(.2+i*.2),8,25+i%2*13)}
+ else if(k==='lisbon'){tower(W*.5,18,38);for(let i=0;i<3;i++)ctx.fillRect(W*.3+i*8,hy-18,3,18);bridge(W*.77,W*.3,28,'#d46c53')}
+ else if(k==='prague'){bridge(W*.5,W*.55,30);for(let i=0;i<4;i++)tower(W*(.25+i*.15),5,42+i%2*12)}
+ else if(k==='honolulu'){poly(hz('#6d806b',.1),[W*.18,hy,W*.42,hy-52,W*.63,hy]);for(let i=0;i<7;i++)pine(W*(.1+i*.13),25+i%3*8,'#2d8058')}
+ else if(k==='sanfrancisco'){bridge(W*.5,W*.65,58,'#d66c4f');for(let i=0;i<6;i++)pine(W*(.1+i*.15),22+i%2*8,'#47764e')}
+ else if(k==='stockholm'){for(let i=0;i<5;i++){const x=W*(.2+i*.13);tower(x,13,24+i%2*12);poly(stone,[x-8,hy-24,x,hy-35,x+8,hy-24])}}
+ ctx.restore()}
 
 // Fire TV: cache the static skyline/background layer. It is rebuilt only when
 // the scene theme or logical canvas dimensions change; moving road/scenery stays live.

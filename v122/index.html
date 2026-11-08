@@ -531,7 +531,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
     g.sp=g.sp.filter(o=>o.t==='I');
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
-  } segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%43==12)s.sp.push({t:'fh',o:-(1.55+R()*.22),c:['#b87943','#d39a55','#a65e3d'][i%3],sz:1.2,ph:R()*6});if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?43:125)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
+  } segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(2.15+R()*.55),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(2.35+R()*.45),ph:R()*6})}if(s.sea&&i%43==12)s.sp.push({t:'fh',o:-(1.55+R()*.22),c:['#b87943','#d39a55','#a65e3d'][i%3],sz:1.2,ph:R()*6});if(!s.sea&&i%(th.urb?43:125)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  // V123 — 70 % minimum de décors de bord de route issus du catalogue régional du circuit.
  const __crRegionalSets={
   coast:['fh','ws','W','p'],desert:['py','c','r','n'],alps:['t','sk','r','h'],meadow:['t','n','u','p'],
@@ -1209,7 +1209,7 @@ function drawBgCached(themeKey){
 function decoRaster(sp,x,y,sc){
  const t=sp.t;
  // Lampadaires, bateaux et planches à voile : agrandissement uniforme de 50 %.
- if(t==='l')sc*=4.5;else if(t==='W'||t==='ws')sc*=1.5;
+ if(t==='l')sc*=4.5;else if(t==='W')sc*=1.05;
  const cactusScale=t==='c'?3:1;const proj=sc*3200*H/2;
  // LOD Firestick : silhouette conservee tant que l'objet est visible.
  // Seuls les objets sous-pixel sont culles; la route/horizon ne changent pas.

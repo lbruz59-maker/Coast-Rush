@@ -1084,6 +1084,14 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
      coast:['lighthouse','sail'],desert:['palm','cactus'],alps:['cablecar','pine'],meadow:['windmill','barn'],sunset:['ferris','sail'],city:['tram','clock'],night:['neon','tower'],
      canyon:['arch','cactus'],autumn:['windmill','bridge'],island:['palm','lighthouse'],paris:['streetlamp','carousel'],london:['clock','bus'],tokyo:['torii','lantern'],ny:['taxi','ferris'],rome:['fountain','column'],cairo:['obelisk','palm'],rio:['cablecar','palm'],sydney:['sail','bridge'],moscow:['dome','tower'],dubai:['sail','tower'],la:['palm','sign'],mexico:['pyramid','cactus'],toronto:['tower','tram'],buenosaires:['obelisk','balcony'],vancouver:['pine','sail'],berlin:['gate','clock'],madrid:['fountain','balcony'],amsterdam:['windmill','canal'],istanbul:['dome','minaret'],athens:['column','olive'],seoul:['gate','lantern'],beijing:['pagoda','wall'],singapore:['garden','tower'],bangkok:['pagoda','boat'],mumbai:['arch','boat'],capetown:['lighthouse','tablemountain'],marrakech:['arch','palm'],auckland:['sail','volcano'],lima:['pyramid','balcony'],hongkong:['ferry','neon'],manila:['jeepney','palm'],lisbon:['tram','sail'],prague:['clock','bridge'],honolulu:['surf','palm'],sanfrancisco:['cablecar','bridge'],stockholm:['boat','spire']
     }[k]||[];
+    const __crThirdProp=({
+     coast:'lighthouse',desert:'pyramid',alps:'cablecar',meadow:'pine',sunset:'ferris',city:'tram',night:'neon',canyon:'arch',autumn:'pine',island:'palm',
+     paris:'fountain',london:'bridge',tokyo:'pagoda',ny:'bridge',rome:'fountain',cairo:'obelisk',rio:'palm',sydney:'sail',moscow:'dome',dubai:'tower',
+     la:'sign',mexico:'pyramid',toronto:'tower',buenosaires:'balcony',vancouver:'pine',berlin:'gate',madrid:'fountain',amsterdam:'boat',istanbul:'minaret',
+     athens:'column',seoul:'lantern',beijing:'pagoda',singapore:'garden',bangkok:'boat',mumbai:'arch',capetown:'lighthouse',marrakech:'palm',
+     auckland:'volcano',lima:'pyramid',hongkong:'ferry',manila:'jeepney',lisbon:'tram',prague:'bridge',honolulu:'surf',sanfrancisco:'cablecar',stockholm:'boat'
+    })[k];
+    if(__crThirdProp)__crLocalProps.push(__crThirdProp);
     const __crProp=(type,x,s)=>{
      const y=hy,ink2=hz('#26384a',.12),warm=hz('#e8c77b',.12),sea=hz('#5d9eae',.12);
      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineWidth=1.7;ctx.strokeStyle=ink2;ctx.fillStyle=warm;ctx.lineCap='round';ctx.lineJoin='round';
@@ -1110,7 +1118,7 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
      else if(type==='volcano'){ctx.fillStyle='#66715f';ctx.beginPath();ctx.moveTo(-16,0);ctx.lineTo(-4,-23);ctx.lineTo(4,-23);ctx.lineTo(16,0);ctx.fill()}
      ctx.restore();
     };
-    __crLocalProps.forEach((type,i)=>__crProp(type,W*(i===0?.13:.87),1));
+    __crLocalProps.forEach((type,i)=>__crProp(type,W*([.2,.42,.68][i]||.42),i===1?.82:1));
    }finally{ctx=__crLiveCtx}
    __crLandmarkSpriteCache[__crLmKey]=__crLmSprite;
   }

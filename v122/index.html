@@ -997,6 +997,19 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,hy*.3);ctx.scale
  const tower=(x,w,h,col=ink)=>{bl(x-w/2,w,h,col);poly(col,[x-w*.58,hy-h,x+w*.58,hy-h,x+w*.28,hy-h-6,x-w*.28,hy-h-6]);};
  const pine=(x,h,col='#24583d')=>{ctx.fillStyle=hz(col,.12);ctx.fillRect(x-1,hy-h*.22,2,h*.22);for(let j=0;j<3;j++){const y=hy-h*.18-j*h*.22,ww=h*(.23-j*.045);poly(hz(col,.12),[x-ww,y,x+ww,y,x,y-h*.28])}};
  const wheel=(x,y,r,col=gold)=>{ctx.strokeStyle=hz(col,.08);ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();for(let j=0;j<12;j++){const a=j*Math.PI/6;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.stroke()}};
+ const wildlife=(x,y,s,type,col='#273b2d')=>{
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.fillStyle=hz(col,.08);ctx.strokeStyle=hz(col,.08);ctx.lineWidth=1.8;ctx.lineCap='round';
+  if(type==='bird'){ctx.beginPath();ctx.moveTo(-8,0);ctx.quadraticCurveTo(-4,-7,0,-1);ctx.quadraticCurveTo(4,-7,8,0);ctx.quadraticCurveTo(3,-3,0,2);ctx.quadraticCurveTo(-3,-3,-8,0);ctx.fill()}
+  else if(type==='camel'){ctx.beginPath();ctx.ellipse(0,-5,12,5,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(-4,-10,4,Math.PI,0);ctx.arc(5,-10,4,Math.PI,0);ctx.fill();ctx.beginPath();ctx.moveTo(9,-7);ctx.lineTo(13,-13);ctx.lineTo(16,-12);ctx.lineTo(14,-6);ctx.fill();for(const lx of[-7,5]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,8);ctx.stroke()}}
+  else if(type==='deer'||type==='elk'){ctx.beginPath();ctx.ellipse(0,-7,12,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(8,-8);ctx.lineTo(12,-15);ctx.lineTo(16,-15);ctx.lineTo(14,-9);ctx.fill();for(const lx of[-8,6]){ctx.beginPath();ctx.moveTo(lx,-4);ctx.lineTo(lx+1,9);ctx.stroke()}ctx.beginPath();ctx.moveTo(13,-14);ctx.lineTo(11,-21);ctx.moveTo(13,-17);ctx.lineTo(8,-20);ctx.moveTo(14,-16);ctx.lineTo(18,-20);ctx.stroke()}
+  else if(type==='bear'){ctx.beginPath();ctx.ellipse(0,-6,13,7,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(11,-10,5,0,7);ctx.fill();for(const lx of[-8,7]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,8);ctx.stroke()}}
+  else if(type==='fox'){ctx.beginPath();ctx.ellipse(0,-6,10,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-17,-11);ctx.lineTo(-13,-3);ctx.fill();ctx.beginPath();ctx.arc(9,-10,4,0,7);ctx.fill();for(const lx of[-6,6]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,7);ctx.stroke()}}
+  else if(type==='goat'){ctx.beginPath();ctx.ellipse(0,-6,10,5,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(9,-10,4,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(8,-13);ctx.lineTo(5,-20);ctx.moveTo(11,-13);ctx.lineTo(14,-20);ctx.stroke();for(const lx of[-6,6]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,8);ctx.stroke()}}
+  else if(type==='crab'){ctx.beginPath();ctx.ellipse(0,0,8,5,0,0,7);ctx.fill();for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(i*4,2);ctx.lineTo(i*7,7);ctx.stroke()}for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(side*6,-1);ctx.lineTo(side*12,-7);ctx.lineTo(side*15,-4);ctx.stroke()}}
+  else if(type==='ostrich'){ctx.beginPath();ctx.ellipse(0,-7,7,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(4,-10);ctx.lineTo(7,-21);ctx.lineTo(10,-22);ctx.stroke();for(const lx of[-3,3]){ctx.beginPath();ctx.moveTo(lx,-3);ctx.lineTo(lx+1,9);ctx.stroke()}}
+  ctx.restore();
+ };
+
  const bridge=(x,w,h,col=stone)=>{const l=x-w*.34,r=x+w*.34,top=hy-h;ctx.fillStyle=hz(col,.1);ctx.fillRect(l-3,top,6,h);ctx.fillRect(r-3,top,6,h);poly(hz(col,.1),[l-7,top,l+7,top,l,top-8]);poly(hz(col,.1),[r-7,top,r+7,top,r,top-8]);ctx.strokeStyle=hz(col,.08);ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(x-w*.5,hy-3);ctx.quadraticCurveTo(x,top-5,x+w*.5,hy-3);ctx.moveTo(l,top);ctx.quadraticCurveTo(x,top+h*.7,r,top);ctx.stroke();ctx.fillStyle=hz(col,.1);ctx.fillRect(x-w*.5,hy-3,w,3)};
  const dome2=(x,w,h,col=stone)=>{ctx.fillStyle=hz(col,.12);ctx.fillRect(x-w/2,hy-h*.48,w,h*.48);ctx.beginPath();ctx.ellipse(x,hy-h*.48,w/2,h*.34,0,Math.PI,0);ctx.fill();tower(x,w*.08,h*.9,col)};
  if(k==='paris'){
@@ -1055,6 +1068,22 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,hy*.3);ctx.scale
  else if(k==='canyon'){poly(hz('#a54d32',.08),[W*.08,hy,W*.22,hy-64,W*.34,hy-22,W*.46,hy-78,W*.58,hy]);poly(hz('#8d432f',.08),[W*.62,hy,W*.75,hy-56,W*.88,hy]);ctx.fillStyle=hz('#4d3026',.08);ctx.fillRect(W*.43,hy-38,W*.12,38)}
  else if(k==='autumn'){for(let i=0;i<22;i++){const x=W*(.02+i*.045),h=26+(i*17%34);ctx.fillStyle=hz(['#b45d2e','#d28b36','#8b5633'][i%3],.08);ctx.fillRect(x-1,hy-h*.25,3,h*.25);ctx.beginPath();ctx.arc(x,hy-h*.48,h*.3,0,Math.PI*2);ctx.fill()}}
  else if(k==='island'){for(let i=0;i<9;i++)pine(W*(.06+i*.1),28+i%3*9,'#287b53');tower(W*.82,7,48,'#f4eee0');ctx.fillStyle='#e64b42';ctx.fillRect(W*.82-4,hy-49,8,5);wheel(W*.22,hy-17,8,'#dceef4')}
+ // Faune locale des circuits naturels : silhouettes au bord de l'horizon.
+ const wild={
+  coast:[['bird',.18,.88],['bird',.27,.95],['crab',.83,.72]],
+  desert:[['camel',.2,.85],['camel',.76,.95],['bird',.48,.55]],
+  alps:[['goat',.23,.9],['deer',.79,.82]],
+  meadow:[['deer',.24,.95],['rabbit',.78,.8],['bird',.56,.58]],
+  canyon:[['goat',.2,.92],['bird',.78,.6]],
+  autumn:[['fox',.2,.9],['deer',.76,.88]],
+  island:[['bird',.2,.7],['crab',.78,.75]],
+  vancouver:[['bear',.2,.95],['deer',.77,.88],['bird',.53,.58]],
+  capetown:[['ostrich',.22,.9],['ostrich',.78,.85]],
+  marrakech:[['camel',.2,.9],['camel',.78,.85]],
+  honolulu:[['bird',.2,.65],['crab',.8,.8]],
+  auckland:[['bird',.22,.7],['deer',.78,.85]]
+ };
+ const fauna=wild[k];if(fauna)fauna.forEach(([kind,px,scale])=>wildlife(W*px,hy-1,scale,kind,kind==='fox'?'#b75d35':kind==='camel'?'#b68b54':kind==='crab'?'#b94b43':'#263d32'));
  ctx.restore()}
 
 // Fire TV: cache the static skyline/background layer. It is rebuilt only when

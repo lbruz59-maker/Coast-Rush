@@ -1006,7 +1006,8 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
   else if(type==='fox'){ctx.beginPath();ctx.ellipse(0,-6,10,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-17,-11);ctx.lineTo(-13,-3);ctx.fill();ctx.beginPath();ctx.arc(9,-10,4,0,7);ctx.fill();for(const lx of[-6,6]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,7);ctx.stroke()}}
   else if(type==='goat'){ctx.beginPath();ctx.ellipse(0,-6,10,5,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(9,-10,4,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(8,-13);ctx.lineTo(5,-20);ctx.moveTo(11,-13);ctx.lineTo(14,-20);ctx.stroke();for(const lx of[-6,6]){ctx.beginPath();ctx.moveTo(lx,-2);ctx.lineTo(lx+1,8);ctx.stroke()}}
   else if(type==='crab'){ctx.beginPath();ctx.ellipse(0,0,8,5,0,0,7);ctx.fill();for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(i*4,2);ctx.lineTo(i*7,7);ctx.stroke()}for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(side*6,-1);ctx.lineTo(side*12,-7);ctx.lineTo(side*15,-4);ctx.stroke()}}else if(type==='rabbit'){ctx.beginPath();ctx.ellipse(0,-4,7,4,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(6,-8,3,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(5,-14,1.5,5,-.15,0,7);ctx.ellipse(8,-14,1.5,5,.15,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-3,-1);ctx.lineTo(-4,5);ctx.moveTo(4,-1);ctx.lineTo(5,5);ctx.stroke()}
-  else if(type==='ostrich'){ctx.beginPath();ctx.ellipse(0,-7,7,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(4,-10);ctx.lineTo(7,-21);ctx.lineTo(10,-22);ctx.stroke();for(const lx of[-3,3]){ctx.beginPath();ctx.moveTo(lx,-3);ctx.lineTo(lx+1,9);ctx.stroke()}}
+  else if(type==='owl'||type==='monkey'){ctx.beginPath();ctx.ellipse(0,-7,8,9,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(-4,-13,3,0,7);ctx.arc(4,-13,3,0,7);ctx.fill();ctx.fillStyle='#f5e6b8';ctx.beginPath();ctx.arc(-3,-8,1.5,0,7);ctx.arc(3,-8,1.5,0,7);ctx.fill();if(type==='monkey'){ctx.strokeStyle=hz(col,.08);ctx.beginPath();ctx.moveTo(7,-5);ctx.quadraticCurveTo(16,-4,13,5);ctx.stroke()}}
+    else if(type==='ostrich'){ctx.beginPath();ctx.ellipse(0,-7,7,5,0,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(4,-10);ctx.lineTo(7,-21);ctx.lineTo(10,-22);ctx.stroke();for(const lx of[-3,3]){ctx.beginPath();ctx.moveTo(lx,-3);ctx.lineTo(lx+1,9);ctx.stroke()}}
   ctx.restore();
  };
 
@@ -1070,20 +1071,11 @@ function drawBg(k){const hy=H/2;ctx.save();ctx.translate(-W*.15,-hy*.5);ctx.scal
  else if(k==='island'){for(let i=0;i<9;i++)pine(W*(.06+i*.1),28+i%3*9,'#287b53');tower(W*.82,7,48,'#f4eee0');ctx.fillStyle='#e64b42';ctx.fillRect(W*.82-4,hy-49,8,5);wheel(W*.22,hy-17,8,'#dceef4')}
  // Faune locale des circuits naturels : silhouettes au bord de l'horizon.
  const wild={
-  coast:[['bird',.18,.88],['bird',.27,.95],['crab',.83,.72]],
-  desert:[['camel',.2,.85],['camel',.76,.95],['bird',.48,.55]],
-  alps:[['goat',.23,.9],['deer',.79,.82]],
-  meadow:[['deer',.24,.95],['rabbit',.78,.8],['bird',.56,.58]],
-  canyon:[['goat',.2,.92],['bird',.78,.6]],
-  autumn:[['fox',.2,.9],['deer',.76,.88]],
-  island:[['bird',.2,.7],['crab',.78,.75]],
-  vancouver:[['bear',.2,.95],['deer',.77,.88],['bird',.53,.58]],
-  capetown:[['ostrich',.22,.9],['ostrich',.78,.85]],
-  marrakech:[['camel',.2,.9],['camel',.78,.85]],
-  honolulu:[['bird',.2,.65],['crab',.8,.8]],
-  auckland:[['bird',.22,.7],['deer',.78,.85]]
+  coast:[['bird',.16,.9],['bird',.25,.85],['crab',.83,.8]],desert:[['camel',.2,1],['camel',.76,.95],['bird',.48,.65]],alps:[['goat',.23,1],['deer',.79,.9]],meadow:[['deer',.24,1],['rabbit',.78,.9],['bird',.56,.65]],sunset:[['fox',.2,.9],['bird',.78,.65]],city:[['bird',.22,.75],['fox',.78,.8]],night:[['owl',.2,.8],['bird',.78,.7]],canyon:[['goat',.2,1],['bird',.78,.7]],autumn:[['fox',.2,1],['deer',.76,.95]],island:[['bird',.2,.8],['crab',.78,.85]],
+  paris:[['bird',.18,.8],['rabbit',.82,.8]],london:[['bird',.2,.8],['fox',.8,.8]],tokyo:[['bird',.18,.8],['deer',.8,.8]],ny:[['bird',.18,.8],['bear',.82,.85]],rome:[['bird',.2,.8],['goat',.8,.8]],cairo:[['camel',.2,1],['ostrich',.8,.9]],rio:[['monkey',.2,.9],['bird',.8,.8]],sydney:[['bird',.2,.8],['rabbit',.8,.8]],moscow:[['bear',.2,1],['fox',.8,.9]],dubai:[['camel',.2,1],['bird',.8,.7]],
+  la:[['fox',.2,.8],['bird',.8,.7]],mexico:[['ostrich',.2,.9],['bird',.8,.8]],toronto:[['deer',.2,.9],['bear',.8,.9]],buenosaires:[['ostrich',.2,.9],['bird',.8,.8]],vancouver:[['bear',.2,1],['deer',.77,.95],['bird',.53,.65]],berlin:[['fox',.2,.85],['bird',.8,.75]],madrid:[['goat',.2,.9],['bird',.8,.8]],amsterdam:[['bird',.2,.9],['rabbit',.8,.8]],istanbul:[['bird',.2,.9],['goat',.8,.8]],athens:[['goat',.2,.9],['bird',.8,.8]],seoul:[['deer',.2,.9],['bird',.8,.8]],beijing:[['bird',.2,.9],['bear',.8,.8]],singapore:[['monkey',.2,.9],['bird',.8,.8]],bangkok:[['monkey',.2,.9],['bird',.8,.8]],mumbai:[['bird',.2,.9],['ostrich',.8,.8]],capetown:[['ostrich',.22,1],['ostrich',.78,.95]],marrakech:[['camel',.2,1],['camel',.78,.95]],auckland:[['bird',.22,.8],['deer',.78,.9]],lima:[['goat',.2,.9],['bird',.8,.8]],hongkong:[['bird',.2,.9],['monkey',.8,.85]],manila:[['bird',.2,.9],['crab',.8,.85]],lisbon:[['bird',.2,.9],['crab',.8,.85]],prague:[['deer',.2,.9],['bird',.8,.8]],honolulu:[['bird',.2,.8],['crab',.8,.9]],sanfrancisco:[['bird',.2,.9],['bear',.8,.85]],stockholm:[['deer',.2,1],['fox',.8,.9]]
  };
- const fauna=wild[k];if(fauna)fauna.forEach(([kind,px,scale])=>{const screenX=W*px,screenY=H*.88;const localX=(screenX+W*.15)/1.5,localY=(screenY+hy*.5)/1.5;wildlife(localX,localY,Math.max(1.8,scale*2.55),kind,kind==='fox'?'#b75d35':kind==='camel'?'#b68b54':kind==='crab'?'#b94b43':'#263d32')});
+ const fauna=wild[k];if(fauna)fauna.forEach(([kind,px,scale])=>{const screenX=W*px,screenY=H*.66;const localX=(screenX+W*.15)/1.5,localY=(screenY+hy*.5)/1.5;wildlife(localX,localY,Math.max(2,scale*2.8),kind,kind==='fox'?'#b75d35':kind==='camel'?'#b68b54':kind==='crab'?'#b94b43':'#263d32')});
  ctx.restore()}
 
 // Fire TV: cache the static skyline/background layer. It is rebuilt only when

@@ -566,18 +566,21 @@ $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').oncl
 function crRequestAndroidFullscreen(){
  try{
   const ua=navigator.userAgent||'';
-  const isAndroid=/Android/i.test(ua);
-  if(!isAndroid)return;
+  if(!/Android/i.test(ua))return;
   const root=document.documentElement;
-  if(document.fullscreenElement||document.webkitFullscreenElement)return;
+  if(document.fullscreenElement||document.webkitFullscreenElement){crLockGameLandscape();return;}
   const request=root.requestFullscreen||root.webkitRequestFullscreen;
-  if(request){
-   const result=request.call(root);
-   if(result&&typeof result.catch==='function')result.catch(()=>{});
-  }
+  if(!request)return;
+  let result;
+  try{result=request.call(root,{navigationUI:'hide'})}
+  catch(e){result=request.call(root)}
+  if(result&&typeof result.then==='function')result.then(()=>crLockGameLandscape()).catch(()=>{});
  }catch(e){}
 }
-document.addEventListener('fullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
+function crLockGameLandscape(){
+ try{if(screen.orientation&&typeof screen.orientation.lock==='function')screen.orientation.lock('landscape').catch(()=>{})}catch(e){}
+}
+document.addEventListener('fullscreenchange',()=>{try{if(document.fullscreenElement)crLockGameLandscape();window.dispatchEvent(new Event('resize'))}catch(e){}});
 document.addEventListener('webkitfullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
 function startGame(){crRequestAndroidFullscreen();applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t*(MODE===0?.9:1);score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE===3?selectedTimeTrialCircuit:0;cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(MODE===3?selectedTimeTrialCircuit:0);if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
 $('go').onclick=startGame;

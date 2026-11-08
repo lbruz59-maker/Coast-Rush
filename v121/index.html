@@ -1070,8 +1070,8 @@ const s=sc*(t==='c'?73600*3:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1);if
  if(sp.k%310===11||sp.k%310===25){
   for(const side of[-1,1]){
    const wx=x+side*k*.78,dw=Math.max(2,w*.22),dh=Math.max(3,w*.56),wy=y;
-   ctx.fillStyle='#303b4b';ctx.fillRect(wx-dw/2,wy-dh/2,dw,dh);
-   ctx.fillStyle='#6e8298';ctx.fillRect(wx-dw*.42,wy-dh*.46,dw*.84,dh*.92);
+   ctx.fillStyle='#303b4b';ctx.fillRect(wx-dw/2,wy-dh,dw,dh);
+   ctx.fillStyle='#6e8298';ctx.fillRect(wx-dw*.42,wy-dh*.92,dw*.84,dh*.92);
    ctx.fillStyle='#263547';ctx.fillRect(wx-dw*.34,wy-dh*.92,dw*.68,dh*.92);ctx.fillStyle='#111923';ctx.fillRect(wx-dw*.40,wy-dh*.96,dw*.80,Math.max(1,dh*.045));ctx.fillStyle='#8795a8';ctx.fillRect(wx-dw*.36,wy-dh*.90,dw*.035,dh*.88);ctx.fillStyle='#111923';ctx.fillRect(wx-dw*.42,wy-Math.max(1,w*.018),dw*.84,Math.max(1,w*.018));
    ctx.fillStyle='#e5c66d';ctx.fillRect(wx+side*dw*.25,wy-dh*.03,Math.max(.7,dw*.06),Math.max(.7,dh*.06));
    // Panneau de sécurité fixé au mur, à côté de la porte.

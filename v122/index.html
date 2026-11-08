@@ -533,6 +533,8 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
    }
   } segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(2.15+R()*.55),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(2.35+R()*.45),ph:R()*6})}if(s.sea&&i%43==12)s.sp.push({t:'fh',o:-(1.55+R()*.22),c:['#b87943','#d39a55','#a65e3d'][i%3],sz:1.2,ph:R()*6});if(!s.sea&&i%(th.urb?43:125)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  // V123 — 70 % minimum de décors de bord de route issus du catalogue régional du circuit.
+ // Alpes : purge des éléments hérités incompatibles (palmiers, tours, immeubles, cabanes côtières).
+ if(th.bg==='alps')for(const sg of segs){if(!sg||!sg.sp)continue;sg.sp=sg.sp.filter(o=>!['p','sk','ws','W','fh','h','rt','ht','sm','sc','ap'].includes(o.t));}
  const __crRegionalSets={
   coast:['fh','ws','W','p'],desert:['py','c','r','n'],alps:['ac','sl','t','r'],meadow:['t','n','u','p'],
   sunset:['p','rt','n','ws'],city:['h','sk','sm','sc'],night:['sk','l','B','sc'],canyon:['py','r','c','n'],

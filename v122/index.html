@@ -551,7 +551,11 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   manila:['ws','rt','p','ht'],lisbon:['cl','rt','ec','n'],prague:['cl','ht','rt','h'],
   honolulu:['ws','fh','p','n'],sanfrancisco:['sk','ht','ws','cl'],stockholm:['sk','t','ht','n']
  };
- const __crRegional=__crRegionalSets[th.bg]||['t','h','l','p'];
+ const __crCircuitRegionalSets={
+  coast:['fh','ws','W','l'],desert:['py','c','r','n'],alps:['ac','sl','t','r'],meadow:['t','n','u','p'],sunset:['p','rt','n','ws'],city:['h','sk','sm','sc'],night:['sk','l','B','sc'],canyon:['py','r','c','n'],autumn:['a','t','n','r'],island:['fh','ws','p','n'],
+  paris:['ec','cl','h','rt'],london:['rt','ht','h','cl'],tokyo:['sk','sc','ht','B'],ny:['sk','gs','bs','sm'],rome:['cl','n','ec','rt'],cairo:['py','n','c','h'],rio:['ws','p','rt','n'],sydney:['ws','ht','p','ap'],moscow:['sk','ht','t','B'],dubai:['sk','ht','ap','sc'],la:['sk','rt','ap','ws'],mexico:['ec','py','n','rt'],toronto:['sk','t','ht','r'],buenosaires:['rt','ec','h','cl'],vancouver:['t','sk','ht','n'],berlin:['sk','gs','ht','cl'],madrid:['rt','n','ec','h'],amsterdam:['cl','rt','ws','h'],istanbul:['cl','ec','rt','n'],athens:['cl','n','py','ec'],seoul:['sk','sc','ht','B'],beijing:['sk','cl','ht','n'],singapore:['sk','p','ws','ht'],bangkok:['rt','p','ws','n'],mumbai:['ht','rt','n','p'],capetown:['t','sk','ws','n'],marrakech:['py','ec','n','p'],auckland:['ws','t','p','ht'],lima:['py','n','ec','r'],hongkong:['sk','ht','sc','B'],manila:['ws','rt','p','ht'],lisbon:['cl','rt','ec','n'],prague:['cl','ht','rt','h'],honolulu:['ws','fh','p','n'],sanfrancisco:['sk','ht','ws','cl'],stockholm:['sk','t','ht','n']
+ };
+ const __crRegional=__crCircuitRegionalSets[k]||__crRegionalSets[th.bg]||['t','h','l','p'];
  const __crCommon=th.bg==='alps'?['t','r','n','u']:['p','t','l','r'];
  let __crSlot=0;
  for(let __ri=36;__ri<N-FORK;__ri+=11){

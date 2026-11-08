@@ -1463,7 +1463,7 @@ const s=sc*(t==='c'?73600*3:t==='l'?80000:t==='a'?100000:3200*H/2)*(sp.sz||1)*(t
 // V42 — cache de sprites de décor statiques (rendu local, indépendant de la caméra).
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
-const __crDecoCacheable=new Set(['fh','p','c','t','h','l','r','a','n','R','A','sk','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','ho','ec','X','P','B','W','ws','u','S']); // décors fixes, bâtiments et signalétique pré-rendus
+const __crDecoCacheable=new Set(['fh','ac','sl','p','c','t','h','l','r','a','n','R','A','sk','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','ho','ec','X','P','B','W','ws','u','S']); // décors fixes, bâtiments et signalétique pré-rendus
 const __crDecoDynamic=new Set(['I','F','G','C','npc','a_camel','a_fox','a_deer','a_goat','a_bear','a_rabbit','a_crab','a_monkey','a_ostrich','a_owl','a_seal','a_kangaroo','a_panda','a_flamingo','a_chamois','a_marmot','a_ibex']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);

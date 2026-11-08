@@ -532,6 +532,23 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
+ // V122 — vrais sprites de bord de route, projetés par segment (pas dans le fond).
+ const __crRoadsideSets={
+  coast:['l','p','h'],desert:['c','r','p'],alps:['t','h','l'],meadow:['t','h','p'],sunset:['p','h','l'],city:['h','l','h'],night:['h','l','h'],canyon:['r','c','h'],autumn:['t','h','r'],island:['p','r','h'],
+  paris:['l','h','t'],london:['l','h','t'],tokyo:['t','h','l'],ny:['h','l','h'],rome:['t','h','l'],cairo:['c','r','h'],rio:['p','h','t'],sydney:['p','h','l'],moscow:['t','h','l'],dubai:['p','h','l'],
+  la:['p','h','l'],mexico:['c','h','t'],toronto:['t','h','l'],buenosaires:['t','h','l'],vancouver:['t','p','h'],berlin:['t','h','l'],madrid:['t','h','p'],amsterdam:['t','h','l'],istanbul:['t','h','l'],athens:['t','h','r'],
+  seoul:['t','h','l'],beijing:['t','h','l'],singapore:['p','h','t'],bangkok:['p','h','l'],mumbai:['p','h','l'],capetown:['t','r','h'],marrakech:['p','c','h'],auckland:['t','p','h'],lima:['c','r','h'],hongkong:['h','l','h'],manila:['p','h','l'],lisbon:['t','h','l'],prague:['t','h','l'],honolulu:['p','r','h'],sanfrancisco:['t','h','l'],stockholm:['t','h','l']
+ };
+ const __crSet=__crRoadsideSets[th.bg]||['t','h','l'];
+ const __crPalette=(th.hc||HC||['#718b72','#b18b58','#74849a']);
+ for(let __ri=92;__ri<N-FORK;__ri+=23){
+  const __sg=segs[__ri];if(!__sg||__sg.tun||__sg.loop)continue;
+  const __variant=(Math.floor(__ri/23)+id)%__crSet.length;
+  for(let __side of [-1,1]){
+   const __type=__crSet[(__variant+(__side>0?1:0))%__crSet.length];
+   __sg.sp.push({t:__type,o:__side*(2.15+((__ri+id)%4)*.12),c:__crPalette[(__variant+(__side>0?1:0))%__crPalette.length],hh:__type==='h'?1.35+((__ri+id)%4)*.22:1,sz:__type==='p'||__type==='c'?1.15:1});
+  }
+ }
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.

@@ -577,7 +577,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
   const __sg=segs[__li];if(!__sg||__sg.tun||__sg.loop)continue;
   const __side=(Math.floor(__li/31)+id)%2?1:-1;
   const __animal=__crFauna[(Math.floor(__li/31)+id)%__crFauna.length];
-  __sg.sp.push({t:'npc',o:__side*2.05,c:['#2877a8','#d06b42','#4d8a55','#8a65aa'][(Math.floor(__li/31)+id)%4],skin:['#d9a078','#8b573c','#edc49b'][(Math.floor(__li/31)+id)%3],sz:1.0,ph:__li*.13});
+  __sg.sp.push({t:'npc',o:__side*1.55,c:['#2877a8','#d06b42','#4d8a55','#8a65aa'][(Math.floor(__li/31)+id)%4],skin:['#d9a078','#8b573c','#edc49b'][(Math.floor(__li/31)+id)%3],sz:1.35,ph:__li*.13});
   if(__li%62===55)__sg.sp.push({t:__animal,o:-__side*2.15,c:__animal==='a_flamingo'?'#e58caa':__animal==='a_camel'?'#bd8b52':'#806044',sz:.68,ph:__li*.17});
  }
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){

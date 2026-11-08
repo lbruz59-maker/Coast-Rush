@@ -604,7 +604,7 @@ function genTrack(seed){const R=rng(seed),names=Object.keys(STY),st=names[seed%n
  const T={bpm:S.bpm[0]+(R()*(S.bpm[1]-S.bpm[0])|0),r,q:q.join(''),L,st,m:[],gen:1};let pp2=0;L.forEach(([n,d])=>{if(n)T.m[pp2]=[n,d];pp2+=d});return T}
 for(let i=0;i<30;i++)TR.push(genTrack(i*7919+11));
 function pickTrack(){tr=Math.floor(Math.random()*TR.length);step=0}
-let ac,master,mus,step=0,nxt=0,eng,eng2,eg,sk,rb,nb,engB,ef,tb,tbg,rev,PB,rn,SFX=null,tunnelLP=null,tunnelWet=null,tunnelRev=null,inTunnel=0;const mf=m=>440*2**((m-69)/12);
+let ac,master,mus,step=0,nxt=0,eng,eng2,eg,sk,rb,nb,engB,ef,tb,tbg,rev,PB,rn,SFX=null,tunnelLP=null,tunnelWet=null,tunnelRev=null,inTunnel=0,advEng,advEng2,advEngGain,advEngFilter;const mf=m=>440*2**((m-69)/12);
 function initAudio(){
  unlockIOS();
  if(ac){if(ac.state==='suspended'&&ac.resume)ac.resume().catch(()=>{});return}
@@ -621,7 +621,11 @@ function initAudio(){
  const dss=ac.createBufferSource();dss.buffer=nb;dss.loop=true;dss.connect(dsf);dsf.connect(window.__driftSqueal);window.__driftSqueal.connect(SFX||master);dss.start();
  tb=ac.createOscillator();tb.type='sine';tbg=ac.createGain();tbg.gain.value=0;tb.connect(tbg);tbg.connect(SFX||master);tb.start();
  rev=ac.createConvolver();const ir=ac.createBuffer(2,ac.sampleRate*2.2|0,ac.sampleRate);for(let c2=0;c2<2;c2++){const d=ir.getChannelData(c2);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}rev.buffer=ir;const rsd=ac.createGain();rsd.gain.value=.28;mus.connect(rsd);rsd.connect(rev);rev.connect(master);PB=ac.createGain();PB.connect(mus);
- SFX=ac.createGain();SFX.gain.value=1;tunnelLP=ac.createBiquadFilter();tunnelLP.type='lowpass';tunnelLP.frequency.value=19000;tunnelLP.Q.value=.7;tunnelWet=ac.createGain();tunnelWet.gain.value=0;tunnelRev=ac.createConvolver();const tir=ac.createBuffer(2,Math.floor(ac.sampleRate*1.35),ac.sampleRate);for(let ch=0;ch<2;ch++){const td=tir.getChannelData(ch);for(let z=0;z<td.length;z++)td[z]=(Math.random()*2-1)*Math.pow(1-z/td.length,2.1)}tunnelRev.buffer=tir;SFX.connect(tunnelLP);tunnelLP.connect(master);SFX.connect(tunnelRev);tunnelRev.connect(tunnelWet);tunnelWet.connect(master);
+ SFX=ac.createGain();SFX.gain.value=1;
+ // Moteur des adversaires : voix audio dédiée, indépendante du moteur du joueur.
+ advEngGain=ac.createGain();advEngGain.gain.value=0;advEngFilter=ac.createBiquadFilter();advEngFilter.type='lowpass';advEngFilter.frequency.value=850;advEngFilter.Q.value=1.1;
+ advEng=ac.createOscillator();advEng.type='sawtooth';advEng2=ac.createOscillator();advEng2.type='triangle';advEng2.detune.value=-7;advEng.connect(advEngFilter);advEng2.connect(advEngFilter);advEngFilter.connect(advEngGain);advEngGain.connect(SFX);advEng.start();advEng2.start();
+ tunnelLP=ac.createBiquadFilter();tunnelLP.type='lowpass';tunnelLP.frequency.value=19000;tunnelLP.Q.value=.7;tunnelWet=ac.createGain();tunnelWet.gain.value=0;tunnelRev=ac.createConvolver();const tir=ac.createBuffer(2,Math.floor(ac.sampleRate*1.35),ac.sampleRate);for(let ch=0;ch<2;ch++){const td=tir.getChannelData(ch);for(let z=0;z<td.length;z++)td[z]=(Math.random()*2-1)*Math.pow(1-z/td.length,2.1)}tunnelRev.buffer=tir;SFX.connect(tunnelLP);tunnelLP.connect(master);SFX.connect(tunnelRev);tunnelRev.connect(tunnelWet);tunnelWet.connect(master);
  const lpn=(f,ty,q)=>{const s=ac.createBufferSource(),b=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;s.loop=true;b.type=ty;b.frequency.value=f;b.Q.value=q;g.gain.value=0;s.connect(b);b.connect(g);g.connect(BUS||SFX||master);s.start();return g};sk=lpn(2300,'bandpass',4);rb=lpn(260,'lowpass',1);rn=lpn(2600,'highpass',.4);nxt=ac.currentTime+.1;setInterval(sched,25)}
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+d+.05)}
 function kick(t){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(40,t+.12);g.gain.setValueAtTime(.35,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+.2)}
@@ -2258,6 +2262,13 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(eng){const gm=gear?1:.62,throttle=!!(inp.g||gpad.g||autoGas),countRev=state==='count'&&throttle,rpm=countRev?(.12+((inp.g||gpad.g)?0.42:0.28)):Math.min(1.1,sp/gm),run=state=='play'||speed>50||countRev;eng.frequency.value=48+rpm*190;eng2.frequency.value=24+rpm*95;engB.frequency.value=48+rpm*190;ef.frequency.value=500+rpm*2600;tb.frequency.value=1800+rpm*2600;tbg.gain.value=((state=='play'&&throttle&&sp>.15)||countRev)?.015+.025*rpm:0;eg.gain.value=run?.12+.14*(throttle?1:.4)*Math.min(1,rpm*2+.2):0;
   const sl=(state=='play'&&speed>MAX*.4&&crash<=0)?Math.max(0,Math.abs(ps.curve)*sp-1.6*gripF)*.15+(Math.abs(steer())>.3&&sp>.8?.08:0):0;sk.gain.value=Math.min(.35,sl+(crash>0?.2:0));if((sl>.04||crash>0)&&Math.random()<.5)__crEmitSmoke(W/2+(Math.random()<.5?-20:20),H-8,(Math.random()-.5)*24);
   rb.gain.value=(__crAudioOffRoad&&speed>MAX*.1)?.3*sp+.08:0;if(rn)rn.gain.value=(wx=='rain'&&state!='menu')?.05:0}}
+ // Suit le véhicule adverse le plus proche : régime, distance et décalage latéral pilotent le son.
+ if(advEngGain&&ac){let nearest=null,nearestDist=Infinity;const playerAt=pos+playerZ;
+  if(state==='play'&&!crManualPaused){for(const c of cars){if(!c||c.z<0||c.hit>0||!(c.sp>0))continue;const dz=Math.abs(c.z-playerAt);if(dz<nearestDist&&dz<segL*28){nearest=c;nearestDist=dz}}}
+  let target=0,rpm=0,cutoff=650;
+  if(nearest){const d=Math.max(0,1-nearestDist/(segL*28)),lane=Math.max(0,1-Math.abs((nearest.o||0)-px)/2.2);rpm=Math.max(.15,Math.min(1.15,nearest.sp/Math.max(1,MAX)));target=(.012+.052*d)*(.58+.42*lane);cutoff=550+rpm*2300;}
+  const now=ac.currentTime;advEng.frequency.setTargetAtTime(48+rpm*145,now,.09);advEng2.frequency.setTargetAtTime(49+rpm*145,now,.09);advEngFilter.frequency.setTargetAtTime(cutoff,now,.12);advEngGain.gain.setTargetAtTime(target,now,.14);
+ }
 let RS=4,qMode=0,RSmax=isTV?2:6;const QN=['AUTO','ÉCO','HD','FULL HD'];
 function sizeCanvas(){
  // Adaptive full-viewport rendering: retain the logical height and expand the

@@ -502,7 +502,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[THI[id]];cons
 brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=brK[(id*5+zi*3+stage)%brK.length],ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
 segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==24)s.sp.push({t:'F',o:-.55});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.14+R()*.1)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.13+R()*.17),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
-  if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
+  if(useItems&&i%(activeDF().b*3)==((activeDF().b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
   else if(i%25==0&&!f&&!s.loop)s.sp.push({t:'B',o:(R()<.5&&!s.sea?-1:1)*(1.8+R()*.3),c:cols[R()*7|0],txt:(ADREG[th.n]||ADS)[R()*(ADREG[th.n]||ADS).length|0]});
   if(th.n!='NIGHT'&&th.n!='CANYON'&&th.d!='h'&&i%23==11&&!f&&!s.loop)s.sp.push({t:'h',o:(R()<.5&&!s.sea?-1:1)*(2+R()*.4),c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1});
@@ -555,7 +555,7 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
- cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[T?i%7:OPPV[(i*7+id)%OPPV.length]%7],v:T?undefined:OPPV[(i*7+id)%OPPV.length]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
+ cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<activeDF().k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[T?i%7:OPPV[(i*7+id)%OPPV.length]%7],v:T?undefined:OPPV[(i*7+id)%OPPV.length]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
@@ -608,7 +608,7 @@ function crRequestAndroidFullscreen(){
 }
 document.addEventListener('fullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
 document.addEventListener('webkitfullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
-function startGame(){crRequestAndroidFullscreen();applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE===3?selectedTimeTrialCircuit:(MODE==4?15:0);cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(MODE===3?selectedTimeTrialCircuit:(MODE==4?15:0));if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
+function startGame(){crRequestAndroidFullscreen();applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=activeDF().t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;cid=MODE===3?selectedTimeTrialCircuit:(MODE==4?15:0);cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=MODE===0?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;loopA=inLoop=0;slip=mini=gun=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()&&(window.DUEL||mpRaces)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:5;raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(MODE===3?selectedTimeTrialCircuit:(MODE==4?15:0));if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
 $('go').onclick=startGame;
 // ---- AUDIO (compositions originales)
 const TR=[{bpm:140,q:'mMMMmMMM',r:[45,41,48,43,45,41,43,40],L:[[69,8],[72,4],[76,4],[77,6],[76,2],[72,8],[67,4],[72,4],[76,4],[79,4],[74,8],[71,4],[67,4],[69,4],[72,4],[76,4],[81,4],[79,6],[77,2],[72,8],[71,4],[74,4],[79,4],[77,4],[76,12],[0,4]]},
@@ -1793,7 +1793,7 @@ function drawOutrunVictoryCine(t){
  const endId=Math.max(10,Math.min(14,Number.isInteger(cid)?cid:10));
  const thm=TH[THI[endId]]||TH[10];
  const skyPair=Array.isArray(thm.sky)&&thm.sky.length>1?thm.sky:TH[10].sky;
- const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:['#64758a','#46566d'];
+ const scenePalette=Array.isArray(thm.g)&&thm.g.length>1?thm.g:['#64758a','#46566d'];
  const city=({
   10:{name:'PARIS',sub:'LA VILLE LUMIERE',kind:'paris'},
   11:{name:'LONDRES',sub:'THE CITY NEVER SLEEPS',kind:'london'},
@@ -1805,10 +1805,10 @@ function drawOutrunVictoryCine(t){
  const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,skyPair[0]);sky.addColorStop(1,skyPair[1]);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
  // Sunset glow and city silhouette use the selected circuit's own theme palette.
  ctx.fillStyle='#fff0bd';ctx.beginPath();ctx.arc(W*.78,H*.32,10+pulse*2,0,Math.PI*2);ctx.fill();
- const horizon=H*.66;ctx.fillStyle=mountainPair[1]||'#39465b';ctx.fillRect(0,horizon,W,H-horizon);
+ const horizon=H*.66;ctx.fillStyle=scenePalette[1]||'#39465b';ctx.fillRect(0,horizon,W,H-horizon);
  for(let i=0;i<24;i++){
   const bw=7+(i*13%13),bh=12+(i*19%31),x=i*W/24;
-  ctx.fillStyle=i%3===0?(mountainPair[0]||'#526078'):(mountainPair[1]||'#303d52');
+  ctx.fillStyle=i%3===0?(scenePalette[0]||'#526078'):(scenePalette[1]||'#303d52');
   ctx.fillRect(x,horizon-bh,bw,bh);
   if(endId>=12){ctx.fillStyle='#ffe4a0';for(let yy=horizon-bh+4;yy<horizon-3;yy+=6)ctx.fillRect(x+2,yy,1.5,1.5)}
  }
@@ -1825,7 +1825,7 @@ function drawOutrunVictoryCine(t){
   ctx.fillRect(-8,-30,16,30);ctx.fillRect(-5,-38,10,8);ctx.fillRect(-2,-47,4,9);ctx.fillRect(-.7,-55,1.4,8);
  }else{ // Roman Colosseum
   ctx.beginPath();ctx.arc(0,0,14,Math.PI,0);ctx.lineTo(14,0);ctx.lineTo(-14,0);ctx.closePath();ctx.fill();
-  ctx.fillStyle=mountainPair[1]||'#303d52';for(let x=-10;x<=10;x+=5)ctx.fillRect(x,-7,2,7);
+  ctx.fillStyle=scenePalette[1]||'#303d52';for(let x=-10;x<=10;x+=5)ctx.fillRect(x,-7,2,7);
  }
  ctx.restore();
  // Road and player's car remain consistent across all five possible endings.
@@ -2319,7 +2319,7 @@ function offRoad(){const N=segs.length,i=Math.floor((pos+playerZ)/segL);if(fk()&
 function endCourse(){if(MODE==2&&bnd&&bnd.hp>0&&state=='play'){chaseCircuitsDone++;if(chaseCircuitsDone>=2){time-=20;startEscape(bnd);return}}
  if(MP&&MODE!=2&&stage%RL==0){finishRace();return}
  if(isLast()){if(MODE===3){try{const done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0]');if(!done.includes(selectedTimeTrialCircuit))done.push(selectedTimeTrialCircuit);crUnlockNextTimeTrial(done,selectedTimeTrialCircuit);localStorage.setItem('cr_time_trial_done',JSON.stringify(done))}catch(e){}toMenu();if(typeof window.__crShowTimeTrialCourses==='function')window.__crShowTimeTrialCourses();return}if(MODE===0&&!outrunVisited.includes(cid))outrunVisited.push(cid);state='win';winT=0;if(MODE==2){chaseRank=Math.min(5,chaseRank+1);try{localStorage.setItem('cr_chase_rank',chaseRank)}catch(e){}sayF('Mission accomplie ! Médaille remise. Promotion accordée.');}else say('Congratulations!',1.7,1);return}
- if(!MODE){const turn=forkRoute>=0?forkRoute:(px<0?0:1);cposk+=turn;outrunTurnChoices.push(turn);}stage++;forkRoute=-1;forkRouteBy='';cid=MODE==4?14+stage:MODE?stage-1:stage*(stage-1)/2+cposk;if(MODE===0)outrunVisited.push(cid);buildCourse(cid);forkSaid=0;pos=0;say('Checkpoint!',1.5,1.1);jingle();px=0;time+=DF[dfi].s*(wx=='snow'?1.1:1);msg='STAGE '+stage+' · '+th.n;msgT=3;/* Chase HQ : pas de seconde cinématique au passage du circuit 1 au circuit 2. La poursuite continue directement avec le même suspect. */}
+ if(!MODE){const turn=forkRoute>=0?forkRoute:(px<0?0:1);cposk+=turn;outrunTurnChoices.push(turn);}stage++;forkRoute=-1;forkRouteBy='';cid=MODE==4?14+stage:MODE?stage-1:stage*(stage-1)/2+cposk;if(MODE===0)outrunVisited.push(cid);buildCourse(cid);forkSaid=0;pos=0;say('Checkpoint!',1.5,1.1);jingle();px=0;time+=activeDF().s*(wx=='snow'?1.1:1);msg='STAGE '+stage+' · '+th.n;msgT=3;/* Chase HQ : pas de seconde cinématique au passage du circuit 1 au circuit 2. La poursuite continue directement avec le même suspect. */}
 let rm=null,lastSend=0,remotes=[],myPeer=null,mpStartAt=0,mpRaceStartAt=0;let myName='J'+Math.random().toString(36).slice(2,5).toUpperCase();const sm={};try{const sv=localStorage.getItem('cr_name');if(sv)myName=sv}catch(e){}let myCol='#ff2a2a';
 let useItems=1,slip=0,mini=0,lastPass=0,gun=0,gunT=0,gunSide=0,musk=0,chaseHits=0,chaseRank=0,remoteLeaderRoute=0,forkRoute=-1,forkRouteBy='';try{chaseRank=+(localStorage.getItem('cr_chase_rank')||0)}catch(e){}let atq=[],seenAt={};
 function gunSfx(){nz(.05,.1,3200,'highpass')}
@@ -2338,7 +2338,7 @@ function useItem(){if(!useItems||state!='play'||!item||crash>0)return;const I=it
  else if(I==3){let t=null;for(const c of cars)if(c.z>p&&!(c.hit>0)&&(!t||c.z<t.z))t=c;if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t,born:flash,life:2.4});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}else{star=6;boostSfx();say('Invincible!',1.5,1.1)}}
 
-const DF=[{n:'FACILE',t:84,k:28,b:45,s:45.5},{n:'NORMAL',t:63,k:40,b:60,s:38.5},{n:'DIFFICILE',t:45.5,k:56,b:80,s:31.5}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,countShown=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftHold=0,brakeWasDown=0,driftMarkClock=0,driftTrail=[];
+const DF=[{n:'FACILE',t:84,k:28,b:45,s:45.5},{n:'NORMAL',t:63,k:40,b:60,s:38.5},{n:'DIFFICILE',t:45.5,k:56,b:80,s:31.5}];const OUTRUN_DF=[{n:'FACILE',t:84,k:28,b:45,s:45.5},{n:'NORMAL',t:72,k:34,b:48,s:44},{n:'DIFFICILE',t:56,k:48,b:68,s:38}];const activeDF=()=>MODE===0?OUTRUN_DF[dfi]:DF[dfi];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,countShown=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftHold=0,brakeWasDown=0,driftMarkClock=0,driftTrail=[];
 const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 // Pools de particules : réutilisation des objets pour limiter le garbage collector.
 const __crSmokePool=[],__crDriftPool=[];

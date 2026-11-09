@@ -456,7 +456,32 @@ const TH=[{n:'COAST',sky:['#2b6cff','#9fe0ff'],g:['#e8c47a','#dcb66c'],w:1,d:'p'
 {n:'SYDNEY',sky:['#3aa4f4','#dcf6ff'],g:['#d9c88e','#cdbc82'],w:1,d:'n',bg:'sydney',urb:1,cv:1.2,hl:.8},
 {n:'MOSCOU',sky:['#8aa0c4','#eaf0f8'],g:['#e9eef5','#dce4ee'],d:'t',hc:['#e8d8c0','#c84a3a','#e0c060','#d8d0c0'],bg:'moscow',urb:1,cv:.9,hl:.6,snowy:1},
 {n:'DUBAÏ',sky:['#f2a354','#fff1cc'],g:['#e8c98f','#dcbd83'],d:'sk',bg:'dubai',urb:1,cv:1,hl:.6}];
-const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,10,11,12,13,14,15,16,17,18,19],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
+{n:'MARRAKECH',sky:['#b85d35','#f5c18a'],g:['#c58a4b','#b8793d'],d:'c',m:['#a65b32','#6d3928'],cv:1.1,hl:.8},
+{n:'SAHARA',sky:['#df7735','#ffe0a4'],g:['#e4b36b','#d6a15a'],d:'c',m:['#bd713a','#8b4c2d'],cv:1.3,hl:1.2},
+{n:'DAKAR',sky:['#4b9bd4','#f4d6a4'],g:['#c7a36a','#b68f59'],d:'p',w:1,m:['#b56a43','#7f4935'],cv:1.2,hl:.8},
+{n:'SERENGETI',sky:['#72a9d8','#f4d6a0'],g:['#b9a15d','#a78e4e'],d:'n',m:['#8b7544','#66552f'],cv:1.1,hl:1.3},
+{n:'KILIMANDJARO',sky:['#6094c9','#e8f1f4'],g:['#7b9860','#6a8552'],d:'t',m:['#8296a5','#536879'],cv:1.1,hl:1.5,snowy:1},
+{n:'NAMIBIE',sky:['#cf7044','#f6d6a4'],g:['#d3a66c','#bd8e59'],d:'c',m:['#a95d39','#75402e'],cv:1.2,hl:1.5},
+{n:'VICTORIA FALLS',sky:['#4e9fd4','#d4f0ed'],g:['#6b9a55','#588344'],d:'n',w:1,m:['#4c8a68','#31684e'],cv:1.2,hl:.9},
+{n:'ZANZIBAR',sky:['#28a5d8','#c9f3f0'],g:['#e6d49b','#d7c287'],d:'p',w:1,m:['#2d9878','#1e6c5b'],cv:1.1,hl:.6},
+{n:'MADAGASCAR',sky:['#5c9ed0','#d5f0e8'],g:['#7eaa62','#6b9651'],d:'n',w:1,m:['#6b9856','#426f3d'],cv:1.1,hl:.8},
+{n:'CAPE TOWN',sky:['#438bc8','#f1d4b0'],g:['#8fa66b','#789257'],d:'h',hc:['#e5d2b2','#d7b48e','#f0dfc4'],bg:'coast',urb:1,m:['#73917b','#4c6b59'],cv:1.2,hl:1},
+{n:'DELHI',sky:['#d58b55','#ffe2b7'],g:['#c5a16e','#b58f5d'],d:'h',hc:['#d8b28a','#b98b65','#e2c6a5'],urb:1,m:['#9d795d','#72533f'],cv:1.1,hl:.7},
+{n:'RAJASTHAN',sky:['#df8a49','#ffe0a5'],g:['#d7a75e','#c4944e'],d:'c',m:['#bb7842','#8c522f'],cv:1.2,hl:1.2},
+{n:'MUMBAI',sky:['#4d9bd0','#f4d6b0'],g:['#a99a78','#968765'],d:'h',hc:['#d9b58c','#b87e68','#e5d0aa'],urb:1,m:['#9c7864','#705342'],cv:1.2,hl:.8},
+{n:'HIMALAYA',sky:['#4b83c4','#e5f1ff'],g:['#d9e2e5','#c6d2da'],d:'t',m:['#a2b6c9','#7189a3'],snowy:1,cv:1.3,hl:1.8},
+{n:'NEPAL',sky:['#5c91c6','#dce9e8'],g:['#739b62','#5e8550'],d:'t',m:['#8a9d9c','#596e70'],cv:1.2,hl:1.4},
+{n:'BANGKOK',sky:['#4a83a9','#f4c7a4'],g:['#4f936c','#3e7e5a'],d:'h',hc:['#d6a06d','#d9c18b','#a85a43'],urb:1,m:['#477d70','#2f5d50'],cv:1.1,hl:.7},
+{n:'THAÏLANDE',sky:['#36a4c4','#c9f1e9'],g:['#5ca56c','#468f59'],d:'n',w:1,m:['#347c61','#245c48'],cv:1.2,hl:.8},
+{n:'VIETNAM',sky:['#5c9bc1','#e8dfc1'],g:['#6c9c55','#568443'],d:'n',w:1,m:['#5d8650','#3e6538'],cv:1.2,hl:.9},
+{n:'GRANDE MURAILLE',sky:['#6294c8','#e8d7b7'],g:['#79915c','#657c49'],d:'t',m:['#9b8c70','#6e604c'],cv:1.3,hl:1.2},
+{n:'SHANGHAI',sky:['#3b5c9d','#f2a6a0'],g:['#686d7a','#565b68'],d:'sk',urb:1,glow:1,m:['#4e607f','#303d5a'],cv:1.2,hl:.7},
+{n:'KYOTO',sky:['#6d86b5','#f4b4b1'],g:['#8b9864','#748452'],d:'n',m:['#9a5c4b','#633b36'],cv:1,hl:.8},
+{n:'BALI',sky:['#2f9bd0','#c6f0e8'],g:['#d9c68c','#c8b579'],d:'p',w:1,m:['#3d9876','#286b57'],cv:1.1,hl:.8},
+{n:'PHILIPPINES',sky:['#329bd5','#d2f4f2'],g:['#e6d59e','#d6c58d'],d:'p',w:1,m:['#3c9975','#286b55'],cv:1.2,hl:.8},
+{n:'CORÉE',sky:['#596ca8','#f0b6b2'],g:['#7d8f75','#687b60'],d:'sk',urb:1,m:['#5e6685','#3e4664'],cv:1.1,hl:.7},
+{n:'PATAGONIE',sky:['#6092c1','#e7ecdf'],g:['#9ba47b','#879164'],d:'t',m:['#899a9b','#5f7377'],cv:1.3,hl:1.5}];
+const THI=Array.from({length:45},(_,i)=>i),HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 const ADREG={
  ALPS:['ALPINE','CHALET','MONT BLANC','SKI CLUB','NEIGE','THERMES'],
  DESERT:['OASIS','DUNES','CARAVANE','DESERT SUN','RELAIS'],
@@ -1923,7 +1948,7 @@ function loop(t){
   const {card,actions,btn,close}=crMakeLayer('CONTRE-LA-MONTRE · CHOISIR UN CIRCUIT','min(96vw,900px)');card.style.maxHeight='94vh';card.style.overflowY='auto';
   let done=[];try{done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0]')}catch(e){done=[0]}if(!Array.isArray(done))done=[0];if(!done.includes(0))done.unshift(0);
   const intro=document.createElement('p');intro.textContent='Les circuits terminés sont rejouables. Les autres se débloquent au fil de tes victoires.';intro.style.cssText='color:#cdeaff;font:13px system-ui;margin:0 0 12px';card.insertBefore(intro,actions);
-  const groups=[['CIRCUITS ORIGINAUX',[0,1,2,3,4,5,6,7,8,9]],['EUROPE',[10,11,14,15,16,19,23,30,31,32,33,34]],['AMÉRIQUE',[13,18,21,25,26,27,28,29,43]],['ASIE',[12,24,35,36,37,38,39,44]],['AFRIQUE',[20,40,41]],['OCÉANIE',[17,22,42]]];
+  const groups=[['CIRCUITS ORIGINAUX',[0,1,2,3,4,5,6,7,8,9]],['EUROPE',[10,11,14,15,16,19,23]],['AMÉRIQUE',[13,18,21,25,26,27,28,29,43]],['ASIE',[12,24,35,36,37,38,39,44,40,41,42]],['AFRIQUE',[20,30,31,32,33,34]],['OCÉANIE',[17,22]]];
   const seen=new Set();groups.forEach(([heading,ids])=>{const valid=ids.filter(id=>id<THI.length&&!seen.has(id));valid.forEach(id=>seen.add(id));if(!valid.length)return;const h=document.createElement('h3');h.textContent=heading;h.style.cssText='margin:15px 0 7px;color:#7deaff;font:900 14px system-ui;letter-spacing:.08em;text-align:left';card.insertBefore(h,actions);const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px';card.insertBefore(grid,actions);valid.forEach(id=>{const unlocked=done.includes(id);const name=TH[THI[id]].n;const b=btn((unlocked?'✓ ':'🔒 ')+name,()=>{if(!unlocked)return;selectedTimeTrialCircuit=id;MODE=3;MODE0=3;try{$('md').textContent='Mode : CONTRE-LA-MONTRE'}catch(e){}close();safeClick('go')},!unlocked);b.style.cssText+=';min-height:48px;text-align:left;padding:9px;background:'+(unlocked?'linear-gradient(135deg,#123b43,#0b2538)':'#182334')+';border:1px solid '+(unlocked?'#4bd7a1':'#526174')+';color:'+(unlocked?'#eafff6':'#8795a5')+';font:800 12px system-ui';const status=document.createElement('small');status.textContent=unlocked?(id===0?'DÉBLOQUÉ · ACTIF':'TERMINÉ · REJOUABLE'):'NON DÉBLOQUÉ';status.style.cssText='display:block;font:9px system-ui;opacity:.8;margin-top:3px';b.appendChild(status);grid.appendChild(b)})});
   const back=btn('RETOUR',close);back.style.cssText+=';margin-top:14px';actions.append(back);
  };

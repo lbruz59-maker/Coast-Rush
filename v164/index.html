@@ -1074,7 +1074,7 @@ function decoRaster(sp,x,y,sc){
  }
 // Echelle monde normalisee : le cactus doit rester nettement plus petit qu'un batiment.
 // Le sprite 'h' de hauteur hh=1 sert de reference : le cactus vise ~45% de cette hauteur.
-const s=sc*(t==='c'?317000:t==='l'?96000:t==='a'?118000:3200*H/2);if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.05,y,s*.16,s*.025,0,0,7);ctx.fill();ctx.restore()}
+const s=sc*(t==='c'?317000:t==='l'?96000:t==='a'?472000:3200*H/2);if('ptacl'.includes(t)){ctx.save();ctx.globalAlpha*=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x+s*.05,y,s*.16,s*.025,0,0,7);ctx.fill();ctx.restore()}
  if(t=='p')palm(x,y,s,sc);
  else if(t=='c'){ctx.fillStyle='#2e8b3a';const w=Math.max(1,s*.06);ctx.fillRect(x-w/2,y-s*.7,w,s*.7);ctx.fillRect(x-w*3,y-s*.45,w*3,w*.8);ctx.fillRect(x-w*3,y-s*.55,w*.8,s*.12);ctx.fillRect(x,y-s*.35,w*3,w*.8);ctx.fillRect(x+w*2.2,y-s*.45,w*.8,s*.12)}
  else if(t=='t'){ctx.fillStyle='#5a3a1a';ctx.fillRect(x-s*.02,y-s*.12,s*.04,s*.12);for(let i=0;i<3;i++){const yy=y-s*.12-i*s*.18,ww=s*(.24-i*.06);poly('#1b6a3a',[x-ww,yy,x+ww,yy,x,yy-s*.3])}}

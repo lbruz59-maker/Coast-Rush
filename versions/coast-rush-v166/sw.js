@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v166-r1";
+const CACHE_NAME="coast-rush-v166-r2";
 const CACHE_PREFIX="coast-rush-v166-";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 

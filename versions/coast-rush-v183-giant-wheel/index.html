@@ -1694,7 +1694,7 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}
- const bump=speed>0?(Math.floor(pos/90)%2):0;if(ac&&tunnelLP&&tunnelWet){const now=ac.currentTime;tunnelLP.frequency.setTargetAtTime(inTunnel?1050:19000,now,.22);tunnelWet.gain.setTargetAtTime(inTunnel?.24:0,now,.22)}BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
+ const bump=speed>0?(Math.floor(pos/90)%2):0;if(ac&&tunnelLP&&tunnelWet){const now=ac.currentTime;tunnelLP.frequency.setTargetAtTime(inTunnel?19000:1050,now,.22);tunnelWet.gain.setTargetAtTime(inTunnel?0:.24,now,.22)}BRK=(inp.b||gpad.b)&&speed>0?1:0;BOOSTF=boost>0?1:0;
  if(inTunnel){ctx.save();ctx.globalCompositeOperation='lighter';for(let side of[-1,1]){const hx=W/2+side*sw*.235,hy=H*.885;const glow=ctx.createRadialGradient(hx,hy,1,hx,hy,W*.045);glow.addColorStop(0,'rgba(255,246,214,.55)');glow.addColorStop(.35,'rgba(255,232,170,.25)');glow.addColorStop(1,'rgba(255,220,150,0)');ctx.fillStyle=glow;ctx.fillRect(hx-W*.05,hy-W*.05,W*.1,W*.1);ctx.fillStyle='#fff8dc';ctx.beginPath();ctx.ellipse(hx,hy,Math.max(2,sw*.035),Math.max(1.4,sw*.02),0,0,7);ctx.fill()}ctx.restore()}
  {const slide=drift*driftSide*28+Math.max(-6,Math.min(6,pxVel*2));
   if(musk>0){drawMuskCraft(cxp+slide,cyp-bump-38,sw,flash);__crMuskSmoke(cxp+slide,cyp-bump-38,sw)}

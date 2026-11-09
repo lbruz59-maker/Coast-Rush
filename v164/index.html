@@ -908,7 +908,7 @@ function drawChaseVictory(t){const g=ctx.createLinearGradient(0,0,0,150);g.addCo
  ctx.fillStyle='#4a4a58';ctx.fillRect(-W,168,W*3,H);rrp(200,150,100,56,6);ctx.fillStyle='#f4f4f6';ctx.fill();ctx.fillStyle='#2a6aff';ctx.fillRect(200,176,100,8);ctx.fillStyle='#111';ctx.beginPath();ctx.arc(222,206,9,0,7);ctx.arc(280,206,9,0,7);ctx.fill();const on=Math.floor(t*6)%2;ctx.fillStyle=on?'#f33':'#36f';ctx.fillRect(232,146,14,5);ctx.fillStyle=on?'#36f':'#f33';ctx.fillRect(254,146,14,5);
  for(let i=0;i<5;i++)person(30+i*36+Math.min(t*18,60),214,'#222','#e8742a','#e8742a',0,0);person(150,214,'#3a2a1a','#1c3f8a','#14224a',0,3);
  ctx.restore();ctx.textAlign='center';ctx.font='bold 22px '+FT;ctx.fillStyle='#000';ctx.fillText('MISSION ACCOMPLIE !',W/2+1,41);ctx.fillStyle='#ffd400';ctx.fillText('MISSION ACCOMPLIE !',W/2,40);ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(W/2,86,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff1a8';ctx.fillRect(W/2-3,94,6,12);ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText('MÉDAILLE & PROMOTION',W/2,113);if(MP){const standings=[{n:myName,h:chaseHits},...remotes.filter(r=>r.presence).map(r=>({n:r.presence.n||'POLICE',h:+r.presence.ch||0}))].sort((a,b)=>b.h-a.h);ctx.font='bold 9px '+FT;ctx.fillStyle='#fff';ctx.fillText('MEILLEUR POLICIER : '+(standings[0]?.n||myName)+' ('+(standings[0]?.h||0)+' COUPS)',W/2,55)}ctx.font='11px '+FT;ctx.fillStyle='#fff';ctx.fillText('Tous les bandits sont derrière les barreaux',W/2,128);drawFinishCelebration(t,'chase')}
-const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo'],VW=[.18,.17,.2,.19,.22,.25,.24],NOHUD=['win','over','brief','arrest','escape','podium','mega'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
+const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo','Taxi','Rallye','Futuriste'],VW=[.18,.17,.2,.19,.22,.25,.24,.19,.2,.18],NOHUD=['win','over','brief','arrest','escape','podium','mega'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
 try{myV=+localStorage.getItem('cr_veh')||0}catch(e){}
 const NR=()=>15/RL,fmt=t=>t==null?'DNF':Math.floor(t/60)+':'+(t%60).toFixed(2).padStart(5,'0');
 function drawCabrioletDuo(x,y,w,c,ln,ph){
@@ -983,7 +983,7 @@ function __crDrawVehPoseRaster(x,y,w,c,v,pose,ph){
  }
  ctx.restore();ctx.globalAlpha=1;
 }
-function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v<=9)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}
 // V86 — atlas véhicule de base, borné en mémoire.
 const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
 function drawVeh(x,y,w,c,v,ln,ph,em){

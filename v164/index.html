@@ -565,7 +565,7 @@ segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(sta
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
- cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,vt:T?-1:i%9,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
+ cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,vt:T?-1:(i%4===0?10+(i%3):i%9),w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
@@ -866,6 +866,7 @@ function drawSidecar(x,y,w,c){
  ctx.fillStyle='#fff3c8';rrp(x-1.2*u,y-3.6*u,2.4*u,.65*u,.25*u);ctx.fill();
 }
 function drawTrafficVehicle(c,x,y,w){
+ if(v>=10){drawMotorcycle(x,y,w,c.c,v);return;}
  const v=c.vt|0,u=w/16;
  if(v<7){__crDrawVehRaster(x,y,w,c.c,v,0,undefined,0);return;}
  if(v===7){
@@ -922,7 +923,7 @@ function drawChaseVictory(t){const g=ctx.createLinearGradient(0,0,0,150);g.addCo
  ctx.fillStyle='#4a4a58';ctx.fillRect(-W,168,W*3,H);rrp(200,150,100,56,6);ctx.fillStyle='#f4f4f6';ctx.fill();ctx.fillStyle='#2a6aff';ctx.fillRect(200,176,100,8);ctx.fillStyle='#111';ctx.beginPath();ctx.arc(222,206,9,0,7);ctx.arc(280,206,9,0,7);ctx.fill();const on=Math.floor(t*6)%2;ctx.fillStyle=on?'#f33':'#36f';ctx.fillRect(232,146,14,5);ctx.fillStyle=on?'#36f':'#f33';ctx.fillRect(254,146,14,5);
  for(let i=0;i<5;i++)person(30+i*36+Math.min(t*18,60),214,'#222','#e8742a','#e8742a',0,0);person(150,214,'#3a2a1a','#1c3f8a','#14224a',0,3);
  ctx.restore();ctx.textAlign='center';ctx.font='bold 22px '+FT;ctx.fillStyle='#000';ctx.fillText('MISSION ACCOMPLIE !',W/2+1,41);ctx.fillStyle='#ffd400';ctx.fillText('MISSION ACCOMPLIE !',W/2,40);ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(W/2,86,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff1a8';ctx.fillRect(W/2-3,94,6,12);ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText('MÉDAILLE & PROMOTION',W/2,113);if(MP){const standings=[{n:myName,h:chaseHits},...remotes.filter(r=>r.presence).map(r=>({n:r.presence.n||'POLICE',h:+r.presence.ch||0}))].sort((a,b)=>b.h-a.h);ctx.font='bold 9px '+FT;ctx.fillStyle='#fff';ctx.fillText('MEILLEUR POLICIER : '+(standings[0]?.n||myName)+' ('+(standings[0]?.h||0)+' COUPS)',W/2,55)}ctx.font='11px '+FT;ctx.fillStyle='#fff';ctx.fillText('Tous les bandits sont derrière les barreaux',W/2,128);drawFinishCelebration(t,'chase')}
-const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo','Taxi','Rallye','Formule 1'],VW=[.18,.17,.2,.19,.22,.25,.24,.19,.2,.18],NOHUD=['win','over','brief','arrest','escape','podium','mega'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
+const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo','Taxi','Rallye','Formule 1','Roadster','Superbike','Moto Touring'],VW=[.18,.17,.2,.19,.22,.25,.24,.19,.2,.18,.13,.12,.15],VEH_SPEED=[1, .96,1.02,1.08,.91,.84,1.01,.97,1.05,1.05,1.03,1.12,.94],VEH_GRIP=[1,1.04,.94,.91,.88,.86,1.02,.98,1.05,.99,1.08,.93,1.1],NOHUD=['win','over','brief','arrest','escape','podium','mega'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
 try{myV=+localStorage.getItem('cr_veh')||0;if(myV===9&&!crF1Unlocked())myV=0}catch(e){}
 const NR=()=>15/RL,fmt=t=>t==null?'DNF':Math.floor(t/60)+':'+(t%60).toFixed(2).padStart(5,'0');
 function drawCabrioletDuo(x,y,w,c,ln,ph){
@@ -1008,7 +1009,23 @@ function drawFormulaOne(x,y,w,c){
  ctx.fillStyle='#f4f4f4';ctx.fillRect(x-1*u,y-7*u,2*u,2.2*u);
  ctx.fillStyle='#161820';ctx.fillRect(x-7*u,y-1.8*u,14*u,.8*u);
 }
-function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+function drawMotorcycle(x,y,w,c,v){
+ const u=w/16,style=v-10;__crDrawVehicleShadow(x,y,w,u);
+ // Deux roues alignées, châssis et carénage vus de l'arrière.
+ for(const sy of[-2.5,-10.2]){ctx.fillStyle='#11131a';rrp(x-1.9*u,y+sy*u,3.8*u,3.8*u,1.3*u);ctx.fill();ctx.strokeStyle='#8994a4';ctx.lineWidth=.45*u;ctx.stroke()}
+ ctx.fillStyle='#4c5665';rrp(x-.65*u,y-10.8*u,1.3*u,8.2*u,.45*u);ctx.fill();
+ ctx.fillStyle='#202733';rrp(x-3.4*u,y-8.4*u,6.8*u,3.8*u,1.5*u);ctx.fill();
+ ctx.beginPath();ctx.moveTo(x-3.6*u,y-6.1*u);ctx.lineTo(x-4.8*u,y-10.2*u);ctx.lineTo(x-2.7*u,y-13.2*u);ctx.lineTo(x+2.7*u,y-13.2*u);ctx.lineTo(x+4.8*u,y-10.2*u);ctx.lineTo(x+3.6*u,y-6.1*u);ctx.closePath();ctx.fillStyle=LG(y-13*u,y-6*u,shade(c,.4),shade(c,-.35));ctx.fill();
+ if(style===1){ctx.fillStyle='#111722';rrp(x-5.8*u,y-12*u,11.6*u,2*u,.65*u);ctx.fill();ctx.fillStyle='#c5f3ff';rrp(x-1.4*u,y-14*u,2.8*u,1.1*u,.45*u);ctx.fill()}
+ if(style===2){ctx.fillStyle='#242b36';rrp(x-5*u,y-10.4*u,10*u,3*u,1.2*u);ctx.fill();ctx.fillStyle='#d4d9e0';rrp(x-5.4*u,y-8.2*u,10.8*u,1.1*u,.5*u);ctx.fill()}
+ // Feu arrière et pilote casqué
+ ctx.fillStyle='#ff344f';rrp(x-1.7*u,y-5.8*u,3.4*u,1.1*u,.4*u);ctx.fill();
+ ctx.fillStyle='#25202a';ctx.beginPath();ctx.ellipse(x,y-15*u,2.35*u,2.4*u,0,0,7);ctx.fill();
+ ctx.fillStyle=style===1?'#e9edf4':'#d8e5ef';ctx.beginPath();ctx.ellipse(x,y-15.4*u,1.7*u,1.5*u,0,0,7);ctx.fill();
+ ctx.fillStyle='#202b3a';rrp(x-1.8*u,y-13.7*u,3.6*u,1.2*u,.5*u);ctx.fill();
+ ctx.fillStyle='#f5f6f8';rrp(x-5.5*u,y-10.4*u,1.5*u,.7*u,.3*u);ctx.fill();rrp(x+4*u,y-10.4*u,1.5*u,.7*u,.3*u);ctx.fill();
+}
+function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v>=10)drawMotorcycle(x,y,w,c,v);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}
 // V86 — atlas véhicule de base, borné en mémoire.
 const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
 function drawVeh(x,y,w,c,v,ln,ph,em){
@@ -2032,8 +2049,8 @@ function loop(t){
   const choices=document.createElement('div');choices.style.cssText='display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0';card.insertBefore(choices,actions);
   const colors=[['Rouge','#ff2a2a'],['Bleu','#2a6aff'],['Jaune','#ffd400'],['Vert','#2ecc40'],['Orange','#ff8800'],['Violet','#c03aff'],['Turquoise','#00cccc'],['Blanc','#ffffff'],['Rose','#ff69b4'],['Noir','#111111']];
   const colorName=hex=>(colors.find(c=>c[1].toLowerCase()===String(hex).toLowerCase())||['Personnalisé',hex])[0];
-  const colorCaption=document.createElement('div');colorCaption.className='cr-color-name';card.insertBefore(colorCaption,palette);
-  const paint=()=>{const g=preview.getContext('2d'),old=ctx;ctx=g;try{g.clearRect(0,0,720,300);const gr=g.createLinearGradient(0,0,0,300);gr.addColorStop(0,'#193a5b');gr.addColorStop(1,'#071426');g.fillStyle=gr;g.fillRect(0,0,720,300);g.strokeStyle='#9bdcff55';g.lineWidth=3;g.beginPath();g.moveTo(25,255);g.lineTo(695,255);g.stroke();drawVeh(360,250,260,myCol,myV,0,0,1)}finally{ctx=old}label.textContent=VEH[myV]||'Véhicule';colorCaption.textContent='Couleur : '+colorName(myCol);Array.from(palette.children).forEach(z=>z.classList.toggle('is-selected',z.dataset.color===myCol))};
+  const colorCaption=document.createElement('div');colorCaption.className='cr-color-name';card.insertBefore(colorCaption,palette);const stats=document.createElement('div');stats.style.cssText='display:flex;justify-content:center;gap:18px;flex-wrap:wrap;color:#dff7ff;font:800 13px system-ui;margin:7px 0 12px';card.insertBefore(stats,choices);
+  const paint=()=>{const g=preview.getContext('2d'),old=ctx;ctx=g;try{g.clearRect(0,0,720,300);const gr=g.createLinearGradient(0,0,0,300);gr.addColorStop(0,'#193a5b');gr.addColorStop(1,'#071426');g.fillStyle=gr;g.fillRect(0,0,720,300);g.strokeStyle='#9bdcff55';g.lineWidth=3;g.beginPath();g.moveTo(25,255);g.lineTo(695,255);g.stroke();drawVeh(360,250,260,myCol,myV,0,0,1)}finally{ctx=old}label.textContent=VEH[myV]||'Véhicule';colorCaption.textContent='Couleur : '+colorName(myCol);stats.innerHTML='<span>VITESSE <b>'+(Math.round(((VEH_SPEED[myV]||1)-1)*100)>=0?'+':'')+Math.round(((VEH_SPEED[myV]||1)-1)*100)+'%</b></span><span>ADHÉRENCE <b>'+(Math.round(((VEH_GRIP[myV]||1)-1)*100)>=0?'+':'')+Math.round(((VEH_GRIP[myV]||1)-1)*100)+'%</b></span>';Array.from(palette.children).forEach(z=>z.classList.toggle('is-selected',z.dataset.color===myCol))};
   const buttons=[];VEH.forEach((v,i)=>{const locked=i===9&&!crF1Unlocked();const x=btn((locked?'🔒 ':'')+v,()=>{if(locked){toast('Termine les 50 circuits du contre-la-montre pour débloquer la Formule 1.');return}myV=i;try{localStorage.setItem('cr_veh',String(i))}catch(e){}if(gameButtons[i])gameButtons[i].click();buttons.forEach((z,j)=>z.style.background=j===i?'#176a83':'#263c5a');paint()},false);x.style.minHeight='44px';if(locked){x.style.opacity='.58';x.title='Débloquée après les 50 circuits du contre-la-montre'}buttons.push(x);choices.appendChild(x)});
   colors.forEach(([name,color])=>{const x=document.createElement('button');x.type='button';x.className='cr-color-swatch';x.dataset.color=color;x.title=name;x.setAttribute('aria-label',name);x.style.setProperty('--swatch-color',color);x.onclick=()=>{myCol=color;try{localStorage.setItem('cr_color',color)}catch(e){}paint()};palette.appendChild(x)});
   actions.insertBefore(btn('VALIDER ET RETOUR AU MENU',()=>{try{localStorage.setItem('cr_veh',String(myV));localStorage.setItem('cr_color',myCol)}catch(e){}crProfileTag();close();toast('Véhicule et couleur enregistrés')},true),actions.firstChild);
@@ -2390,10 +2407,10 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(braking&&!driftStart)speed-=MAX*(drift>.15?.10:.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));
-  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1))*(myV===9?1.05:1),speed));
+  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1))*(VEH_SPEED[myV]||1),speed));
   const sp2=speed/MAX,d=dt*2.1*sp2;
   // Direction progressive : la voiture prend de l'appui au lieu de se téléporter latéralement.
-  const vehGrip=gripF*(myV===9?.99:1),steerGain=(slip>0?.65:1)*(.85+.15*vehGrip)*(1+drift*.22);
+  const vehGrip=gripF*(VEH_GRIP[myV]||1),steerGain=(slip>0?.65:1)*(.85+.15*vehGrip)*(1+drift*.22);
   const curvePull=ps.loop?0:-2.1*sp2*sp2*ps.curve*.38/vehGrip*(1-drift*.62);
   const lateralTarget=st*2.1*sp2*steerGain+curvePull+(slip>0?Math.sin(flash*11)*.55:0);
   pxVel+=(lateralTarget-pxVel)*Math.min(1,dt*(drift>.08?7.5:9));

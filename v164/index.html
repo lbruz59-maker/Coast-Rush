@@ -494,7 +494,7 @@ segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(sta
   if(useItems&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:R()<.4?0:1+(R()*6|0)});
   if(i%(th.d=='h'?4:th.d=='sk'?21:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;s.sp.push({t:th.d,o:-1.5-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:1.5+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
   else if(i%25==0&&!f&&!s.loop)s.sp.push({t:'B',o:(R()<.5&&!s.sea?-1:1)*(1.8+R()*.3),c:cols[R()*7|0],txt:(ADREG[th.n]||ADS)[R()*(ADREG[th.n]||ADS).length|0]});
-  if(th.n!='NIGHT'&&th.n!='CANYON'&&th.d!='h'&&i%23==11&&!f&&!s.loop)s.sp.push({t:'h',o:(R()<.5&&!s.sea?-1:1)*(2+R()*.4),c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1});
+  if(th.n!='NIGHT'&&th.n!='CANYON'&&th.d!='h'&&i%(th.urb?38:26)==11&&!f&&!s.loop)s.sp.push({t:'h',o:(R()<.5&&!s.sea?-1:1)*(2+R()*.4),c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1});
   if(th.n=='ALPS'&&i%31==9&&!f&&!s.loop)s.sp.push({t:'ch',o:(R()<.5?-1:1)*(2.15+R()*.25),c:R()<.5?'#8b5638':'#a66a42'});
   if(th.n=='ALPS'&&i%19==7&&!f&&!s.loop)s.sp.push({t:'an',o:(R()<.5?-1:1)*(3.15+R()*.35),k:R()<.55?0:1});
   

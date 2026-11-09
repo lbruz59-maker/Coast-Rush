@@ -561,13 +561,15 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
  const __crRoadsideDecor=new Set(['M','L','D','Z','K','h','B','p','c','t','eu','fa','an','cl','py','u','W','ws','ch','P','C','l','r','n','a','g','v','q','ap','sc','ht']);
  const __crRoadsideShift=1.5;
  segs.forEach(seg=>{if(!seg||!Array.isArray(seg.sp))return;for(const sp of seg.sp){if(!sp||!__crRoadsideDecor.has(sp.t))continue;const side=sp.o<0?-1:sp.o>0?1:(seg.i%2?-1:1);sp.o=(Number(sp.o)||0)+side*__crRoadsideShift;}});
- // V182 : PNJ et animaux rapprochés du bord de route, sans toucher au personnage rouge.
- const __crNearRoadTypes=new Set(['P','C','an','fa']);
- segs.forEach(seg=>{if(!seg||!Array.isArray(seg.sp))return;for(const sp of seg.sp){if(!sp||!__crNearRoadTypes.has(sp.t))continue;const side=sp.o<0?-1:sp.o>0?1:(seg.i%2?-1:1);const distance=Math.max(1.65,Math.abs(Number(sp.o)||0)-1.0);sp.o=side*distance;}});
- // PNJ supplémentaires, répartis sur le parcours sans empiéter sur la chaussée.
+ // V183 : rapprocher visiblement tous les PNJ et animaux du bord de chaussée.
+ // Inclut les sprites faune LOC (L), les animaux alpins (an/fa) et les PNJ (P/C).
+ // La marge minimale conserve les silhouettes hors de la chaussée.
+ const __crNearRoadTypes=new Set(['P','C','L','an','fa']);
+ segs.forEach(seg=>{if(!seg||!Array.isArray(seg.sp))return;for(const sp of seg.sp){if(!sp||!__crNearRoadTypes.has(sp.t))continue;const side=sp.o<0?-1:sp.o>0?1:(seg.i%2?-1:1);const distance=Math.max(1.28,Math.abs(Number(sp.o)||0)-1.35);sp.o=side*distance;}});
+ // PNJ supplémentaires, répartis plus près de la route sans empiéter sur la chaussée.
  segs.forEach(seg=>{const i=seg.i;if(i<80||i>=segs.length-FORK-10||seg.tun||seg.bridge||seg.loop)return;
-  if(i%43===17)seg.sp.push({t:'P',o:(i%86<43?-1:1)*2.05});
-  if(i%29===9)seg.sp.push({t:'C',o:(i%58<29?1:-1)*2.1,c:cols[(i*3)%cols.length],ph:i%5});
+  if(i%43===17)seg.sp.push({t:'P',o:(i%86<43?-1:1)*1.42});
+  if(i%29===9)seg.sp.push({t:'C',o:(i%58<29?1:-1)*1.45,c:cols[(i*3)%cols.length],ph:i%5});
  });
  cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[T?i%7:OPPV[(i*7+id)%OPPV.length]%7],v:T?undefined:OPPV[(i*7+id)%OPPV.length]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.

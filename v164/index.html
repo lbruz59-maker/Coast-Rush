@@ -506,7 +506,7 @@ const ADREG={
  'DUBAÏ':['SKY HOTEL','DESERT CLUB','MARINA','OASIS']
 };
 let loopS=-1,loopE=-1,loopA=0,inLoop=0,item=0,boost=0,star=0;const objs=[];
-let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[],outrunTurnChoices=[];const fk=()=>!MODE&&stage<5,isLast=()=>MODE===3||stage>=(MODE===1?45:MODE===4?10:5);let selectedTimeTrialCircuit=0;const CR_TIME_TRIAL_ORDER=[0,1,2,3,4,5,6,7,8,9,10,11,14,15,16,19,23,30,31,32,33,34,13,18,21,25,26,27,28,29,43,12,24,35,36,37,38,39,44,20,40,41,17,22,42];function crUnlockNextTimeTrial(done,id){const i=CR_TIME_TRIAL_ORDER.indexOf(id),next=i>=0?CR_TIME_TRIAL_ORDER[i+1]:undefined;if(next!==undefined&&!done.includes(next))done.push(next)};
+let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[],outrunTurnChoices=[];const fk=()=>!MODE&&stage<5,isLast=()=>MODE===3||stage>=(MODE===1?45:MODE===4?10:5);let selectedTimeTrialCircuit=0;const CR_TIME_TRIAL_ORDER=[0,1,2,3,4,5,6,7,8,9,10,11,14,15,16,19,23,30,31,32,33,34,13,18,45,46,47,48,49,21,25,26,27,28,29,43,12,24,35,36,37,38,39,44,20,40,41,17,22,42];function crUnlockNextTimeTrial(done,id){const i=CR_TIME_TRIAL_ORDER.indexOf(id),next=i>=0?CR_TIME_TRIAL_ORDER[i+1]:undefined;if(next!==undefined&&!done.includes(next))done.push(next)};
 const FORK=125;let th=TH[0],cid=0,cposk=0;
 const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc'];
 let cars=[];

@@ -1,4 +1,5 @@
-const CACHE_NAME="coast-rush-v171";
+const CACHE_NAME="coast-rush-v164-r2";
+const CACHE_PREFIX="coast-rush-v164-";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 
 self.addEventListener("install",event=>{
@@ -6,7 +7,7 @@ self.addEventListener("install",event=>{
 });
 
 self.addEventListener("activate",event=>{
- event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith("coast-rush-")&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
+ event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));
 });
 
 self.addEventListener("fetch",event=>{

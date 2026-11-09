@@ -565,7 +565,7 @@ segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(sta
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
- cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
+ cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,vt:T?-1:i%11,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[i%7]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
@@ -828,7 +828,7 @@ function drawObj(c,x,y,w){if(c.k=='g'){const bw=Math.max(w,3);ctx.fillStyle='#ff
  else if(c.k=='b'){ctx.strokeStyle='#ffd400';ctx.lineWidth=Math.max(1.2,w*.35);ctx.lineCap='round';ctx.beginPath();ctx.arc(x,y-w*.55,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.strokeStyle='#e0a800';ctx.lineWidth=Math.max(.6,w*.12);ctx.beginPath();ctx.arc(x,y-w*.5,w*.7,.3,Math.PI-.3);ctx.stroke();ctx.lineCap='butt'}
  else if(c.k=='s'){ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y-w*.5,w*.55,0,7);ctx.fill();ctx.fillStyle='#2ecc40';ctx.beginPath();ctx.arc(x,y-w*.5,w*.38,0,7);ctx.fill()}
  else if(c.k=='r'){drawVeh(x,y,w,c.c,c.v|0,0,Math.floor(c.z/70)%2);if(w>12){ctx.fillStyle='#fff';ctx.font='8px "Arial Black",Impact,sans-serif';ctx.textAlign='center';ctx.fillText(c.nm,x,y-w*.95)}}
- else{if(c.b){drawBandit(c,x,y,w);const ak=Math.max(w,10),bob=Math.sin(flash*6)*ak*.1,ay=y-ak*1.15+bob;poly('#ff2a2a',[x-ak*.32,ay-ak*.45,x+ak*.32,ay-ak*.45,x,ay]);ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(.6,ak*.05);ctx.beginPath();ctx.moveTo(x-ak*.32,ay-ak*.45);ctx.lineTo(x,ay);ctx.lineTo(x+ak*.32,ay-ak*.45);ctx.stroke()}else(c.T?drawTruck:drawCar)(x,y,w*1.26,c.c,0);if(c.b&&c.hp<=4){ctx.globalAlpha=.5;ctx.fillStyle='#555';ctx.beginPath();ctx.arc(x+Math.sin(flash*9)*w*.1,y-w*.7,w*.18,0,7);ctx.fill();ctx.globalAlpha=1}}}
+ else{if(c.b){drawBandit(c,x,y,w);const ak=Math.max(w,10),bob=Math.sin(flash*6)*ak*.1,ay=y-ak*1.15+bob;poly('#ff2a2a',[x-ak*.32,ay-ak*.45,x+ak*.32,ay-ak*.45,x,ay]);ctx.strokeStyle='#fff';ctx.lineWidth=Math.max(.6,ak*.05);ctx.beginPath();ctx.moveTo(x-ak*.32,ay-ak*.45);ctx.lineTo(x,ay);ctx.lineTo(x+ak*.32,ay-ak*.45);ctx.stroke()}else drawTrafficVehicle(c,x,y,w*1.26);if(c.b&&c.hp<=4){ctx.globalAlpha=.5;ctx.fillStyle='#555';ctx.beginPath();ctx.arc(x+Math.sin(flash*9)*w*.1,y-w*.7,w*.18,0,7);ctx.fill();ctx.globalAlpha=1}}}
 function drawVan(x,y,w,c){const u=w/16;__crDrawVehicleShadow(x,y,w,u);
  for(const sx of[-8.6,6]){rrp(x+sx*u,y-4.6*u,2.6*u,4.6*u,u*.8);ctx.fillStyle=LG(y-5*u,y,'#262626','#050505');ctx.fill()}
  rrp(x-8*u,y-15*u,16*u,11.4*u,u*1.5);ctx.fillStyle=LG(y-15*u,y-3.6*u,shade(c,.3),shade(c,-.4));ctx.fill();
@@ -851,6 +851,24 @@ function drawDefeat(t){const ox=(W-320)/2,g=ctx.createLinearGradient(0,0,0,130);
  if(t>1.6){person(cx+74,208,'#4a2a12','#2b4a8a','#223',0,-4);person(cx+116,208,'#ffe58a','#e04a6a','#f1c19a',1,5)}
  ctx.strokeStyle='#bcd0ff88';ctx.lineWidth=.8;for(let i=0;i<70;i++){const a=(i*47+t*40)%400-40,b=((i*29+t*260)%240)-10;ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(a-4,b+12);ctx.stroke()}
  ctx.restore();ctx.textAlign='center';ctx.font='bold 26px "Arial Black",Impact,sans-serif';ctx.fillStyle='#000';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2+1,51);ctx.fillStyle='#ff4d6d';ctx.fillText(MODE==2?'MISSION ÉCHOUÉE':'GAME OVER',W/2,50);ctx.font='11px "Arial Black",Impact,sans-serif';ctx.fillStyle='#fff';ctx.fillText(MODE==2?'Rétrogradation à la circulation':'Le temps est écoulé…',W/2,68)}
+function drawTrafficVehicle(c,x,y,w){
+ const v=c.vt|0,u=w/16;
+ if(v<7){__crDrawVehRaster(x,y,w,c.c,v,0,undefined,0);return;}
+ if(v===7){
+  drawCar(x,y,w,c.c,0,0,undefined,0,0);
+  ctx.fillStyle='#f5d447';ctx.fillRect(x-5.8*u,y-7.35*u,11.6*u,.8*u);
+  ctx.fillStyle='#f5d447';rrp(x-1.9*u,y-11.4*u,3.8*u,1.5*u,.4*u);ctx.fill();
+  ctx.fillStyle='#222';ctx.fillRect(x-1.25*u,y-11.1*u,2.5*u,.7*u);
+ }else if(v===8){
+  drawCar(x,y,w,c.c,0,0,undefined,0,2);
+  ctx.fillStyle='#f5f5f5';ctx.fillRect(x-5.8*u,y-7.2*u,1.15*u,3.4*u);ctx.fillRect(x+4.65*u,y-7.2*u,1.15*u,3.4*u);
+  ctx.fillStyle='#17171d';rrp(x-7.7*u,y-11.9*u,15.4*u,1.1*u,.3*u);ctx.fill();
+ }else{
+  drawCar(x,y,w,c.c,0,0,undefined,0,3);
+  ctx.fillStyle='#42eaff';ctx.fillRect(x-7.2*u,y-3.3*u,14.4*u,.45*u);
+  ctx.fillStyle='#d8fbff';ctx.fillRect(x-1.1*u,y-12.2*u,2.2*u,.65*u);
+ }
+}
 function drawBandit(c,x,y,w){const v=c.vt|0;if(v==1)drawVan(x,y,w,c.c);else if(v==4)drawPickup(x,y,w,c.c);else if(v==6)drawCabrioletDuo(x,y,w,c.c,0,undefined);else drawCar(x,y,w,c.c,0,0,undefined,0,v)}
 const BL=9,VN=['un coupé sombre','un fourgon blanc','une muscle car orange','une supercar violette','un pick-up kaki'],VNm=['COUPÉ','FOURGON','MUSCLE CAR','SUPERCAR','PICK-UP'],CRIM=['Braquage de banque','Cambriolage de bijouterie','Vol de camion blindé','Évasion de prison','Trafic de diamants'],BCOL=['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'];
 let briefT=0,arT=0,arrCar=null,escT=0,escCar=null;

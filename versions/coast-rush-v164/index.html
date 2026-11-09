@@ -1793,7 +1793,7 @@ function drawOutrunVictoryCine(t){
  const endId=Math.max(10,Math.min(14,Number.isInteger(cid)?cid:10));
  const thm=TH[THI[endId]]||TH[10];
  const skyPair=Array.isArray(thm.sky)&&thm.sky.length>1?thm.sky:TH[10].sky;
- const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:TH[10].m;
+ const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:['#64758a','#46566d'];
  const city=({
   10:{name:'PARIS',sub:'LA VILLE LUMIERE',kind:'paris'},
   11:{name:'LONDRES',sub:'THE CITY NEVER SLEEPS',kind:'london'},
@@ -1847,7 +1847,7 @@ function drawOutrunMap(t){
  const visited=new Set(outrunVisited),currentId=stage*(stage-1)/2+cposk;
  const currentProgress=Math.max(0,Math.min(1,(pos+playerZ)/(trackLen||1)));
  const completed=state==='win';
- const cardH=26,cardW=Math.min(70,Math.max(44,W*.15)),top=59,bottom=H-33;
+ const cardH=26,cardW=Math.min(70,Math.max(44,W*.15)),top=59,bottom=H-52;
  const colX=s=>(cardW/2+4)+(s-1)*((W-cardW-8)/4); // V108: spread all five route stages across the adaptive canvas width
  const node=(s,k)=>({id:s*(s-1)/2+k,x:colX(s),y:s===1?(top+bottom)/2:top+k*(bottom-top)/(s-1)});
  const themeFor=id=>TH[THI[id]]||TH[0];
@@ -1904,6 +1904,26 @@ function drawOutrunMap(t){
        ctx.fillStyle='#f4f7fb';ctx.fillRect(x+w*.44,groundY-11,8,1.5);
        ctx.fillStyle='#d94b42';ctx.fillRect(x+w*.72,groundY-10,4,4);ctx.fillStyle='#bfe2f2';ctx.fillRect(x+w*.73,groundY-9,2,2);
      }
+   }else if(name==='FJORDS'){
+     // Profil de fjord : hautes parois montagneuses, sommets enneigés et eau profonde.
+     mountain(x+w*.18,groundY-1,27,21,mountainPair[0]);
+     mountain(x+w*.48,groundY-1,32,25,mountainPair[1]);
+     mountain(x+w*.82,groundY-1,29,22,mountainPair[0]);
+     ctx.fillStyle='#eef6f7';
+     ctx.beginPath();ctx.moveTo(x+w*.48,groundY-26);ctx.lineTo(x+w*.48-5,groundY-17);ctx.lineTo(x+w*.48+5,groundY-17);ctx.fill();
+     ctx.beginPath();ctx.moveTo(x+w*.18,groundY-22);ctx.lineTo(x+w*.18-4,groundY-14);ctx.lineTo(x+w*.18+4,groundY-14);ctx.fill();
+     ctx.fillStyle='#276c86';ctx.fillRect(x,groundY+3,w,h*.26);
+     ctx.strokeStyle='#a9dce5';ctx.lineWidth=.7;
+     for(let q=0;q<4;q++){ctx.beginPath();ctx.moveTo(x+q*17,groundY+6);ctx.lineTo(x+q*17+10,groundY+6);ctx.stroke()}
+   }else if(name==='ISLANDE'){
+     // Profil volcanique islandais : crêtes sombres, neige et plaine de lave.
+     mountain(x+w*.22,groundY-1,29,20,mountainPair[0]);
+     mountain(x+w*.63,groundY-1,36,24,mountainPair[1]);
+     mountain(x+w*.91,groundY+1,19,14,mountainPair[0]);
+     ctx.fillStyle='#dce8ed';
+     ctx.beginPath();ctx.moveTo(x+w*.63,groundY-25);ctx.lineTo(x+w*.63-6,groundY-15);ctx.lineTo(x+w*.63+6,groundY-15);ctx.fill();
+     ctx.beginPath();ctx.moveTo(x+w*.22,groundY-21);ctx.lineTo(x+w*.22-4,groundY-13);ctx.lineTo(x+w*.22+4,groundY-13);ctx.fill();
+     ctx.fillStyle='#343b42';ctx.fillRect(x,groundY+3,w,h*.25);
    }else if(name==='CANYON'){
      ctx.fillStyle='#9b4d32';ctx.fillRect(x+3,groundY-8,8,10);ctx.fillRect(x+w-13,groundY-11,10,13);
      ctx.fillStyle='#c66b3b';ctx.fillRect(x+5,groundY-10,5,3);ctx.fillRect(x+w-11,groundY-13,6,3);
@@ -1995,16 +2015,17 @@ function drawOutrunMap(t){
  }
  ctx.restore();
 
- // Bandeau bas : progression précise, y compris si la partie s'arrête avant le dernier circuit.
- ctx.fillStyle='#06182bf5';ctx.fillRect(3,158,W-6,21);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,158.5,W-7,20); ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='bold 6.3px '+FT;ctx.fillStyle='#ffe078';
- ctx.fillText('COAST RUSH  •  15 CIRCUITS',8,166);
+ // Bandeau de progression ancré au bord inférieur, sous toutes les miniatures.
+ const barY=H-22;
+ ctx.fillStyle='#06182bf5';ctx.fillRect(3,barY,W-6,21);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,barY+.5,W-7,20); ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='bold 6.3px '+FT;ctx.fillStyle='#ffe078';
+ ctx.fillText('COAST RUSH  •  15 CIRCUITS',8,barY+8);
  ctx.font='5.5px '+FT;ctx.fillStyle='#d9e9f2';
- ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,174);
+ ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,barY+16);
  const pct=completed?100:Math.round(currentProgress*100);
- ctx.fillStyle='#20364a';ctx.fillRect(8,176,W-16,2);
- ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,176,(W-16)*pct/100,2);
+ ctx.fillStyle='#20364a';ctx.fillRect(8,barY+18,W-16,2);
+ ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,barY+18,(W-16)*pct/100,2);
  ctx.textAlign='right';ctx.font='bold 5.8px '+FT;ctx.fillStyle='#fff';
- ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,175);
+ ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,barY+17);
 }
 // ---- LOGIQUE + DIAGNOSTIC DE CADENCE NATIF/WEBVIEW
 let last=0,ema=.016,perfT=0,__crLoadBad=0,__crLoadGood=0,crFrames=0,crWindowStart=0,crFps=0,crUpdateMs=0,crRenderMs=0,crPollMs=0,crHudAt=0,crLastRaf=0,crRafSum=0,crRafCount=0,crRafMax=0,crNativeStats={},crFrameSamples=new Array(180),crFrameSampleCount=0,crFrameSampleWrite=0,crUpdateSamples=new Array(180),crRenderSamples=new Array(180),crWorkSampleCount=0,crWorkSampleWrite=0,crLongFrames=0;

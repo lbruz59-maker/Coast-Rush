@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v177";
+const CACHE_NAME="coast-rush-v178";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 
 self.addEventListener("install",event=>{

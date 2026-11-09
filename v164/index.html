@@ -866,8 +866,8 @@ function drawSidecar(x,y,w,c){
  ctx.fillStyle='#fff3c8';rrp(x-1.2*u,y-3.6*u,2.4*u,.65*u,.25*u);ctx.fill();
 }
 function drawTrafficVehicle(c,x,y,w){
- if(v>=10){drawMotorcycle(x,y,w,c.c,v);return;}
  const v=c.vt|0,u=w/16;
+ if(v>=10){drawMotorcycle(x,y,w,c.c,v);return;}
  if(v<7){__crDrawVehRaster(x,y,w,c.c,v,0,undefined,0);return;}
  if(v===7){
   drawCar(x,y,w,c.c,0,0,undefined,0,0);
@@ -1025,7 +1025,7 @@ function drawMotorcycle(x,y,w,c,v){
  ctx.fillStyle='#202b3a';rrp(x-1.8*u,y-13.7*u,3.6*u,1.2*u,.5*u);ctx.fill();
  ctx.fillStyle='#f5f6f8';rrp(x-5.5*u,y-10.4*u,1.5*u,.7*u,.3*u);ctx.fill();rrp(x+4*u,y-10.4*u,1.5*u,.7*u,.3*u);ctx.fill();
 }
-function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v>=10)drawMotorcycle(x,y,w,c,v);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}
+function __crDrawVehRaster(x,y,w,c,v,ln,ph,em){if(v<0)drawCar(x,y,w,c,1,ln,ph,1);else if(v==1)drawBeetle(x,y,w,c);else if(v==2)drawCar(x,y,w,c,0,0,ph,0,2);else if(v==3)drawCar(x,y,w,c,0,0,ph,0,3);else if(v==4)drawPickup(x,y,w,c);else if(v==5)drawVan(x,y,w,c);else if(v==6)drawCabrioletDuo(x,y,w,c,ln,ph);else if(v==9)drawFormulaOne(x,y,w,c);else if(v>=10)drawMotorcycle(x,y,w,c,v);else if(v<=8)drawTrafficVehicle({vt:v,c},x,y,w);else drawCar(x,y,w,c,em?2:1,ln,ph)}
 // V86 — atlas véhicule de base, borné en mémoire.
 const __crVehicleAtlas=new Map();let __crVehicleAtlasBytes=0;
 function drawVeh(x,y,w,c,v,ln,ph,em){

@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Coast Rush V185 – Super OutRun 10 arrivées",
+  "short_name": "Coast Rush",
+  "description": "Coast Rush – 55 circuits, 10 arrivées Super OutRun, Afrique et Asie",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

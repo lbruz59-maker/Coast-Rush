@@ -1813,9 +1813,21 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
   if(!window.__CR_LITE||n<34||s.sp.some(o=>o.t==='M'))__crDrawDecoGroup(s,a.x,a.y,a.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
+   // Fermeture complète de la branche opposée : plusieurs modules de barrière
+   // couvrent toute l'entrée de la voie, avec une glissière continue visuellement.
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
-   const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;
-   deco(__crForkBlockSprite,bx0,a.y,a.sc);
+   const bo=blocked*(.5+.9*ff),unit=roadW*160*a.sc;
+   for(let bi=-2;bi<=2;bi++){
+    const bx0=a.x+a.sc*(bo+bi*.19)*roadW*160;
+    deco(__crForkBlockSprite,bx0,a.y,a.sc);
+   }
+   const railY=a.y-Math.max(2,unit*.035),railW=unit*.88;
+   ctx.save();ctx.globalAlpha=Math.max(.55,1-s.ft*.6);
+   ctx.strokeStyle='#d7e0e8';ctx.lineWidth=Math.max(2,unit*.045);
+   ctx.beginPath();ctx.moveTo(a.x+unit*(bo-.48),railY);ctx.lineTo(a.x+unit*(bo+.48),railY);ctx.stroke();
+   ctx.strokeStyle='#e52f3f';ctx.lineWidth=Math.max(1.5,unit*.022);
+   ctx.beginPath();ctx.moveTo(a.x+unit*(bo-.48),railY-2);ctx.lineTo(a.x+unit*(bo+.48),railY-2);ctx.stroke();
+   ctx.restore();
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
   for(const c of s.cars){const pct=((c.zr!=null?c.zr:c.z)%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(s.tun&&cw>2){const s2=segs[s.i+1],fb=(s2&&s2.v&&s2.b)?s2.b:b;if(fb.y<sy-1){const ow=c.w||.2;ctx.save();ctx.globalCompositeOperation='lighter';for(const sd of[-1,1]){const nx=cxs+sd*cw*.3,hn=cw*.1,fx=fb.x+fb.w*(c.o+sd*ow*.3),hf=fb.w*(ow*.1+.07);const g=ctx.createLinearGradient(0,sy,0,fb.y);g.addColorStop(0,'rgba(255,230,160,.26)');g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(nx-hn,sy);ctx.lineTo(fx-hf,fb.y);ctx.lineTo(fx+hf,fb.y);ctx.lineTo(nx+hn,sy);ctx.closePath();ctx.fill()}ctx.restore()}}drawObj(c,cxs,sy,cw)}

@@ -1047,7 +1047,7 @@ function brUpdate(dt){const L=brWrap;if(!L)return;const play=state=='play';
    for(let q=0;q<7;q++){const sg=segs[(ci+q)%segs.length];if(!sg||!sg.sp)continue;
     for(const sp of sg.sp)if(sp.t==='I'&&flash>=(sp.off||0)){const d=q*segL;if(d<pickupDist&&Math.abs(sp.o-c.o)<.85){pickupTarget=sp;pickupDist=d}}
    }
-   if(pickupTarget&&pickupDist<segL*7&&!c.item){c.o+=(pickupTarget.o-c.o)*Math.min(1,dt*2.7);if(pickupDist<segL*.65){pickupTarget.off=flash+5;c.item=pickupTarget.k||BRIT[(Math.random()*BRIT.length)|0];pickup();}}
+   if(pickupTarget&&pickupDist<segL*7&&!c.item){c.o+=(pickupTarget.o-c.o)*Math.min(1,dt*2.7);if(pickupDist<segL*.65){pickupTarget.off=flash+5;c.item=pickupTarget.k||BRIT[(Math.random()*BRIT.length)|0];whoosh();}}
    else{const lt=tg?tg.o:Math.sin(flash*.5+c.ph)*.65;c.o+=(lt-c.o)*Math.min(1,dt*(tg?1.8:.9))}
    c.o=Math.max(-.92,Math.min(.92,c.o));
    c.fc-=dt;c.cool-=dt;c.bt-=dt;if(c.gunT>0)c.gunT-=dt;

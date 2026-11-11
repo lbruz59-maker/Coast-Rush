@@ -480,9 +480,9 @@ TH.push(
 {n:'ZANZIBAR',sky:['#59cde2','#e5edf2'],g:['#e4d39d','#e4d39d'],d:'p',cv:0.89,hl:0.80},
 {n:'VICTORIA FALLS',sky:['#7cc9d5','#e5edf2'],g:['#629765','#629765'],d:'n',cv:0.98,hl:0.95},
 {n:'CASABLANCA',sky:['#9bd3ed','#e5edf2'],g:['#c9ba93','#c9ba93'],d:'h',cv:1.07,hl:0.50},
-{n:'KILIMANDJARO',sky:['#92b4d8','#e5edf2'],g:['#87a36c','#87a36c'],d:'t',cv:1.16,hl:0.65},
-{n:'NAMIB',sky:['#efb46d','#e5edf2'],g:['#d89450','#d89450'],d:'c',cv:0.80,hl:0.80},
-{n:'KAMPALA',sky:['#88c9d8','#e5edf2'],g:['#73a96d','#73a96d'],d:'n',cv:0.89,hl:0.95},
+{n:'FIJI',sky:['#92b4d8','#e5edf2'],g:['#87a36c','#87a36c'],d:'t',cv:1.16,hl:0.65},
+{n:'AUCKLAND',sky:['#efb46d','#e5edf2'],g:['#d89450','#d89450'],d:'c',cv:0.80,hl:0.80},
+{n:'QUEENSTOWN',sky:['#88c9d8','#e5edf2'],g:['#73a96d','#73a96d'],d:'n',cv:0.89,hl:0.95},
 {n:'KYOTO',sky:['#f2b2bb','#e5edf2'],g:['#83a579','#83a579'],d:'a',cv:0.98,hl:0.50},
 {n:'SÉOUL',sky:['#7999d2','#e5edf2'],g:['#929e9e','#929e9e'],d:'sk',cv:1.07,hl:0.65},
 {n:'BANGKOK',sky:['#8acde8','#e5edf2'],g:['#80ae73','#80ae73'],d:'h',cv:1.16,hl:0.80},
@@ -492,10 +492,10 @@ TH.push(
 {n:'JAIPUR',sky:['#f1b69a','#e5edf2'],g:['#d5a478','#d5a478'],d:'h',cv:1.07,hl:0.80},
 {n:'KATMANDOU',sky:['#83b7dd','#e5edf2'],g:['#8e9b8b','#8e9b8b'],d:'t',cv:1.16,hl:0.95},
 {n:'HONG KONG',sky:['#4c86bd','#e5edf2'],g:['#84959c','#84959c'],d:'sk',cv:0.80,hl:0.50},
-{n:'OSAKA',sky:['#87a4e4','#e5edf2'],g:['#a0a8a5','#a0a8a5'],d:'sk',cv:0.89,hl:0.65},
-{n:'LUANG PRABANG',sky:['#9dcfca','#e5edf2'],g:['#80a76e','#80a76e'],d:'n',cv:0.98,hl:0.80},
-{n:'TAIPEI',sky:['#82b6d9','#e5edf2'],g:['#83a09d','#83a09d'],d:'sk',cv:1.07,hl:0.95},
-{n:'BORNEO',sky:['#81c5a8','#e5edf2'],g:['#498e65','#498e65'],d:'n',cv:1.16,hl:0.50}
+{n:'GREAT BARRIER REEF',sky:['#87a4e4','#e5edf2'],g:['#a0a8a5','#a0a8a5'],d:'sk',cv:0.89,hl:0.65},
+{n:'BORA BORA',sky:['#9dcfca','#e5edf2'],g:['#80a76e','#80a76e'],d:'n',cv:0.98,hl:0.80},
+{n:'TAHITI',sky:['#82b6d9','#e5edf2'],g:['#83a09d','#83a09d'],d:'sk',cv:1.07,hl:0.95},
+{n:'PORT MORESBY',sky:['#81c5a8','#e5edf2'],g:['#498e65','#498e65'],d:'n',cv:1.16,hl:0.50}
 );
 const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,23,24,25,26,15,16,17,18,19,20,21,27,28,29,...Array.from({length:25},(_,i)=>30+i)],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 const ADREG={
@@ -2249,7 +2249,7 @@ function loop(t){
   const {card,actions,btn,close}=crMakeLayer('CONTRE-LA-MONTRE · CHOISIR UN CIRCUIT','min(calc(96*var(--vw)),900px)');card.style.maxHeight='calc(94*var(--vh))';card.style.overflowY='auto';
   let done=[];try{done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0]')}catch(e){done=[0]}if(!Array.isArray(done))done=[0];if(!done.includes(0))done.unshift(0);
   const intro=document.createElement('p');intro.textContent='Les circuits terminés sont rejouables. Les autres se débloquent au fil de tes victoires.';intro.style.cssText='color:#cdeaff;font:13px system-ui;margin:0 0 12px';card.insertBefore(intro,actions);
-  const groups=[['CIRCUITS ORIGINAUX',[0,1,2,3,4,5,6,7,8,9]],['EUROPE',[10,11,14,15,16,19,23]],['AMÉRIQUE',[13,21,27,28,29]],['ASIE',[12,19,24,...Array.from({length:13},(_,i)=>42+i)]],['AFRIQUE',[20,...Array.from({length:12},(_,i)=>30+i)]],['OCÉANIE',[17,22]]];
+  const groups=[['EUROPE',[2,3,8,10,11,14,18,20,21,22,23]],['AMÉRIQUE',[0,4,5,6,7,13,16,25,27,28,29]],['ASIE',[12,19,...Array.from({length:9},(_,i)=>42+i)]],['AFRIQUE',[1,15,...Array.from({length:9},(_,i)=>30+i)]],['OCÉANIE',[9,17,24,26,39,40,41,51,52,53,54]]];
   const seen=new Set();groups.forEach(([heading,ids])=>{const valid=ids.filter(id=>id<THI.length&&!seen.has(id));valid.forEach(id=>seen.add(id));if(!valid.length)return;const h=document.createElement('h3');h.textContent=heading;h.style.cssText='margin:15px 0 7px;color:#7deaff;font:900 14px system-ui;letter-spacing:.08em;text-align:left';card.insertBefore(h,actions);const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px';card.insertBefore(grid,actions);valid.forEach(id=>{const unlocked=done.includes(id);const name=TH[THI[id]].n;const b=btn((unlocked?'✓ ':'🔒 ')+name,()=>{if(!unlocked)return;selectedTimeTrialCircuit=id;MODE=3;MODE0=3;try{$('md').textContent='Mode : CONTRE-LA-MONTRE'}catch(e){}close();safeClick('go')},!unlocked);b.style.cssText+=';min-height:48px;text-align:left;padding:9px;background:'+(unlocked?'linear-gradient(135deg,#123b43,#0b2538)':'#182334')+';border:1px solid '+(unlocked?'#4bd7a1':'#526174')+';color:'+(unlocked?'#eafff6':'#8795a5')+';font:800 12px system-ui';const status=document.createElement('small');status.textContent=unlocked?(id===0?'DÉBLOQUÉ · ACTIF':'TERMINÉ · REJOUABLE'):'NON DÉBLOQUÉ';status.style.cssText='display:block;font:9px system-ui;opacity:.8;margin-top:3px';b.appendChild(status);grid.appendChild(b)})});
   const back=btn('RETOUR',close);back.style.cssText+=';margin-top:14px';actions.append(back);
  };

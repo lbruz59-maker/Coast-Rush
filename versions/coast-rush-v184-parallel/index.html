@@ -1021,7 +1021,7 @@ function __crMuskSmoke(x,y,w){const L=window.__CR_LITE;if(smoke.length<(L?24:80)
 function __crStartCid(){return MODE===3?selectedTimeTrialCircuit:MODE==4?15:MODE===5?100+brCircuit:0}
 function __crBrRoomCircuit(){let h=0;const s=String(curRoom||'');for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h%5}
 function __crCloseLoop(N){const K=260;brWrap=(N-K)*segL;for(let j=0;j<K;j++){const h=segs[j],t2=segs[N-K+j];if(!h||!t2)continue;for(const k in h){if(k==='i'||k==='cars')continue;t2[k]=h[k]}t2.sp=h.sp.slice()}}
-function brSetup(R){brHp=100;brLap=1;brKills=0;brHitFlash=0;brRank=0;gun=0;item=0;brArmor=0;
+function brSetup(R){brHp=100;brLap=1;brKills=0;brHitFlash=0;brRank=0;gun=0;item=0;brArmor=0;antiMissile=0;
  const nh=NET()?Math.min(9,1+remotes.filter(r=>r.presence&&r.presence.mp).length):1,na=10-nh;
  for(let k=0;k<na;k++)cars.push({br:1,ai:1,z:playerZ+segL*(6+Math.floor(k/2)*3.4),o:(k%2?1:-1)*(.2+.22*((k>>1)%3)),w:.18,sp:0,hp:100,v:OPPV[(k*5+3)%OPPV.length],c:cols[(k*3+1)%7],skill:.25+R()*.75,ph:R()*6,fc:R()*.3,cool:0,bt:5+R()*9,gunT:0,shell:0,armor:0,name:'IA'+(k+1),item:0,useCd:0,glueT:0,lightning:0});
  brAlive=10;msg='BATTLE ROYALE · '+th.n;msgT=4}
@@ -2439,7 +2439,7 @@ function useItem(){if(!(useItems||MODE===5)||state!='play'||!item||crash>0||glue
   boostSfx();say('Éclair global !',1.5,1.1);msg='ÉCLAIR : TOUT LE MONDE RALENTI';msgT=1.8
  }
  else if(I==11){objs.push({k:'y',z:p+segL*13,o:px,w:.3,sp:0,id:Math.random()*1e9|0,tt:flash});say('Glue !',1.5,1.2);whoosh()}
- else if(I==12){let t=null;for(const c of cars){if(c.dead||c.z<=p||c.hit>0)continue;if(!t||c.z<t.z)t=c}if(t){if(t.rp)atq.push({to:t.peer,id:Date.now()+Math.random(),kind:'missile'});else objs.push({k:'s',z:p+segL*2,o:px,w:.12,sp:MAX*1.8,t,born:flash,life:3.2,missile:1});say('Missile tête chercheuse !',1.8,1.1);whoosh()}else say('Aucune cible devant !',1.4,1.1)}
+ else if(I==12){let t=null;for(const c of cars){if(c.dead||c.z<=p||c.hit>0)continue;if(!t||c.z<t.z)t=c}if(t){if(t.rp)atq.push({to:t.peer,id:Date.now()+Math.random(),kind:'missile'});else objs.push({k:'s',z:p+segL*.25,o:px,w:.12,sp:MAX*1.8,t,born:flash,life:3.2,missile:1});say('Missile tête chercheuse !',1.8,1.1);whoosh()}else say('Aucune cible devant !',1.4,1.1)}
  else if(I==13){antiMissile=10;boostSfx();say('Anti-missile activé !',1.6,1.1);msg='BOUCLIER ANTI-MISSILE';msgT=1.8}
 
  else{star=6;boostSfx();say('Invincible!',1.5,1.1)}
@@ -2709,7 +2709,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     // Déclencher l'impact avant de franchir la voiture cible.
     if(dz<=segL*.6){
      const dir=Math.sign(target.o-b.o)||((Math.random()<.5)?-1:1);
-     if(b.missile){if(target.rp){atq.push({to:target.peer,id:Date.now()+Math.random(),kind:'missile'})}else if(MODE===5){if(target.armor>0){target.armor=Math.max(0,target.armor-60);msg='3 PLAQUES PERDUES !';msgT=1.4;bang()}else brHitAI(target,100,{pl:1})}else hitCar(target,3,dir);objs.push({k:'x',z:target.z,o:target.o,w:.3,tt:flash})}
+     if(b.missile){if(target.rp){atq.push({to:target.peer,id:Date.now()+Math.random(),kind:'missile'})}else if(target.antiMissile>0){target.antiMissile=0;msg='MISSILE INTERCEPTÉ !';msgT=1.3;pickup()}else if(MODE===5){if(target.armor>0){target.armor=Math.max(0,target.armor-60);msg='3 PLAQUES PERDUES !';msgT=1.4;bang()}else brHitAI(target,100,{pl:1})}else hitCar(target,3,dir);objs.push({k:'x',z:target.z,o:target.o,w:.3,tt:flash})}
      else if(target.b&&MODE==2){hitCar(target,3,dir);target.hp=Math.max(0,target.hp-1);target.hit=1.25;target.vo=dir*3.8;target.sft=1;target.noTp=1;target.shr=4.5;objs.push({k:'x',z:target.z,o:target.o,w:.55,tt:flash});shake=.45}
      else{hitCar(target,3,dir);objs.push({k:'x',z:target.z,o:target.o,w:.3,tt:flash})}
      dead=true;

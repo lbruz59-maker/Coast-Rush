@@ -1078,6 +1078,8 @@ function brUpdate(dt){const L=brWrap;if(!L)return;const play=state=='play';
   }
   if(!c.dead&&c.dzr>-segL*3&&c.dzr<segL*(drawN+3)){c.zr=me+c.dzr;__crAddSegmentCar(Math.floor(c.zr/segL),c)}
  }
+ // Les IA peuvent aussi se percuter et s'éliminer entre elles.
+ for(let i=0;i<ai.length;i++){const a=ai[i];if(a.dead)continue;for(let j=i+1;j<ai.length;j++){const b=ai[j];if(b.dead||a.cool>0||b.cool>0)continue;const dz=dd(a.z,b.z);if(Math.abs(dz)<segL*.72&&Math.abs(a.o-b.o)<.27){a.cool=b.cool=1.15;const damage=17+Math.min(8,Math.abs((a.sp||0)-(b.sp||0))/MAX*12);brHitAI(a,damage,b);brHitAI(b,damage,a);a.sp*=.94;b.sp*=.94;}}}
  for(const c of cars){if(!c.rp)continue;if(c.z<0){c.dzr=null;continue}alive++;c.dzr=dd(me,c.z);const pd=c.pdz;c.pdz=c.dzr;
   if(c.dzr>-segL*3&&c.dzr<segL*(drawN+3)){c.zr=me+c.dzr;__crAddSegmentCar(Math.floor(c.zr/segL),c)}
   if(play&&crash<=0&&flash-(c.hcd||0)>.7&&brContact(c,pd)){c.hcd=flash;brRamFx(c,0)}

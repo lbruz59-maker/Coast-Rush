@@ -1866,6 +1866,20 @@ function crDrawHUD(){
  const wi={clear:'\u2600\uFE0F',cloud:'\u2601\uFE0F',rain:'\uD83C\uDF27\uFE0F',snow:'\u2744\uFE0F',fog:'\uD83C\uDF2B\uFE0F'}[wx]||'';
  let nm=String((th&&th.n)||''),fs=L,maxw=W*.19-24;ctx.font='bold '+fs+'px '+FT;while(fs>8&&ctx.measureText(nm).width>maxw){fs--;ctx.font='bold '+fs+'px '+FT}
  T(nm,c3,69,fs,'#fff');
+  if(MP&&remotes.length){
+   const bx=W*.29,bw=W*.42,by=91,center=bx+bw/2,range=segL*18;
+   ctx.fillStyle='#0009';rrp(bx,by-13,bw,26,7);ctx.fill();
+   ctx.strokeStyle='#ffffff66';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(bx+5,by);ctx.lineTo(bx+bw-5,by);ctx.stroke();
+   ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(center,by,4,0,Math.PI*2);ctx.fill();
+   T('TOI',center,by-7,7,'#ffd95a','center');
+   for(const r of remotes){const q=r.presence;if(!q||!Number.isFinite(+q.pos))continue;
+    const delta=(+q.pos-(pos+playerZ)),x=Math.max(bx+7,Math.min(bx+bw-7,center+delta/range*(bw/2-9)));
+    ctx.fillStyle=q.c||'#55dfff';ctx.beginPath();ctx.arc(x,by,4,0,Math.PI*2);ctx.fill();
+    const meters=Math.round(Math.abs(delta)/20),ahead=delta>0;
+    T((q.n||'J').slice(0,7)+' '+meters+'m',x,by+16,7,q.c||'#bfeeff','center');
+   }
+  }
+
  if(msgT>0&&msg){ctx.globalAlpha=Math.min(1,msgT*2);T(String(msg),W/2,H*.34,15,'#ffd400','center')}
  ctx.restore();
 }

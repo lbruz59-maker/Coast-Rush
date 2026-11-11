@@ -1852,9 +1852,10 @@ function crDrawHUD(){
   const low=time<10;T('TEMPS',c1,17,L,'#ffd400');T(String(Math.max(0,Math.ceil(time))),c1,35,L+4,low&&Math.floor(flash*4)%2?'#ffffff':'#ff3860');
  }
  {const IC={1:'\uD83C\uDF44',2:'\uD83C\uDF4C',3:'\uD83D\uDC22',4:'\u2B50',5:'\uD83D\uDEE2\uFE0F',6:'\uD83D\uDD2B',7:'\uD83D\uDE80',8:'\u2764\uFE0F',9:'\uD83D\uDEE1\uFE0F',10:'\u26A1',11:'\uD83E\uDDF4',12:'\uD83D\uDE80',13:'\uD83D\uDEE1\uFE0F'},NM={1:'BOOST',2:'BANANE',3:'CARAPACE',4:'INVINCIBLE',5:'HUILE',6:'MITRAILLETTE',7:'MUSK',8:'VIE +25',9:'3 PLAQUES',10:'ÉCLAIR',11:'GLUE',12:'MISSILE',13:'ANTI-MISSILE'};
-  ctx.fillStyle='#000a';ctx.beginPath();ctx.arc(c1+13,56,17,0,7);ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=item?'#ffd400':'#ffffff55';ctx.stroke();
-  if(useItems!==false||MODE===5){if(item){E(IC[item]||'\u2753',c1+1,63,22);T(NM[item]||'BONUS',c1+34,60,9,'#ffd400')}else{T('?',c1+8,63,18,'#ffffff66')}}
-  if(antiMissile>0)T('ANTI '+Math.ceil(antiMissile),c1+34,72,9,'#7fe0ff');else if(glueT>0)T('STOP '+Math.ceil(glueT),c1+34,72,9,'#70e8d8');else if(star>0)T('\u2605 '+Math.ceil(star),c1+34,72,9,'#ffd400');else if(gun>0)T('\u25CF '+Math.ceil(gun),c1+34,72,9,'#ffd400');else if(musk>0)T('\u25CF '+Math.ceil(musk),c1+34,72,9,'#4dd2ff');else if(boost>0)T('\u25B6 '+Math.ceil(boost),c1+34,72,9,'#ff8a00')}
+   const ix=c1+9,iy=55,tx=c1+25;
+   ctx.fillStyle='#000b';ctx.beginPath();ctx.arc(ix,iy,11,0,7);ctx.fill();ctx.lineWidth=1.3;ctx.strokeStyle=item?'#ffd400':'#ffffff55';ctx.stroke();
+   if(useItems!==false||MODE===5){if(item){E(IC[item]||'\u2753',ix-7,iy+5,14);T(NM[item]||'BONUS',tx,iy+3,8,'#ffd400')}else{T('?',ix-4,iy+5,13,'#ffffff66')}}
+   if(antiMissile>0)T('ANTI '+Math.ceil(antiMissile),tx,iy+13,7,'#7fe0ff');else if(glueT>0)T('STOP '+Math.ceil(glueT),tx,iy+13,7,'#70e8d8');else if(star>0)T('\u2605 '+Math.ceil(star),tx,iy+13,7,'#ffd400');else if(gun>0)T('\u25CF '+Math.ceil(gun),tx,iy+13,7,'#ffd400');else if(musk>0)T('\u25CF '+Math.ceil(musk),tx,iy+13,7,'#4dd2ff');else if(boost>0)T('\u25B6 '+Math.ceil(boost),tx,iy+13,7,'#ff8a00')}
  T('SCORE',c2,17,L,'#ffd400');T(String(Math.floor(score||0)).padStart(7,'0'),c2,35,L+4,'#fff');
  T(MODE===5?'TOUR '+brLap:'ÉTAPE '+(stage||1),c3,17,L,'#4dd2ff');if(MODE===5)T('SURV. '+brAlive+'/10',c2,52,L-3,'#ff8a00');
  const kmh=Math.round(Math.max(0,speed)/(typeof MAX==='number'&&MAX>0?MAX:1)*320);

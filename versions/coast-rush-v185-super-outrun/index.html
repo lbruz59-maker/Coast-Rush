@@ -495,9 +495,14 @@ TH.push(
 {n:'GREAT BARRIER REEF',sky:['#87a4e4','#e5edf2'],g:['#a0a8a5','#a0a8a5'],d:'sk',cv:0.89,hl:0.65},
 {n:'BORA BORA',sky:['#9dcfca','#e5edf2'],g:['#80a76e','#80a76e'],d:'n',cv:0.98,hl:0.80},
 {n:'TAHITI',sky:['#82b6d9','#e5edf2'],g:['#83a09d','#83a09d'],d:'sk',cv:1.07,hl:0.95},
-{n:'PORT MORESBY',sky:['#81c5a8','#e5edf2'],g:['#498e65','#498e65'],d:'n',cv:1.16,hl:0.50}
+{n:'PORT MORESBY',sky:['#81c5a8','#e5edf2'],g:['#498e65','#498e65'],d:'n',cv:1.16,hl:0.50},
+{n:'SAINT-POL-SUR-TERNOISE',sky:['#91b8d8','#e5edf2'],g:['#73915c','#73915c'],d:'h',cv:0.86,hl:0.45},
+{n:'ÎLE DE LA RÉUNION',sky:['#48b6dc','#e5edf2'],g:['#398a62','#398a62'],d:'p',w:1,cv:1.05,hl:0.72},
+{n:'ALASKA',sky:['#83a9d2','#e5edf2'],g:['#91a6a0','#91a6a0'],d:'t',snowy:1,cv:1.02,hl:0.92},
+{n:'SÉOUL',sky:['#788fce','#e5edf2'],g:['#818f87','#818f87'],d:'sk',cv:0.94,hl:0.62},
+{n:'SAMOA',sky:['#55c8d7','#e5edf2'],g:['#3c9366','#3c9366'],d:'p',w:1,cv:1.08,hl:0.7}
 );
-const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,23,24,25,26,15,16,17,18,19,20,21,27,28,29,...Array.from({length:25},(_,i)=>30+i)],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
+const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,23,24,25,26,15,16,17,18,19,20,21,27,28,29,...Array.from({length:25},(_,i)=>30+i),55,56,57,58,59],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 const ADREG={
  ALPS:['ALPINE','CHALET','MONT BLANC','SKI CLUB','NEIGE','THERMES'],
  DESERT:['OASIS','DUNES','CARAVANE','DESERT SUN','RELAIS'],
@@ -521,7 +526,7 @@ const ADREG={
 };
 let loopS=-1,loopE=-1,loopA=0,inLoop=0,item=0,boost=0,star=0;const objs=[];
 let mpRaces=0,winT=0,MODE=0,bnd=null,arrestT=0,sirT=0,sirF=0;let outrunVisited=[],outrunTurnChoices=[];const fk=()=>(MODE===0&&stage<5)||(MODE===6&&stage<10),isLast=()=>MODE===3||stage>=(MODE===1?45:(MODE===4||MODE===6)?10:5);
-const SO_W=[1,2,3,4,5,6,7,8,9,10],SO_OFF=[0,1,3,6,10,15,21,28,36,45],orId=(s,k)=>MODE===6?SO_OFF[s-1]+k:s*(s-1)/2+k,soNext=(s,k,tt)=>{const w=SO_W[s-1],w2=SO_W[s];return Math.min(w2-1,k+tt)},__crOrChild=tt=>orId(stage+1,MODE===6?soNext(stage,cposk,tt):cposk+tt);let selectedTimeTrialCircuit=0;const CR_TIME_TRIAL_ORDER=[...Array.from({length:30},(_,i)=>i),...Array.from({length:25},(_,i)=>30+i)];function crUnlockNextTimeTrial(done,id){const i=CR_TIME_TRIAL_ORDER.indexOf(id),next=i>=0?CR_TIME_TRIAL_ORDER[i+1]:undefined;if(next!==undefined&&!done.includes(next))done.push(next)};
+const SO_W=[1,2,3,4,5,6,7,8,9,10],SO_OFF=[0,1,3,6,10,15,21,28,36,45],orId=(s,k)=>MODE===6?SO_OFF[s-1]+k:s*(s-1)/2+k,soNext=(s,k,tt)=>{const w=SO_W[s-1],w2=SO_W[s];return Math.min(w2-1,k+tt)},__crOrChild=tt=>orId(stage+1,MODE===6?soNext(stage,cposk,tt):cposk+tt);let selectedTimeTrialCircuit=0;const CR_TIME_TRIAL_ORDER=[...Array.from({length:60},(_,i)=>i)];function crUnlockNextTimeTrial(done,id){const i=CR_TIME_TRIAL_ORDER.indexOf(id),next=i>=0?CR_TIME_TRIAL_ORDER[i+1]:undefined;if(next!==undefined&&!done.includes(next))done.push(next)};
 const FORK=125;let th=TH[0],cid=0,cposk=0;
 const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc'];
 let cars=[];
@@ -2249,7 +2254,7 @@ function loop(t){
   const {card,actions,btn,close}=crMakeLayer('CONTRE-LA-MONTRE · CHOISIR UN CIRCUIT','min(calc(96*var(--vw)),900px)');card.style.maxHeight='calc(94*var(--vh))';card.style.overflowY='auto';
   let done=[];try{done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0]')}catch(e){done=[0]}if(!Array.isArray(done))done=[0];if(!done.includes(0))done.unshift(0);
   const intro=document.createElement('p');intro.textContent='Les circuits terminés sont rejouables. Les autres se débloquent au fil de tes victoires.';intro.style.cssText='color:#cdeaff;font:13px system-ui;margin:0 0 12px';card.insertBefore(intro,actions);
-  const groups=[['EUROPE',[2,3,8,10,11,14,15,16,23,25,26]],['AMÉRIQUE',[0,4,5,6,7,13,18,21,27,28,29]],['ASIE',[12,24,...Array.from({length:9},(_,i)=>42+i)]],['AFRIQUE',[1,20,...Array.from({length:9},(_,i)=>30+i)]],['OCÉANIE',[9,17,19,22,39,40,41,51,52,53,54]]];
+  const groups=[['EUROPE',[2,3,8,10,11,14,15,16,23,25,26,55]],['AMÉRIQUE',[0,4,5,6,7,13,18,21,27,28,29,57]],['ASIE',[12,24,...Array.from({length:9},(_,i)=>42+i),58]],['AFRIQUE',[1,20,...Array.from({length:9},(_,i)=>30+i),56]],['OCÉANIE',[9,17,19,22,39,40,41,51,52,53,54,59]]];
   const seen=new Set();groups.forEach(([heading,ids])=>{const valid=ids.filter(id=>id<THI.length&&!seen.has(id));valid.forEach(id=>seen.add(id));if(!valid.length)return;const h=document.createElement('h3');h.textContent=heading;h.style.cssText='margin:15px 0 7px;color:#7deaff;font:900 14px system-ui;letter-spacing:.08em;text-align:left';card.insertBefore(h,actions);const grid=document.createElement('div');grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px';card.insertBefore(grid,actions);valid.forEach(id=>{const unlocked=done.includes(id);const name=TH[THI[id]].n;const b=btn((unlocked?'✓ ':'🔒 ')+name,()=>{if(!unlocked)return;selectedTimeTrialCircuit=id;MODE=3;MODE0=3;try{$('md').textContent='Mode : CONTRE-LA-MONTRE'}catch(e){}close();safeClick('go')},!unlocked);b.style.cssText+=';min-height:48px;text-align:left;padding:9px;background:'+(unlocked?'linear-gradient(135deg,#123b43,#0b2538)':'#182334')+';border:1px solid '+(unlocked?'#4bd7a1':'#526174')+';color:'+(unlocked?'#eafff6':'#8795a5')+';font:800 12px system-ui';const status=document.createElement('small');status.textContent=unlocked?(id===0?'DÉBLOQUÉ · ACTIF':'TERMINÉ · REJOUABLE'):'NON DÉBLOQUÉ';status.style.cssText='display:block;font:9px system-ui;opacity:.8;margin-top:3px';b.appendChild(status);grid.appendChild(b)})});
   const back=btn('RETOUR',close);back.style.cssText+=';margin-top:14px';actions.append(back);
  };
@@ -2468,7 +2473,7 @@ function useItem(){if(!(useItems||MODE===5)||state!='play'||!item||crash>0||glue
  else if(I==6){if(MODE===5){crGunHeat=Math.max(0,crGunHeat-.5);crGunLock=0;gun=1}else gun=3.2;gunT=0;boostSfx();say('Mitraillette !',1.5,1.2)}
  else if(I==3){let t=null;for(const c of cars){if(c.dead||c.z<=p||c.hit>0)continue;if(!t||c.z<t.z)t=c}if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t,born:flash,life:2.4});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}
- else if(I==10){mini=4;speed*=.62;const lightningOrigin=pos+playerZ,lightningVisible=c=>!c.dead&&c.z>lightningOrigin&&c.z-lightningOrigin<=segL*Math.min(drawN,55)&&Math.abs(c.o-px)<1.05;for(const c of cars){if(c.ai&&lightningVisible(c)){c.shr=4;c.sp*=.62}}for(const r of remotes){const target=prox[r.peer];if(target&&lightningVisible(target))atq.push({to:r.peer,id:Date.now()+Math.random(),kind:'lightning'})}boostSfx();say('Éclair !',1.5,1.1);msg='ÉCLAIR : ADVERSAIRES VISIBLES';msgT=1.8
+ else if(I==10){const lightningOrigin=pos+playerZ,lightningVisible=c=>!c.dead&&c.z>lightningOrigin&&c.z-lightningOrigin<=segL*Math.min(drawN,55)&&Math.abs(c.o-px)<1.05;for(const c of cars){if(c.ai&&lightningVisible(c)){c.shr=4;c.sp*=.62}}for(const r of remotes){const target=prox[r.peer];if(target&&lightningVisible(target))atq.push({to:r.peer,id:Date.now()+Math.random(),kind:'lightning'})}boostSfx();say('Éclair !',1.5,1.1);msg='ÉCLAIR : ADVERSAIRES VISIBLES';msgT=1.8
  }
  else if(I==11){objs.push({k:'y',z:p-segL*2,o:px,w:.3,sp:0,id:Math.random()*1e9|0,tt:flash});say('Glue !',1.5,1.2);whoosh()}
  else if(I==12){let t=null;for(const c of cars){if(c.dead||c.z<=p||c.hit>0)continue;if(!t||c.z<t.z)t=c}if(t){if(t.rp)atq.push({to:t.peer,id:Date.now()+Math.random(),kind:'missile'});else objs.push({k:'s',z:p+segL*.25,o:px,w:.12,sp:MAX*1.8,t,born:flash,life:3.2,missile:1});say('Missile tête chercheuse !',1.8,1.1);whoosh()}else say('Aucune cible devant !',1.4,1.1)}

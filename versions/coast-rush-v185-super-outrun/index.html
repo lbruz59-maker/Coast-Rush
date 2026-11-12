@@ -1834,19 +1834,28 @@ function __crDrawDecoGroup(seg,baseX,baseY,sc){
  const sprites=seg.sp||[];
  if(!sprites.length)return;
  const qsc=Math.round(sc*64)/64; // quantification plus large = réutilisation du cache entre images
- if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- const stat=[],live=[];
- for(const sp of sprites){
-  if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);
-  else live.push(sp);
+ if(qsc<=0){for(let i=0;i<sprites.length;i++){const sp=sprites[i];deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc)}return}
+ // Les sprites d'un segment sont stables pendant la course : préparer une seule fois
+ // leur séparation statique/animée et leur signature au lieu de recréer tableaux,
+ // map/join et chaînes à chaque image.
+ let meta=seg.__crDecoGroupMeta,valid=!!(meta&&meta.sprites===sprites&&meta.length===sprites.length);
+ if(valid){for(let i=0;i<sprites.length;i++)if(meta.refs[i]!==sprites[i]){valid=false;break}}
+ if(!valid){
+  const stat=[],live=[],refs=sprites.slice();let sig='';
+  try{
+   for(let i=0;i<sprites.length;i++){
+    const sp=sprites[i];
+    if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t)){stat.push(sp);sig+=(sig?';':'')+[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')}
+    else live.push(sp);
+   }
+  }catch(_){__crDecoGroupFallbacks++;for(let i=0;i<sprites.length;i++){const sp=sprites[i];deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc)}return}
+  meta=seg.__crDecoGroupMeta={sprites,length:sprites.length,refs,stat,live,sig};
  }
+ const stat=meta.stat,live=meta.live;
  // Animations, événements et éléments dépendants du temps : rendu natif inchangé.
- for(const sp of live)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);
+ for(let i=0;i<live.length;i++){const sp=live[i];deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc)}
  if(!stat.length)return;
- // Signature recalculée : supporte aussi les segments dont la liste de décors évolue.
- let sig='';
- try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';')}
- catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const sig=meta.sig;
  const key=[seg.i,sig,qsc,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
  const ratio=sc/qsc;
  let entry=__crDecoGroupCache.get(key);

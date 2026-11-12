@@ -560,7 +560,7 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
     if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
- cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[T?i%7:OPPV[(i*7+id)%OPPV.length]%7],v:T?undefined:OPPV[(i*7+id)%OPPV.length]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
+ cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<DF[dfi].k+stage*2;i++){const T=i%5==4;cars.push({ai:1,item:0,aiUseCd:2+R()*3,z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3),c:cols[T?i%7:OPPV[(i*7+id)%OPPV.length]%7],v:T?undefined:OPPV[(i*7+id)%OPPV.length]})}cars.forEach(c=>c.lane=c.o);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
@@ -2494,6 +2494,37 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
    continue;
   }
   if(c.z>trackLen-(FORK+10)*segL){c.z=-1e9;continue}
+  // IA de course : collecte et utilisation des bonus (autorité réseau unique en multijoueur).
+  if(c.ai&&state==='play'&&(!MP||isOutrunLeader())){
+   c.aiUseCd=Math.max(0,(c.aiUseCd||0)-dt);
+   let pick=null,pickD=Infinity;
+   const base=((Math.floor(c.z/segL)%N)+N)%N;
+   for(let q=0;q<7;q++){const sg=segs[(base+q)%N];if(!sg||!sg.sp)continue;
+    for(const sp of sg.sp)if(sp.t==='I'&&flash>=(sp.off||0)){const d=q*segL;if(d<pickD&&Math.abs(sp.o-c.o)<.9){pick=sp;pickD=d}}
+   }
+   if(pick&&pickD<segL*7&&!c.item){
+    c.o+=(pick.o-c.o)*Math.min(1,dt*2.8);
+    if(pickD<segL*.7){pick.off=flash+5;c.item=pick.k||((Math.random()*13|0)+1);whoosh()}
+   }
+   if(c.item&&c.aiUseCd<=0){
+    const I=c.item;c.item=0;c.aiUseCd=3.2+Math.random()*2.4;
+    const ahead=pos+playerZ-c.z,near=Math.abs(ahead)<segL*32;
+    let target=null,targetPeer='';
+    if(near&&Math.abs(px-c.o)<1.05){target={z:pos+playerZ,o:px};targetPeer=myId}
+    for(const r of remotes){const q=r.presence;if(!q||q.cid!==cid||q.st!=='play')continue;const d=q.pos-c.z;if(d>0&&d<segL*32&&Math.abs(q.px-c.o)<1.05&&(!target||d<Math.abs(target.z-c.z))){target={z:q.pos,o:q.px};targetPeer=r.peer}}
+    const sendHit=kind=>{if(targetPeer&&targetPeer!==myId)atq.push({to:targetPeer,id:Date.now()+Math.random(),kind});else if(targetPeer===myId&&state==='play'&&star<=0){if(kind==='shell'){crDamageFlash();crash=Math.max(crash,.65);speed*=.72;bang();shake=.3}else if(kind==='lightning'){crDamageFlash();mini=4;speed*=.62;bang();msg='ÉCLAIR !';msgT=1.2}else if(kind==='glue'){glueT=.85;speed=0;crash=0;msg='GLUE ! ARRÊT';msgT=1.2}else if(kind==='missile'){if(antiMissile>0){antiMissile=0;msg='MISSILE INTERCEPTÉ !';msgT=1.5}else{crDamageFlash();crash=Math.max(crash,.9);speed*=.55;bang();shake=.4;msg='TOUCHÉ PAR MISSILE !';msgT=1.4}}}};
+    if(I===1)c.sp=Math.min(MAX*1.08,Math.max(c.sp,MAX*.82));
+    else if(I===2||I===5||I===11){const k=I===2?'b':I===5?'o':'y',id='AI-'+myId+'-'+Math.random().toString(36).slice(2,9);objs.push({k,z:Math.max(0,c.z-segL*1.8),o:c.o,w:k==='b'?.22:.38,sp:0,id,tt:flash,ai:1,owner:myId})}
+    else if(I===3||I===12){if(target)sendHit(I===3?'shell':'missile')}
+    else if(I===4){c.invincible=5}
+    else if(I===6){c.gunT=4}
+    else if(I===7){c.musk=4;c.sp=Math.max(c.sp,MAX*.9)}
+    else if(I===8)c.hp=Math.min(100,(c.hp||70)+25);
+    else if(I===9)c.armor=60;
+    else if(I===10){if(target)sendHit('lightning')}
+    else if(I===13)c.antiMissile=10;
+   }
+  }
   __crAddSegmentCar(Math.floor(c.z/segL),c);
   const dz=c.z-(pos+playerZ),pd=c.pdz;c.pdz=dz;if(pd>0&&dz<=0&&state=='play'&&!c.rp&&Math.abs(px-c.o)<.9&&flash-lastPass>.12){lastPass=flash;passSfx(Math.min(1,speed/MAX))}
   if(crash>0||state!='play'||musk>0||c.hit>0||pd===undefined)continue;

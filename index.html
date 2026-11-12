@@ -2329,7 +2329,8 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
    if(b.born!=null&&flash-b.born>(b.life||2.4))dead=true;
   }
   if(!dead&&b.k==='s'&&b.ai&&state==='play'&&crash<=0&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<segL*.8&&Math.abs(b.o-px)<.34){crash=.85;speed*=.82;bang();voice();shake=.4;if(b.id)eatQ.push(b.id);dead=true}
-  if(b.k=='g'){const z0=b.z;b.z+=b.sp*dt;for(const c of cars)if(c.z>0&&!(c.hit>0&&!c.b)&&c.z>=z0-segL*.5&&c.z<=b.z+segL*.5&&Math.abs(c.o-b.o)<(c.b?.22:.18)){hitCar(c,4,Math.sign(c.o-b.o)||1);dead=true;break}}\n  if(!dead&&b.k==='g'&&b.ai&&state==='play'&&crash<=0&&musk<=0&&star<=0&&b.z>=pos+playerZ-segL*.5&&b.z<=pos+playerZ+segL*.5&&Math.abs(b.o-px)<.22){crash=.75;speed*=.85;bang();shake=.35;if(b.id)eatQ.push(b.id);dead=true}
+  if(b.k=='g'){const z0=b.z;b.z+=b.sp*dt;for(const c of cars)if(c.z>0&&!(c.hit>0&&!c.b)&&c.z>=z0-segL*.5&&c.z<=b.z+segL*.5&&Math.abs(c.o-b.o)<(c.b?.22:.18)){hitCar(c,4,Math.sign(c.o-b.o)||1);dead=true;break}}
+  if(!dead&&b.k==='g'&&b.ai&&state==='play'&&crash<=0&&musk<=0&&star<=0&&b.z>=pos+playerZ-segL*.5&&b.z<=pos+playerZ+segL*.5&&Math.abs(b.o-px)<.22){crash=.75;speed*=.85;bang();shake=.35;if(b.id)eatQ.push(b.id);dead=true}
   if((b.k!='b'&&b.k!='o'&&b.k!='x'&&b.z<pos-segL*5)||b.z>=trackLen||(b.tt&&flash-b.tt>(b.k=='x'?.5:b.k=='g'?1.5:15)))dead=true;
   if(!dead&&(b.k=='b'||b.k=='o')){const oil=b.k=='o';for(const c of cars)if(!c.rp&&c.z>0&&!(c.hit>0)&&Math.abs(c.z-b.z)<segL*.6&&Math.abs(c.o-b.o)<(oil?.28:.2)){hitCar(c,oil?2:1);if(!oil)dead=true;break}
    if(!dead&&state=='play'&&!crash&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<segL*.8&&Math.abs(px-b.o)<(oil?.28:.17)){if(oil){if(slip<=0){slip=1.6;squeal();shake=.2}}else{crash=.9;bang();voice();shake=.3;dead=true}}}

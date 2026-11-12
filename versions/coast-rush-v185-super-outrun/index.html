@@ -1874,22 +1874,23 @@ function crDrawHUD(){
  const wi={clear:'\u2600\uFE0F',cloud:'\u2601\uFE0F',rain:'\uD83C\uDF27\uFE0F',snow:'\u2744\uFE0F',fog:'\uD83C\uDF2B\uFE0F'}[wx]||'';
  let nm=String((th&&th.n)||''),fs=L,maxw=W*.19-24;ctx.font='bold '+fs+'px '+FT;while(fs>8&&ctx.measureText(nm).width>maxw){fs--;ctx.font='bold '+fs+'px '+FT}
  T(nm,c3,56,fs,'#fff');
-  // Barre de position multijoueur universelle : tous les joueurs humains actifs,
-  // quel que soit le mode ou l'identifiant de circuit (OutRun / Super OutRun inclus).
+  // Barre de progression du circuit complet : début à gauche, arrivée à droite.
+  // Tous les marqueurs sont positionnés sur la longueur totale du circuit courant.
   const distancePeers=MP?remotes.filter(r=>{const q=r&&r.presence;return q&&q.mp&&q.st!=='over'&&Number.isFinite(Number(q.pos))}):[];
   if(MP){
-   const bx=W*.28,bw=W*.44,by=64,center=bx+bw/2,range=segL*18;
-   ctx.fillStyle='#000b';rrp(bx,by-5,bw,10,5);ctx.fill();
-   ctx.strokeStyle='#ffffff88';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(bx+5,by);ctx.lineTo(bx+bw-5,by);ctx.stroke();
-   ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(center,by,3.2,0,Math.PI*2);ctx.fill();
-   
-   for(const r of distancePeers){const q=r.presence,delta=Number(q.pos)-(pos+playerZ),x=Math.max(bx+7,Math.min(bx+bw-7,center+delta/range*(bw/2-9)));
-    ctx.fillStyle=q.c||'#55dfff';ctx.beginPath();ctx.arc(x,by,2.8,0,Math.PI*2);ctx.fill();
-    const meters=Math.round(Math.abs(delta)/20),direction=delta>0?'AV.':delta<0?'RET.':'ÉGALITÉ';
-    const label=(q.n||'JOUEUR').slice(0,7)+' '+direction+' '+meters+'m';
-    T(label,x,by+11,5.5,q.c||'#bfeeff','center');
+   const bx=W*.22,bw=W*.56,by=4,barH=3,fullLen=Math.max(1,Number(trackLen)||1);
+   const progress=v=>Math.max(0,Math.min(1,Number(v)/fullLen));
+   ctx.fillStyle='#000b';rrp(bx,by,bw,barH,2);ctx.fill();
+   ctx.fillStyle='#ffffffaa';rrp(bx,by,bw,1,1);ctx.fill();
+   // Repères de départ et d'arrivée.
+   ctx.fillStyle='#ffffffcc';ctx.fillRect(bx,by-1,1,barH+2);ctx.fillRect(bx+bw-1,by-1,1,barH+2);
+   // Ta position : jaune. Les autres joueurs : couleur de leur pseudo.
+   const ownX=bx+bw*progress(pos+playerZ);
+   ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(ownX,by+barH/2,3.2,0,Math.PI*2);ctx.fill();
+   for(const r of distancePeers){
+    const q=r.presence,x=bx+bw*progress(q.pos);
+    ctx.fillStyle=q.c||'#55dfff';ctx.beginPath();ctx.arc(x,by+barH/2,2.7,0,Math.PI*2);ctx.fill();
    }
-   if(!distancePeers.length)T('EN ATTENTE',center,by+11,5.5,'#bfeeff','center');
   }
 
  if(msgT>0&&msg){ctx.globalAlpha=Math.min(1,msgT*2);T(String(msg),W/2,H*.34,15,'#ffd400','center')}

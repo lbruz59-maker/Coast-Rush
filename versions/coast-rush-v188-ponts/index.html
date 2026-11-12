@@ -756,6 +756,12 @@ segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(sta
  if(i%13===6)s.sp.push({t:'L',pe:lc[2],o:-sd*(((i*11)%5)<4?1.3+((i*3)%9)*.07:2.3+(i%5)*.1),ph:i});
  const mt=lc[0]=='matter';if(i%(mt?29:94)===21)s.sp.push({t:'M',k:lc[0],o:(i%94<47?-1:1)*(mt?5.4:4.8),z:mt?3.4:1});
  if(i%82===17){const zl=ZL[th.n];if(zl)s.sp.push({t:'Z',k:zl[(i/41|0)%zl.length],o:(i%82<41?1:-1)*(5.2+(i%5)*.12)})}
+ // V196 : monuments emblématiques, gondoles, ports et feuillage saisonnier.
+ if(i%190===92&&!s.tun&&!s.loop){const landmark={PARIS:'arch',BARCELONE:'sagrada',VENISE:'basil',ROME:'colo','NEW YORK':'liberty',LONDRES:'ben','LE CAIRE':'pyr',SYDNEY:'opera',TOKYO:'ttower',DUBAÏ:'burj',LILLE:'belf'}[th.n];if(landmark)s.sp.push({t:'M',k:landmark,o:(i%380<190?-1:1)*5.8,z:1.2})}
+ if(th.n==='VENISE'&&i%37===18&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'gon',o:(i%74<37?-1:1)*3.8,z:1.15});
+ const waterPort=['VENISE','BARCELONE','RIO','SYDNEY','COAST','ISLAND','SUNSET','SANTORIN','FJORDS','ISLANDE','AMAZONIE','ÎLE DE LA RÉUNION'];if(waterPort.includes(th.n)&&i%155===70&&!s.tun&&!s.loop)s.sp.push({t:'M',k:'port',o:(i%310<155?-1:1)*7.2,z:1.25});
+ if(th.n==='AUTUMN'&&i%9===4&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'leaf',o:(i%18<9?-1:1)*(2.8+(i%5)*.12),z:.9});
+
  if(s.sea&&BEACH.has(th.n)&&i%37===19)s.sp.push({t:'K',o:-(2.5+(i%4)*.25),ph:i});
  const un=UNI[th.n];if(un)s.sp.forEach((o,q)=>{if(GEN.has(o.t)&&(i*7+q*13)%10<4){o.k=un[((i>>1)+q)%un.length];o.t='D';o.c=BLD.has(o.k)?(th.hc?th.hc[i%th.hc.length]:'#b8603f'):LEAF[th.n]}});
  if(i%3===0)for(const o of s.sp)if(o.t==='h'||o.t==='B'){o.t='D';o.k=lc[3][i%lc[3].length]}s.sp=s.sp.filter((o,q)=>!(o.t==='D'&&BLD.has(o.k)&&((i+q)%2===1)))});
@@ -1177,6 +1183,7 @@ function __crLocalSprite(sp,x,y,sc){
   else if(k=='mill'){Q('#c9b08a',-8,0,-5,34,5,34,8,0);Q('#8a4a2a',-7,34,0,44,7,34);ctx.strokeStyle='#6a4a2a';ctx.lineWidth=s*1.3;ctx.beginPath();for(let j=0;j<4;j++){const a=T*.6+j*1.5708;ctx.moveTo(x,y-36*s);ctx.lineTo(x+Math.cos(a)*28*s,y-36*s-Math.sin(a)*28*s)}ctx.stroke()}
   else if(k=='castle'){R('#8d8070',-26,0,52,26);R('#8d8070',-32,0,10,38);R('#8d8070',22,0,10,38);R('#8d8070',-6,0,12,44);Q('#7a3a2a',-33,38,-27,50,-21,38);Q('#7a3a2a',21,38,27,50,33,38);Q('#7a3a2a',-7,44,0,56,7,44);R('#3a2a20',-3,0,6,9)}
   else if(k=='arch'){R('#b25a34',-34,0,16,44);R('#b25a34',18,0,16,44);Q('#b25a34',-34,44,-30,56,30,56,34,44,18,38,-18,38)}
+  else if(k=='port'){R('#d0bda0',-62,0,124,7);R('#8a9aa8',-58,7,116,3);for(let j=0;j<5;j++){R('#d8c9ae',-54+j*25,7,3,34+(j%2)*10);R('#f0e5d2',-58+j*25,39+(j%2)*10,12,3)}R('#a8b7c2',-72,0,14,22);R('#a8b7c2',58,0,14,22);R('#fff',-45,16,88,2);R('#e8e0d0',-38,22,76,2)}
   else if(k=='needle'){Q('#dfe6ee',-1.5,0,-3,42,3,42,1.5,0);E('#dfe6ee',0,48,16,3.2);E('#9fd0ff',0,51,9,3.2);R('#dfe6ee',-.8,52,1.6,14)}
   else if(k=='campa'){R('#b8503a',-5,0,10,56);R('#8a3a2a',-6,56,12,2);Q('#4a8a6a',-5.5,58,0,76,5.5,58);R('#d8b050',-.4,76,.8,5);R('#7a2a1a',-2,44,4,6)}
   else if(k=='blued'){R('#f8f8fc',-16,0,32,16);E('#2a6ad0',0,16,9,7);R('#2a6ad0',-.3,23,.6,5);R('#f8f8fc',12,0,7,26);Q('#2a6ad0',11.5,26,15.5,34,19.5,26);R('#2a6ad0',-12,4,5,8)}
@@ -2015,8 +2022,8 @@ function __crDrawOverpasses(vis){
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
   // Hauteur plus importante : le pont doit être clairement séparé de la chaussée.
-  const hA=Math.max(12,wa*3.5),hB=Math.max(5,wb*3.5);
-  const fasciaA=Math.max(4,wa*.38),fasciaB=Math.max(2,wb*.38);
+  const hA=Math.max(17,wa*5.2),hB=Math.max(7,wb*5.2);
+  const fasciaA=Math.max(7,wa*.62),fasciaB=Math.max(3,wb*.62);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
@@ -2051,7 +2058,7 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
   // Garde-corps supérieurs continus.
-  const railA=Math.max(5,wa*.58),railB=Math.max(2.5,wb*.58);
+  const railA=Math.max(7,wa*.78),railB=Math.max(3.5,wb*.78);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
   __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
   ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);
@@ -2892,7 +2899,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v195';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v196';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

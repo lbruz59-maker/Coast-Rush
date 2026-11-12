@@ -2809,13 +2809,13 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     const sendHit=kind=>{if(targetPeer&&targetPeer!==myId)atq.push({to:targetPeer,id:Date.now()+Math.random(),kind});else if(targetPeer===myId&&state==='play'&&star<=0){if(kind==='shell'){crDamageFlash();crash=Math.max(crash,.65);speed*=.72;bang();shake=.3}else if(kind==='lightning'){crDamageFlash();mini=4;speed*=.62;bang();msg='ÉCLAIR !';msgT=1.2}else if(kind==='glue'){glueT=.85;speed=0;crash=0;msg='GLUE ! ARRÊT';msgT=1.2}else if(kind==='missile'){if(antiMissile>0){antiMissile=0;msg='MISSILE INTERCEPTÉ !';msgT=1.5}else{crDamageFlash();crash=Math.max(crash,.9);speed*=.55;bang();shake=.4;msg='TOUCHÉ PAR MISSILE !';msgT=1.4}}}};
     if(I===1)c.sp=Math.min(MAX*1.08,Math.max(c.sp,MAX*.82));
     else if(I===2||I===5||I===11){const k=I===2?'b':I===5?'o':'y',id='AI-'+myId+'-'+Math.random().toString(36).slice(2,9);objs.push({k,z:Math.max(0,c.z-segL*1.8),o:c.o,w:k==='b'?.22:.38,sp:0,id,tt:flash,ai:1,owner:myId})}
-    else if(I===3||I===12){if(target&&near)sendHit(I===3?'shell':'missile')}
+    else if(I===3||I===12){if(target)sendHit(I===3?'shell':'missile')}
     else if(I===4){c.invincible=5}
     else if(I===6){c.gunT=4}
     else if(I===7){c.musk=4;c.sp=Math.max(c.sp,MAX*.9)}
     else if(I===8)c.hp=Math.min(100,(c.hp||70)+25);
     else if(I===9)c.armor=60;
-    else if(I===10){if(target&&near)sendHit('lightning')}
+    else if(I===10){if(target)sendHit('lightning')}
     else if(I===13)c.antiMissile=10;
    }
   }

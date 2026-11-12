@@ -2273,7 +2273,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     c.aiItem=pick.k||1+(Math.random()*7|0);pick.off=flash+7;break;
    }
   }
-  if(!MP&&c.aiItem&&c.aiCooldown<=0&&state==='play')__crAIUseItem(c);
+  if(!MP&&c.aiItem&&(c.aiCooldown||0)<=0&&state==='play')__crAIUseItem(c);
   __crAddSegmentCar(Math.floor(c.z/segL),c);
   const dz=c.z-(pos+playerZ),pd=c.pdz;c.pdz=dz;if(pd>0&&dz<=0&&state=='play'&&!c.rp&&Math.abs(px-c.o)<.9&&flash-lastPass>.12){lastPass=flash;passSfx(Math.min(1,speed/MAX))}
   if(crash>0||state!='play'||musk>0||c.hit>0||pd===undefined)continue;

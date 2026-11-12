@@ -1288,7 +1288,7 @@ function drawVehPose(x,y,w,c,v,pose,ph){
 }
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
-function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function __crSpawnSlot(id){let h=2166136261;const v=String(id||'PLAYER');for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h%256}
+function outrunLeaderId(){const candidates=[{id:myId,at:Number(window.__crRoomJoinedAt)||0},...remotes.filter(r=>r&&r.peer&&r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>({id:r.peer,at:Number(r.presence.jAt)||0}))];candidates.sort((a,b)=>a.at-b.at||String(a.id).localeCompare(String(b.id)));return candidates[0]?.id||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function __crSpawnSlot(id){let h=2166136261;const v=String(id||'PLAYER');for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h%256}
 function crSpreadBRPlayer(){if(MODE!==5||!brWrap)return;const k=__crSpawnSlot(myId)%64;pos=brWrap*(k+.5)/64;px=k%2?-.38:.38;pxVel=0;speed=0;}
 function gridStart(){
  // Battle Royale conserve ses départs répartis sur le circuit.

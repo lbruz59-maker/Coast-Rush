@@ -1260,8 +1260,10 @@ function gridStart(){
  // et du délai d'arrivée des présences réseau sur les différents appareils.
  const slot=__crSpawnSlot(myId);
  if(MODE===5){crSpreadBRPlayer();return}
- pos=slot*segL*1.4;
- px=slot%2===0?-.38:.38;
+ const spreadSlot=slot%64;
+ // Répartir les départs sur toute la longueur du circuit, comme en Battle Royale.
+ pos=trackLen*(spreadSlot+.5)/64;
+ px=spreadSlot%2===0?-.38:.38;
  pxVel=0;carTurn=0;speed=0;crash=0;ang=0;
 }
 function finishRace(){rts[raceNo-1]=raceT;state='podium';podT=0;say('Race complete!',1.5,1.1);jingle()}

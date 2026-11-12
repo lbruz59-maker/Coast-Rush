@@ -2770,7 +2770,7 @@ requestAnimationFrame(loop);
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused)return
- if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const p95Now=crFrameSampleCount?crFrameSamples.slice(0,crFrameSampleCount).sort((a,b)=>a-b)[Math.min(crFrameSampleCount-1,Math.ceil(crFrameSampleCount*.95)-1)]:0;const slow=p95Now>50||ema>(isTV?.040:.045),verySlow=p95Now>90,fast=p95Now<25&&ema<(isTV?.022:.025);__crLoadBad=slow?Math.min(3,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1||__crLoadGood>=4){__crLoadBad=0;__crLoadGood=0}}}
+ if(state=='play'&&rawDt>0)ema=ema*.96+rawDt*.04;
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
@@ -2778,6 +2778,9 @@ requestAnimationFrame(loop);
   if(state==='play'&&t-crWindowStart>=1000){
    const span=t-crWindowStart,rafAvg=crRafCount?crRafSum/crRafCount:0,rafMax=crRafMax;
    crFps=crFrames>1?(crFrames-1)*1000/span:0;
+   // Adaptation automatique à la cadence réellement mesurée : priorité au maintien de 60 FPS.
+   if(crFps<60){__crLoadBad=Math.min(3,__crLoadBad+1);__crLoadGood=0;if(__crLoadBad>=1){drawN=Math.max(isTV?60:72,drawN-(crFps<40?14:8));__crLoadBad=0}}
+   else{__crLoadBad=0;__crLoadGood=Math.min(4,__crLoadGood+1);if(__crLoadGood>=4){drawN=Math.min(150,drawN+(isTV?2:4));__crLoadGood=0}}
    crReadNativeFrames();
    const nativeInfo=window.__COAST_RUSH_NATIVE_DISPLAY__||{},hz=Number(nativeInfo.refreshRateHz)||0;
    const work=crPollMs+crUpdateMs+crRenderMs,rafGap=Math.max(0,rafAvg-work),sorted=crFrameSamples.slice(0,crFrameSampleCount).sort((a,b)=>a-b),uSorted=crUpdateSamples.slice(0,crWorkSampleCount).sort((a,b)=>a-b),rSorted=crRenderSamples.slice(0,crWorkSampleCount).sort((a,b)=>a-b),pct=(a,q)=>a.length?a[Math.min(a.length-1,Math.floor((a.length-1)*q))]:0,canvasBytes=cv.width*cv.height*4,heap=(performance.memory&&performance.memory.usedJSHeapSize)||0;
@@ -2889,7 +2892,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v194';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v195';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

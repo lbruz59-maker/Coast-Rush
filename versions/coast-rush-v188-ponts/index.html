@@ -1154,7 +1154,7 @@ const UNI={COAST:['hut','dtp','umb','lmp','ban','gon'],DESERT:['adb','yuc','dun'
 LEAF={COAST:'#3a9a4a',DESERT:'#9a9a4a',ALPS:'#1b6a3a',MEADOW:'#3a9a3a',SUNSET:'#4a6a3a',CITY:'#3a8a4a',NIGHT:'#2a6a5a',CANYON:'#8a8a4a',AUTUMN:'#d8801a',ISLAND:'#2aa05a',PARIS:'#5aa04a',LONDRES:'#3a8a3a',TOKYO:'#f08aa8','NEW YORK':'#4a9a3a',ROME:'#4a8a3a','LE CAIRE':'#6a9a3a',RIO:'#1f9a4a',SYDNEY:'#4a9a5a',MOSCOU:'#2a5a3a','DUBAÏ':'#4a9a4a',LILLE:'#5a9a4a',BARCELONE:'#5a9a3a',VENISE:'#4a8a4a',SANTORIN:'#6a8a4a',FJORDS:'#2a6a3a',VEGAS:'#3a7a4a',ISLANDE:'#6a8a5a',AMAZONIE:'#1f9a3a',PATAGONIE:'#3a6a3a',MEXIQUE:'#6a9a3a','SAINT-POL-SUR-TERNOISE':'#72934f'},
 BLD=new Set(['bkh','brn','adb','skl','mes','dun','bel','ons']),GEN=new Set(['p','c','t','h','l','r','a','n','eu','sk']);
 const AK={sheep:.85,camel:1.4,cow:1.2,deer:.7,ibex:.65,bear:.9,fox:.55,coyote:.6,cat:.45,dog:.75,squirrel:1,hare:.5,pigeon:.55,gull:.6,toucan:.65,parrot:.55,crab:.65,kanga:1.2},MK={blued:1.8,campa:1.3,geys:1.2,church:.68},ZK={tenn:1.6,play:1.8,fair:1.8,gym:1.55,cine:1.4,hotel:1.2,mall:1.65,stad:1.1},
-DK={hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:3,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
+DK={leaf:2.4,hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:3,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
 function __crLocalSprite(sp,x,y,sc){
  const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
  // V186 : limite universelle des sprites locaux géants, sur TOUS les circuits.
@@ -1245,6 +1245,7 @@ function __crLocalSprite(sp,x,y,sc){
  else if(k=='orange'){R('#6a4a3a',-.6,0,1.2,5);E('#3a8a3a',0,8,3.6,3.4);E('#ff9a1a',-1.4,8,.6,.6);E('#ff9a1a',1.2,9,.6,.6)}
  else if(k=='matry'){E('#c8323a',0,3,2,3);E('#f0c090',0,6.6,1.3,1.3);E('#ffd400',0,3,1,1)}
  else if(k=='pumpkin'){E('#ff8a1a',-1.5,1.6,2,1.6);E('#ff8a1a',2,1.2,1.4,1.2)}
+ else if(k=='leaf'){for(let j=0;j<5;j++){ctx.save();ctx.translate(Math.sin(T*1.7+j*2.2)*2+j*1.1,Math.cos(T*1.3+j)*1.4);ctx.rotate(Math.sin(T+j)*.5);Q(['#d94b22','#ef8a24','#d8b52c','#a83b22','#e6bd42'][j],0,0,-2,3,-.5,6,2,5,3,2);ctx.restore()}}
  else if(k=='lamp'){R('#444',-.3,0,.6,9);E('#ff4adf',0,9.6,1.4,1.4)}
  else if(k=='bao'){R('#7a5a40',-3,0,6,12);E(cc,0,15,9,3.6);E('#ffffff22',-2,16,4,1.6)}
  else if(k=='bam'){for(let j=0;j<4;j++){const x2=-3+j*2,h2=16+(j%2)*3;R('#7ab04a',x2,0,.8,h2);E(cc,x2+.4,h2+1,1.8,1)}}
@@ -2022,8 +2023,8 @@ function __crDrawOverpasses(vis){
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
   // Hauteur plus importante : le pont doit être clairement séparé de la chaussée.
-  const hA=Math.max(17,wa*5.2),hB=Math.max(7,wb*5.2);
-  const fasciaA=Math.max(7,wa*.62),fasciaB=Math.max(3,wb*.62);
+  const hA=Math.max(22,wa*6.4),hB=Math.max(9,wb*6.4);
+  const fasciaA=Math.max(10,wa*.88),fasciaB=Math.max(4,wb*.88);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
@@ -2058,7 +2059,7 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
   // Garde-corps supérieurs continus.
-  const railA=Math.max(7,wa*.78),railB=Math.max(3.5,wb*.78);
+  const railA=Math.max(9,wa*.96),railB=Math.max(4.5,wb*.96);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
   __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
   ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);
@@ -2899,7 +2900,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v196';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v197';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

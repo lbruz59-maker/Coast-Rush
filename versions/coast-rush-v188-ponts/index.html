@@ -757,10 +757,10 @@ segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(sta
  const mt=lc[0]=='matter';if(i%(mt?29:94)===21)s.sp.push({t:'M',k:lc[0],o:(i%94<47?-1:1)*(mt?5.4:4.8),z:mt?3.4:1});
  if(i%82===17){const zl=ZL[th.n];if(zl)s.sp.push({t:'Z',k:zl[(i/41|0)%zl.length],o:(i%82<41?1:-1)*(5.2+(i%5)*.12)})}
  // V196 : monuments emblématiques, gondoles, ports et feuillage saisonnier.
- if(i%190===92&&!s.tun&&!s.loop){const landmark={PARIS:'arch',BARCELONE:'sagrada',VENISE:'basil',ROME:'colo','NEW YORK':'liberty',LONDRES:'ben','LE CAIRE':'pyr',SYDNEY:'opera',TOKYO:'ttower',DUBAÏ:'burj',LILLE:'belf'}[th.n];if(landmark)s.sp.push({t:'M',k:landmark,o:(i%380<190?-1:1)*5.8,z:1.2})}
- if(th.n==='VENISE'&&i%37===18&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'gon',o:(i%74<37?-1:1)*3.8,z:1.15});
- const waterPort=['VENISE','BARCELONE','RIO','SYDNEY','COAST','ISLAND','SUNSET','SANTORIN','FJORDS','ISLANDE','AMAZONIE','ÎLE DE LA RÉUNION'];if(waterPort.includes(th.n)&&i%155===70&&!s.tun&&!s.loop)s.sp.push({t:'M',k:'port',o:(i%310<155?-1:1)*7.2,z:1.25});
- if(th.n==='AUTUMN'&&i%9===4&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'leaf',o:(i%18<9?-1:1)*(2.8+(i%5)*.12),z:.9});
+ if(i%95===46&&!s.tun&&!s.loop){const landmark={PARIS:'arch',BARCELONE:'sagrada',VENISE:'basil',ROME:'colo','NEW YORK':'liberty',LONDRES:'ben','LE CAIRE':'pyr',SYDNEY:'opera',TOKYO:'ttower',DUBAÏ:'burj',LILLE:'belf'}[th.n];if(landmark)s.sp.push({t:'M',k:landmark,o:(i%380<190?-1:1)*5.8,z:1.2})}
+ if(th.n==='VENISE'&&i%29===14&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'gon',o:(i%74<37?-1:1)*3.8,z:1.15});
+ const waterPort=['VENISE','BARCELONE','RIO','SYDNEY','COAST','ISLAND','SUNSET','SANTORIN','FJORDS','ISLANDE','AMAZONIE','ÎLE DE LA RÉUNION'];if(waterPort.includes(th.n)&&i%95===46&&!s.tun&&!s.loop)s.sp.push({t:'M',k:'port',o:(i%310<155?-1:1)*7.2,z:1.25});
+ if(th.n==='AUTUMN'&&i%6===3&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'leaf',o:(i%18<9?-1:1)*(2.8+(i%5)*.12),z:.9});
 
  if(s.sea&&BEACH.has(th.n)&&i%37===19)s.sp.push({t:'K',o:-(2.5+(i%4)*.25),ph:i});
  const un=UNI[th.n];if(un)s.sp.forEach((o,q)=>{if(GEN.has(o.t)&&(i*7+q*13)%10<4){o.k=un[((i>>1)+q)%un.length];o.t='D';o.c=BLD.has(o.k)?(th.hc?th.hc[i%th.hc.length]:'#b8603f'):LEAF[th.n]}});
@@ -1159,7 +1159,12 @@ function __crLocalSprite(sp,x,y,sc){
  const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
  // V186 : limite universelle des sprites locaux géants, sur TOUS les circuits.
  // Les monuments/bâtiments restent lisibles mais ne peuvent plus remplir l'écran.
- if(t==='M'||t==='Z'||t==='D'||t==='K')s=Math.min(s,H*.003);
+ // V198 : limites distinctes par famille. Le plafond uniforme de 0,3 % rendait
+ // monuments, ports, gondoles et feuilles pratiquement invisibles.
+ if(t==='M')s=Math.min(s,H*.10);
+ else if(t==='Z')s=Math.min(s,H*.075);
+ else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.022:.018));
+ else if(t==='K')s=Math.min(s,H*.035);
  const T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
  const R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a*s*F-(F<0?w*s:0),y-(b+h)*s,w*s,h*s)},E=(c,a,b,rx,ry)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x+a*s*F,y-b*s,rx*s,ry*s,0,0,7);ctx.fill()},Q=(c,...p)=>{ctx.fillStyle=c;ctx.beginPath();for(let i=0;i<p.length;i+=2){const X=x+p[i]*s*F,Y=y-p[i+1]*s;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.fill()};
  if(t=='M'){const k=sp.k;
@@ -2900,7 +2905,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v197';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v198';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

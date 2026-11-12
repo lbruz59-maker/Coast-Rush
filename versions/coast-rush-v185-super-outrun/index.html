@@ -3034,3 +3034,29 @@ if('serviceWorker' in navigator){
  });
 }
 </script></body></html>
+
+/* V190 — zones de clic strictement limitées aux deux cases du visuel de référence. */
+#crMenuHotspots .music,#crMenuHotspots .sound{
+ left:93.6%!important;width:2.1%!important;height:3.4%!important;
+ border:0!important;border-radius:2px!important;background:transparent!important;
+ box-shadow:none!important;clip-path:none!important;
+}
+#crMenuHotspots .music{top:5.25%!important}
+#crMenuHotspots .sound{top:10.2%!important}
+#crMenuHotspots .music::before,#crMenuHotspots .sound::before{
+ left:0!important;right:auto!important;top:0!important;
+ width:100%!important;height:100%!important;max-height:none!important;
+ box-sizing:border-box!important;border:1px solid rgba(185,244,255,.8)!important;
+ border-radius:3px!important;background:transparent!important;box-shadow:none!important;
+}
+#crMenuHotspots .music[aria-pressed="true"]::before,
+#crMenuHotspots .sound[aria-pressed="true"]::before{
+ background:rgba(0,238,255,.82)!important;
+ box-shadow:inset 0 0 0 1px #c9fbff,0 0 8px #00cfff!important;
+}
+#crMenuHotspots .music[aria-pressed="false"]::before,
+#crMenuHotspots .sound[aria-pressed="false"]::before{background:transparent!important;box-shadow:none!important}
+#crMenuHotspots .music:focus,#crMenuHotspots .sound:focus,
+#crMenuHotspots .music.cr-active,#crMenuHotspots .sound.cr-active{
+ outline:none!important;background:transparent!important;box-shadow:none!important;
+}

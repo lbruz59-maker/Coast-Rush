@@ -2008,58 +2008,59 @@ function __crBridges(vis,bs){
  }
 }
 function __crDrawOverpasses(vis){
- // Pont routier en franchissement : tablier transversal, sous-face sombre,
- // poutres, culées latérales et garde-corps. La chaussée reste entièrement libre.
- for(const s of vis){
-  if(s.overpass!==1||!s.a||!s.b)continue;
-  const a=s.a,b=s.b,ft=s.ft||0;
-  const wa=Math.max(2,a.w),wb=Math.max(1,b.w);
-  const leftA=a.x-wa*1.52,rightA=a.x+wa*1.52;
-  const leftB=b.x-wb*1.52,rightB=b.x+wb*1.52;
-  const hA=Math.max(4,Math.min(wa*.58,wa*1.05));
-  const hB=Math.max(2,Math.min(wb*.58,wb*1.05));
-  const thickA=Math.max(2,wa*.16),thickB=Math.max(1,wb*.16);
+ // Ponts routiers cohérents : tablier haut, chaussées d'accès latérales,
+ // piles, sous-face et garde-corps. Le gabarit de la route principale reste libre.
+ for(let n=0;n<vis.length;n++){
+  const s=vis[n];if(s.overpass!==1||!s.a||!s.b)continue;
+  const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
+  const leftA=a.x-wa*1.58,rightA=a.x+wa*1.58,leftB=b.x-wb*1.58,rightB=b.x+wb*1.58;
+  // Hauteur plus importante : le pont doit être clairement séparé de la chaussée.
+  const hA=Math.max(8,wa*2.05),hB=Math.max(3,wb*2.05);
+  const fasciaA=Math.max(3,wa*.28),fasciaB=Math.max(1.5,wb*.28);
+  const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
-  const fasciaA=Math.max(2,wa*.23),fasciaB=Math.max(1,wb*.23);
-  const deckTopA=underA-fasciaA,deckTopB=underB-fasciaB;
-  ctx.save();
-  ctx.globalAlpha=Math.max(.45,1-ft*.5);
-  // Piles/culées massives sur les bas-côtés, jamais au milieu de la route.
-  const pOuterA=wa*.25,pOuterB=wb*.25;
-  __crPoly4(fg('#777d82',ft),a.x-wa*1.43,underA,a.x-wa*1.15,underA,b.x-wb*1.15,b.y,b.x-wb*1.43,b.y);
-  __crPoly4(fg('#aeb3b7',ft),a.x-wa*1.43,underA,a.x-wa*1.31,underA,b.x-wb*1.31,b.y,b.x-wb*1.43,b.y);
-  __crPoly4(fg('#777d82',ft),a.x+wa*1.15,underA,a.x+wa*1.43,underA,b.x+wb*1.43,b.y,b.x+wb*1.15,b.y);
-  __crPoly4(fg('#aeb3b7',ft),a.x+wa*1.31,underA,a.x+wa*1.43,underA,b.x+wb*1.43,b.y,b.x+wb*1.31,b.y);
-  // Sous-face profonde du tablier, visible quand le joueur approche.
-  __crPoly4(fg('#34383c',ft),leftA,underA,rightA,underA,rightB,underB,leftB,underB);
-  // Poutres transversales sous le tablier.
-  for(const q of [.22,.5,.78]){
-   const yA=underA+fasciaA*q,yB=underB+fasciaB*q;
-   __crPoly4(fg('#4b5054',ft),leftA,yA,leftA+wa*.22,yA,leftB+wb*.22,yB,leftB,yB);
-   __crPoly4(fg('#4b5054',ft),rightA-wa*.22,yA,rightA,yA,rightB,yB,rightB-wb*.22,yB);
+  ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
+  // Chaussées d'accès surélevées qui partent du tablier vers la gauche et la droite.
+  // Elles sont dessinées hors de la route du joueur et convergent vers le pont.
+  const rampOuterA=Math.max(W*.78,wa*5.2),rampOuterB=Math.max(W*.78,wb*5.2);
+  const rampY_A=deckTopA+fasciaA*.92,rampY_B=deckTopB+fasciaB*.92;
+  __crPoly4(fg('#343b43',ft),0,rampY_A,leftA,rampY_A,leftB,rampY_B,0,rampY_B);
+  __crPoly4(fg('#343b43',ft),rightA,rampY_A,W,rampY_A,W,rampY_B,rightB,rampY_B);
+  // Bandes claires de rive et glissières des deux chaussées d'accès.
+  for(const side of [-1,1]){
+   const xA=side<0?0:rightA,xB=side<0?0:rightB;
+   const eA=side<0?leftA:rightA,eB=side<0?leftB:rightB;
+   ctx.strokeStyle=fg('#d5d9dc',ft);ctx.lineWidth=Math.max(1,wa*.055);
+   ctx.beginPath();ctx.moveTo(xA,rampY_A-fasciaA*.2);ctx.lineTo(eA,rampY_A-fasciaA*.2);ctx.lineTo(eB,rampY_B-fasciaB*.2);ctx.lineTo(xB,rampY_B-fasciaB*.2);ctx.stroke();
+   ctx.strokeStyle=fg('#78838c',ft);ctx.lineWidth=Math.max(1,wa*.07);
+   ctx.beginPath();ctx.moveTo(xA,rampY_A-fasciaA*.75);ctx.lineTo(eA,rampY_A-fasciaA*.75);ctx.lineTo(eB,rampY_B-fasciaB*.75);ctx.lineTo(xB,rampY_B-fasciaB*.75);ctx.stroke();
+   for(let k=0;k<=10;k++){const u=k/10,xx=lerp(xA,eA,u),yy=lerp(rampY_A-fasciaA*.75,rampY_A-fasciaA*.2,u);ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(lerp(xB,eB,u),lerp(rampY_B-fasciaB*.75,rampY_B-fasciaB*.2,u));ctx.stroke()}
   }
-  // Grande poutre frontale en béton, caractéristique d'un vrai passage inférieur.
-  __crPoly4(fg('#9da2a6',ft),leftA,deckTopA,rightA,deckTopA,rightB,deckTopB,leftB,deckTopB);
-  __crPoly4(fg('#c0c4c7',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.22,leftB,deckTopB+fasciaB*.22,leftB,deckTopB);
-  __crPoly4(fg('#555b60',ft),leftA,deckTopA+fasciaA*.68,rightA,deckTopA+fasciaA*.68,rightB,deckTopB+fasciaB*.68,leftB,deckTopB+fasciaB*.68);
-  __crPoly4(fg('#777d82',ft),leftA,deckTopA+fasciaA*.82,rightA,deckTopA+fasciaA*.82,rightB,deckTopB+fasciaB*.82,leftB,deckTopB+fasciaB*.82);
-  // Garde-corps sur le dessus du pont, avec potelets réguliers.
-  const railH_A=Math.max(2,wa*.22),railH_B=Math.max(1,wb*.22);
-  __crPoly4(fg('#d0d4d7',ft),leftA,deckTopA-railH_A,rightA,deckTopA-railH_A,rightB,deckTopB-railH_B,leftB,deckTopB-railH_B);
-  __crPoly4(fg('#858b90',ft),leftA,deckTopA-railH_A*.32,rightA,deckTopA-railH_A*.32,rightB,deckTopB-railH_B*.32,leftB,deckTopB-railH_B*.32);
-  for(let n=0;n<=18;n++){
-   const u=n/18,xA=leftA+(rightA-leftA)*u,xB=leftB+(rightB-leftB)*u;
-   const yA=deckTopA-railH_A,yB=deckTopB-railH_B;
-   ctx.strokeStyle=fg('#687078',ft);ctx.lineWidth=Math.max(1,wa*.018);
-   ctx.beginPath();ctx.moveTo(xA,yA);ctx.lineTo(xA,deckTopA);ctx.stroke();
-  }
-  // Signal de hauteur libre suspendu au centre, comme sur les vrais ponts.
-  if(wa>18){
-   const cx=(a.x+b.x)*.5,cy=(deckTopA+deckTopB)*.5+fasciaA*.43,rr=Math.max(3,Math.min(wa*.105,18));
+  // Culées latérales et piles épaisses, sans pilier au milieu de la chaussée.
+  __crPoly4(fg('#777d82',ft),a.x-wa*1.48,underA,a.x-wa*1.25,underA,b.x-wb*1.25,b.y,b.x-wb*1.48,b.y);
+  __crPoly4(fg('#aeb3b7',ft),a.x-wa*1.36,underA,a.x-wa*1.25,underA,b.x-wb*1.25,b.y,b.x-wb*1.36,b.y);
+  __crPoly4(fg('#777d82',ft),a.x+wa*1.25,underA,a.x+wa*1.48,underA,b.x+wb*1.48,b.y,b.x+wb*1.25,b.y);
+  __crPoly4(fg('#aeb3b7',ft),a.x+wa*1.25,underA,a.x+wa*1.36,underA,b.x+wb*1.36,b.y,b.x+wb*1.25,b.y);
+  // Sous-face et poutres visibles sous le tablier.
+  __crPoly4(fg('#292e33',ft),leftA,underA,rightA,underA,rightB,underB,leftB,underB);
+  for(const q of [.2,.5,.8]){const yA=underA+fasciaA*q,yB=underB+fasciaB*q;
+   __crPoly4(fg('#4b5157',ft),leftA,yA,leftA+wa*.2,yA,leftB+wb*.2,yB,leftB,yB);
+   __crPoly4(fg('#4b5157',ft),rightA-wa*.2,yA,rightA,yA,rightB,yB,rightB-wb*.2,yB)}
+  // Tablier en béton, bande de roulement et nez de pont.
+  __crPoly4(fg('#858d94',ft),leftA,deckTopA,rightA,deckTopA,rightB,deckTopB,leftB,deckTopB);
+  __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
+  __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
+  // Garde-corps supérieurs continus.
+  const railA=Math.max(3,wa*.32),railB=Math.max(1.5,wb*.32);
+  __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
+  __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
+  ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);
+  for(let k=0;k<=20;k++){const u=k/20,xA=lerp(leftA,rightA,u),xB=lerp(leftB,rightB,u);ctx.beginPath();ctx.moveTo(xA,deckTopA-railA);ctx.lineTo(xA,deckTopA);ctx.stroke()}
+  // Panneau de hauteur libre sur la face du pont.
+  if(wa>22){const cx=(a.x+b.x)*.5,cy=(deckTopA+deckTopB)*.5+fasciaA*.48,rr=Math.max(4,Math.min(wa*.11,20));
    ctx.fillStyle=fg('#f8f8f5',ft);ctx.beginPath();ctx.arc(cx,cy,rr,0,Math.PI*2);ctx.fill();
-   ctx.strokeStyle=fg('#d52d2d',ft);ctx.lineWidth=Math.max(1.5,rr*.18);ctx.stroke();
-   ctx.fillStyle=fg('#202326',ft);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.max(5,rr*.72)+'px Arial';ctx.fillText('4,0',cx,cy-rr*.08);
-   ctx.font='bold '+Math.max(3,rr*.38)+'px Arial';ctx.fillText('M',cx,cy+rr*.48);
+   ctx.strokeStyle=fg('#d52d2d',ft);ctx.lineWidth=Math.max(1.5,rr*.17);ctx.stroke();
+   ctx.fillStyle=fg('#202326',ft);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.max(5,rr*.7)+'px Arial';ctx.fillText('4,0',cx,cy-rr*.08);ctx.font='bold '+Math.max(3,rr*.36)+'px Arial';ctx.fillText('M',cx,cy+rr*.48)
   }
   ctx.restore();
  }

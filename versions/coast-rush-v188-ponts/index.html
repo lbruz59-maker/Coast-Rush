@@ -588,7 +588,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 const __crBridgePalettes={stone:['#b7a58a','#65584a','#d1bea0','#a99c88'],urban:['#aab6c2','#465563','#dce4ec','#555e68'],coast:['#d7e0e8','#59636c','#657582','#505a64'],desert:['#c6a06b','#715338','#e4c18c','#8c6948'],wood:['#92704b','#493b2b','#c49a65','#66513a'],neon:['#5b91a8','#263b55','#8bd4e8','#273648'],suspension:['#7f929c','#34434c','#c2d0d8','#3e4d56'],steel:['#8796a5','#34414d','#c2d0d8','#3c4957'],modern:['#aeb8c2','#46515c','#edf1f5','#56616c']};
 
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
-let drawN=105;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
+let drawN=150;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
 if(isTV)document.documentElement.classList.add('tv');
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
@@ -1840,25 +1840,25 @@ function deco(sp,x,y,sc){
 const __crDecoGroupCache=new Map();
 let __crDecoGroupBytes=0,__crDecoGroupHits=0,__crDecoGroupMisses=0,__crDecoGroupDrawCalls=0;
 let __crDecoGroupFallbacks=0,__crDecoGroupSprites=0;
-function __crDrawDecoGroup(seg,baseX,baseY,sc){
+function __crDrawDecoGroup(seg,baseX,baseY,sc,spriteBoost=1){
  const sprites=seg.sp||[];
  if(!sprites.length)return;
- const qsc=Math.round(sc*64)/64; // quantification plus large = réutilisation du cache entre images
- if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ const offsetSc=sc,qsc=Math.round(sc*spriteBoost*64)/64; // taille des sprites séparée de leur position sur le bas-côté
+ if(qsc<=0){for(const sp of sprites)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
  const stat=[],live=[];
  for(const sp of sprites){
   if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);
   else live.push(sp);
  }
  // Animations, événements et éléments dépendants du temps : rendu natif inchangé.
- for(const sp of live)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);
+ for(const sp of live)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);
  if(!stat.length)return;
  // Signature recalculée : supporte aussi les segments dont la liste de décors évolue.
  let sig='';
  try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0].join(':')).join(';')}
- catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
- const key=[seg.i,sig,qsc,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
- const ratio=sc/qsc;
+ catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
+ const key=[seg.i,sig,qsc,Math.round(offsetSc*64)/64,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
+ const ratio=(sc*spriteBoost)/qsc;
  let entry=__crDecoGroupCache.get(key);
  if(entry){
   __crDecoGroupCache.delete(key);__crDecoGroupCache.set(key,entry);__crDecoGroupHits++;
@@ -1867,18 +1867,18 @@ function __crDrawDecoGroup(seg,baseX,baseY,sc){
  }
  __crDecoGroupMisses++;
  const radius=Math.ceil(qsc*3200*H/2*2.7)+4;
- if(radius>560){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ if(radius>560){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
  let minX=Infinity,maxX=-Infinity;
- for(const sp of stat){const ox=qsc*sp.o*roadW*160;minX=Math.min(minX,ox-radius);maxX=Math.max(maxX,ox+radius)}
+ for(const sp of stat){const ox=offsetSc*sp.o*roadW*160;minX=Math.min(minX,ox-radius);maxX=Math.max(maxX,ox+radius)}
  const width=Math.ceil(maxX-minX)+2,height=radius*2+2;
- if(width>2048||height>1200){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ if(width>2048||height>1200){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
  const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
  const cacheCtx=canvas.getContext('2d');
- if(!cacheCtx){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
+ if(!cacheCtx){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
  const liveCtx=ctx,anchorY=radius+2;
  try{
   ctx=cacheCtx;ctx.setTransform(1,0,0,1,0,0);
-  for(const sp of stat)decoRaster(sp,-minX+1+qsc*sp.o*roadW*160,anchorY,qsc);
+  for(const sp of stat)decoRaster(sp,-minX+1+offsetSc*sp.o*roadW*160,anchorY,qsc);
  }finally{ctx=liveCtx}
  entry={canvas,minX:minX-1,anchorY,width,height,bytes:width*height*4,sprites:stat.length};
  __crDecoGroupCache.set(key,entry);__crDecoGroupBytes+=entry.bytes;__crDecoGroupSprites+=entry.sprites;
@@ -2013,9 +2013,9 @@ function __crDrawOverpasses(vis){
  for(let n=0;n<vis.length;n++){
   const s=vis[n];if(s.overpass!==1||!s.a||!s.b)continue;
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
-  const leftA=a.x-wa*1.58,rightA=a.x+wa*1.58,leftB=b.x-wb*1.58,rightB=b.x+wb*1.58;
+  const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
   // Hauteur plus importante : le pont doit être clairement séparé de la chaussée.
-  const hA=Math.max(10,wa*2.8),hB=Math.max(4,wb*2.8);
+  const hA=Math.max(12,wa*3.5),hB=Math.max(5,wb*3.5);
   const fasciaA=Math.max(4,wa*.38),fasciaB=Math.max(2,wb*.38);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
@@ -2051,7 +2051,7 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
   // Garde-corps supérieurs continus.
-  const railA=Math.max(4,wa*.46),railB=Math.max(2,wb*.46);
+  const railA=Math.max(5,wa*.58),railB=Math.max(2.5,wb*.58);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
   __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
   ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);
@@ -2069,7 +2069,7 @@ function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
  renderBackdrop();
  const bs=segs[Math.floor(pos/segL)%segs.length],bp=(pos%segL)/segL,ps=segs[Math.floor((pos+playerZ)/segL)%segs.length],roadProgress=((pos+playerZ)%segL)/segL;
- const cy=camH+lerp(ps.y1,ps.y2,roadProgress);inTunnel=!!ps.tun;let x=0,dx=-bs.curve*bp,maxY=H;const DN=window.__CR_LITE?Math.min(drawN,58):drawN;const N=segs.length,vis=__crRenderVisible,forkActive=fk();vis.length=0;
+ const cy=camH+lerp(ps.y1,ps.y2,roadProgress);inTunnel=!!ps.tun;let x=0,dx=-bs.curve*bp,maxY=H;const DN=drawN;const N=segs.length,vis=__crRenderVisible,forkActive=fk();vis.length=0;
  for(let n=0;n<DN&&bs.i+n<N;n++){const s=segs[bs.i+n],lz=0,z1=s.i*segL+lz-pos,z2=z1+segL,cx=px*roadW;
   const a=__crProjectPoint(s.__crA||(s.__crA={}),0,s.y1,z1,cx-x,cy),b=__crProjectPoint(s.__crB||(s.__crB={}),0,s.y2,z2,cx-x-dx,cy);x+=dx;dx+=s.curve;
   s.clip=maxY;s.v=0;if(z1<=camD||b.y>=a.y||b.y>=maxY)continue;
@@ -2103,9 +2103,10 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  const farLodBoost=1+Math.min(.55,Math.max(0,(n-18)/Math.max(1,DN-18))*.55);
-  // Tous les tronçons visibles gardent leurs décors en mode Lite ; les silhouettes lointaines sont légèrement agrandies.
-  if(!window.__CR_LITE||n<DN||s.sp.some(o=>o.t==='M'))__crDrawDecoGroup(s,a.x,a.y,a.sc*farLodBoost);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK){
+  const farLodBoost=1+Math.min(.85,Math.max(0,(n-18)/Math.max(1,DN-18))*.85);
+  // Agrandit les sprites lointains sans déplacer leur point d'ancrage : ils restent sur les bas-côtés.
+  // Le rendu de tous les segments visibles est conservé, y compris sur Firestick/Lite.
+  __crDrawDecoGroup(s,a.x,a.y,a.sc,farLodBoost);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK){
    // Fermeture complète de la branche opposée : plusieurs modules de barrière
    // couvrent toute l'entrée de la voie, avec une glissière continue visuellement.
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
@@ -2769,7 +2770,7 @@ requestAnimationFrame(loop);
  const rawDt=Math.max(0,(t-last)/1000||0),dt=Math.min(.033,rawDt);last=t;
  if(!crManualPaused){const pauseVisible=(state!=='menu'&&state!=='over'&&state!=='win'&&state!=='podium'&&state!=='mega');if(pauseVisible!==__crPauseButtonVisible){$('pauseBtn').style.display=pauseVisible?'flex':'none';__crPauseButtonVisible=pauseVisible;}}
  if(crManualPaused)return
- if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const p95Now=crFrameSampleCount?crFrameSamples.slice(0,crFrameSampleCount).sort((a,b)=>a-b)[Math.min(crFrameSampleCount-1,Math.ceil(crFrameSampleCount*.95)-1)]:0;const slow=p95Now>50||ema>(isTV?.040:.045),verySlow=p95Now>90,fast=p95Now<25&&ema<(isTV?.022:.025);__crLoadBad=slow?Math.min(3,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1){drawN=Math.max(isTV?60:72,drawN-(verySlow?(isTV?18:22):(isTV?10:14)));__crLoadBad=0;__crLoadGood=0}else if(__crLoadGood>=4){drawN=Math.min(isTV?110:150,drawN+(isTV?2:4));__crLoadGood=0;__crLoadBad=0}}}
+ if(state=='play'&&rawDt>0){ema=ema*.96+rawDt*.04;perfT+=Math.min(rawDt,.25);if(perfT>1.25){perfT=0;const p95Now=crFrameSampleCount?crFrameSamples.slice(0,crFrameSampleCount).sort((a,b)=>a-b)[Math.min(crFrameSampleCount-1,Math.ceil(crFrameSampleCount*.95)-1)]:0;const slow=p95Now>50||ema>(isTV?.040:.045),verySlow=p95Now>90,fast=p95Now<25&&ema<(isTV?.022:.025);__crLoadBad=slow?Math.min(3,__crLoadBad+1):Math.max(0,__crLoadBad-1);__crLoadGood=fast?Math.min(4,__crLoadGood+1):Math.max(0,__crLoadGood-1);if(__crLoadBad>=1||__crLoadGood>=4){__crLoadBad=0;__crLoadGood=0}}}
  try{
   const p0=performance.now();pollPad();crPollMs=performance.now()-p0;
   const u0=performance.now();if(state!='menu')update(dt);crUpdateMs=performance.now()-u0;
@@ -2888,7 +2889,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v193';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v194';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

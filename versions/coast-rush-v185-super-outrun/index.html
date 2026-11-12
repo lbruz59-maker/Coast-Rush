@@ -795,6 +795,10 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
     if((ai-archStart)%archGap===0&&!g.bridge)g.sp.push({t:'A',o:0});
    }
   } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
+ // V186 : tous les monuments, bâtiments et décors locaux sont repoussés hors chaussée.
+ // Les grandes empreintes de M/Z nécessitent un décalage supérieur aux petits sprites.
+ const __crLocalRoadsideMin={M:8.2,Z:6.8,D:4.2,K:4.8};
+ segs.forEach(seg=>{if(!seg||!Array.isArray(seg.sp))return;for(const sp of seg.sp){const min=__crLocalRoadsideMin[sp.t];if(!min)continue;const side=Number(sp.o)<0?-1:1;if(Math.abs(Number(sp.o)||0)<min)sp.o=side*min;}});
  // V184 : PNJ et animaux rapprochés du bord de chaussée, sans empiéter sur la route.
  const __crNearRoadTypes=new Set(['P','C','L','an','fa']);
  segs.forEach(seg=>{if(!seg||!Array.isArray(seg.sp))return;for(const sp of seg.sp){
@@ -1144,7 +1148,11 @@ BLD=new Set(['bkh','brn','adb','skl','mes','dun','bel','ons']),GEN=new Set(['p',
 const AK={sheep:.85,camel:1.4,cow:1.2,deer:.7,ibex:.65,bear:.9,fox:.55,coyote:.6,cat:.45,dog:.75,squirrel:1,hare:.5,pigeon:.55,gull:.6,toucan:.65,parrot:.55,crab:.65,kanga:1.2},MK={blued:1.8,campa:1.3,geys:1.2,church:.68},ZK={tenn:1.6,play:1.8,fair:1.8,gym:1.55,cine:1.4,hotel:1.2,mall:1.65,stad:1.1},
 DK={hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:3,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
 function __crLocalSprite(sp,x,y,sc){
- const t=sp.t,s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1)),T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
+ const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
+ // V186 : limite universelle des sprites locaux géants, sur TOUS les circuits.
+ // Les monuments/bâtiments restent lisibles mais ne peuvent plus remplir l'écran.
+ if(t==='M'||t==='Z'||t==='D'||t==='K')s=Math.min(s,H*.19);
+ const T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
  const R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a*s*F-(F<0?w*s:0),y-(b+h)*s,w*s,h*s)},E=(c,a,b,rx,ry)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x+a*s*F,y-b*s,rx*s,ry*s,0,0,7);ctx.fill()},Q=(c,...p)=>{ctx.fillStyle=c;ctx.beginPath();for(let i=0;i<p.length;i+=2){const X=x+p[i]*s*F,Y=y-p[i+1]*s;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.fill()};
  if(t=='M'){const k=sp.k;
   if(k=='eiffel'){Q('#5d5348',-17,0,-12,0,-2.5,30,-1.5,62,0,72,1.5,62,2.5,30,12,0,17,0,6,33,3.5,63,-3.5,63,-6,33);R('#6f6357',-8,28,16,2);R('#6f6357',-4,52,8,1.6)}

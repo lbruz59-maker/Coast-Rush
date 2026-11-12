@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v203-thicker-bridges";
+const CACHE_NAME="coast-rush-v204-perspective-fix";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

@@ -725,6 +725,8 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[
 
  const bridgeTypes={COAST:'coast',ISLAND:'coast',SUNSET:'coast',RIO:'coast',SYDNEY:'coast',ALPS:'stone',PARIS:'urban',LONDRES:'urban',ROME:'urban',DESERT:'desert',MEADOW:'wood',CITY:'urban',NIGHT:'neon',CANYON:'suspension',AUTUMN:'wood',TOKYO:'neon','NEW YORK':'steel','LE CAIRE':'stone',MOSCOU:'steel','DUBAÏ':'modern',LILLE:'urban',BARCELONE:'coast',VENISE:'stone',SANTORIN:'coast',FJORDS:'steel',VEGAS:'neon',ISLANDE:'modern',AMAZONIE:'wood',PATAGONIE:'steel',MEXIQUE:'desert'};const brT=bridgeTypes[th.n]||'urban',brK={coast:['w'],stone:['w','r'],urban:['w','r','l'],desert:['r','l'],wood:['w'],neon:['r','l','w'],suspension:['g'],steel:['w','l'],modern:['w','r']}[brT]||['w'],brZ=MODE===5?[[430,535]]:[[170,285],[430,535]];if(th.n==='ALPS')brZ.push([610,730]);
 brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=brK[(id*5+zi*3+stage)%brK.length],ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
+// V190 : véritables ponts en hauteur à franchir dessous, garantis sur chaque circuit.
+const overpassZones=[70,370];overpassZones.forEach((z,zi)=>{if(z>=N-FORK-20)return;let at=z;if(loopS>=0&&at>=loopS-10&&at<=loopE+10)at=loopE+24;if(at>=N-FORK-20)return;for(let j=-2;j<=2;j++){const q=segs[at+j];if(q&&!q.tun&&!q.loop)q.overpass=(j===0?1:2)}});
 segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==24)s.sp.push({t:'F',o:-.55});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.14+R()*.1)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.13+R()*.17),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if((useItems||MODE===5)&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:MODE===5?BRIT[R()*BRIT.length|0]:(R()<.22?0:(()=>{const q=1+(R()*11|0);return q>=8?q+2:q})())});
@@ -2005,6 +2007,25 @@ function __crBridges(vis,bs){
   ctx.restore();
  }
 }
+function __crDrawOverpasses(vis){
+ for(const s of vis){if(s.overpass!==1||!s.a||!s.b)continue;const a=s.a,b=s.b,ft=s.ft||0,w=a.w,h=Math.max(5,w*.62),t=Math.max(2,w*.16),pad=w*1.34;
+  const lx0=a.x-pad,lx1=b.x-b.w*1.34,rx0=a.x+pad,rx1=b.x+b.w*1.34,yt0=a.y-h,yt1=b.y-h*.62,bt0=yt0+t,bt1=yt1+Math.max(2,b.w*.16);
+  ctx.save();ctx.globalAlpha=Math.max(.35,1-ft*.58);
+  // Piles latérales : l'ouverture centrale reste libre pour laisser passer la voiture.
+  __crPoly4(fg('#59636c',ft),lx0,a.y,lx0+w*.13, a.y,lx1+b.w*.13,b.y,lx1,b.y);
+  __crPoly4(fg('#59636c',ft),rx0-w*.13,a.y,rx0,a.y,rx1,b.y,rx1-b.w*.13,b.y);
+  __crPoly4(fg('#8796a5',ft),lx0,bt0,lx0+w*.13,bt0,lx1+b.w*.13,bt1,lx1,bt1);
+  __crPoly4(fg('#8796a5',ft),rx0-w*.13,bt0,rx0,bt0,rx1,bt1,rx1-b.w*.13,bt1);
+  // Tablier transversal au-dessus de la chaussée.
+  __crPoly4(fg('#465563',ft),lx0,yt0,rx0,yt0,rx1,yt1,lx1,yt1);
+  __crPoly4(fg('#c2d0d8',ft),lx0,yt0,rx0,yt0,rx1,yt1,lx1,yt1);
+  __crPoly4(fg('#34414d',ft),lx0,bt0,rx0,bt0,rx1,bt1,lx1,bt1);
+  ctx.fillStyle=fg('#f4d06f',ft);ctx.fillRect((lx0+rx0)*.5-w*.12,yt0+t*.25,Math.max(2,w*.24),Math.max(2,t*.45));
+  // Poutres et garde-corps visibles de face.
+  ctx.strokeStyle=fg('#34414d',ft);ctx.lineWidth=Math.max(1,w*.035);ctx.beginPath();ctx.moveTo(lx0,yt0);ctx.lineTo(rx0,yt0);ctx.lineTo(rx1,yt1);ctx.lineTo(lx1,yt1);ctx.closePath();ctx.stroke();
+  ctx.restore();
+ }
+}
 function render(){
  if(!segs.length)return;ctx.setTransform(RS,0,0,RS,0,0);ctx.save();if(loopA){const c=Math.abs(Math.cos(loopA)),n=Math.abs(Math.sin(loopA)),k=Math.max(W/H*n+c,c+H/W*n)+.03;ctx.translate(W/2,H/2);ctx.rotate(loopA);ctx.scale(k,k);ctx.translate(-W/2,-H/2)}
  renderBackdrop();
@@ -2031,6 +2052,7 @@ function render(){
 
  maxY=b.y}
  __crBridges(vis,bs);
+ __crDrawOverpasses(vis);
  if(ps.tun&&(state==='play'||state==='count')&&crash<=0){const bm=[];let pi=-1;for(const q of vis){if(q.i<ps.i)continue;if(pi>=0&&q.i!==pi+1)break;if(q.i-ps.i>18)break;bm.push(q);pi=q.i}
  if(bm.length>1){ctx.save();ctx.globalCompositeOperation='lighter';const y0=bm[0].a.y,y1=bm[bm.length-1].b.y;
   for(const sd of[-1,1]){const g=ctx.createLinearGradient(0,y0,0,y1);g.addColorStop(0,'rgba(255,236,170,.34)');g.addColorStop(.55,'rgba(255,226,150,.14)');g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.beginPath();
@@ -2825,7 +2847,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v189';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v190';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

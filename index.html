@@ -2031,18 +2031,18 @@ function useItem(){if(!useItems||state!='play'||!item||crash>0)return;const I=it
  else if(I==3){let t=null;for(const c of cars)if(c.z>p&&!(c.hit>0)&&(!t||c.z<t.z))t=c;if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t,born:flash,life:2.4});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}else{star=6;boostSfx();say('Invincible!',1.5,1.1)}}
 function __crAIUseItem(c){
- const I=c.aiItem;if(!I||!useItems||MP||state!=='play'||c.b||c.rp)return;
+ const I=c.aiItem;if(!I||!useItems||(MP&&!isOutrunLeader())||state!=='play'||c.b||c.rp)return;
  c.aiItem=0;c.aiCooldown=2.2+Math.random()*2.2;
- const lane=c.o,p=c.z;
+ const lane=c.o,p=c.z,oid=()=>myId+'-'+Math.random().toString(36).slice(2,9);
  if(I===1){c.sp=Math.min(MAX*.92,Math.max(c.sp,MAX*.72));c.aiBoost=2.2}
- else if(I===2||I===5){objs.push({k:I===2?'b':'o',z:Math.max(0,p-segL*2.4),o:lane,w:I===2?.16:.3,sp:0,id:Math.random()*1e9|0,tt:flash,ai:1})}
+ else if(I===2||I===5){objs.push({k:I===2?'b':'o',z:Math.max(0,p-segL*2.4),o:lane,w:I===2?.16:.3,sp:0,id:oid(),tt:flash,ai:1,owner:myId})}
  else if(I===3){
-  let target=null;
-  for(const q of cars)if(q!==c&&q.z>p+segL*2&&q.z>0&&!(q.hit>0)&&(!target||q.z<target.z))target=q;
-  if(pos+playerZ>p+segL*2&&pos+playerZ<p+segL*32)target={z:pos+playerZ,o:px,w:VW[myV]};
-  objs.push({k:'s',z:p+segL*1.5,o:lane,w:.1,sp:MAX*1.45,t:target,born:flash,life:2.8,ai:1});
+  let target=null,targetPeer='';
+  for(const q of cars)if(q!==c&&q.z>p+segL*2&&q.z>0&&!(q.hit>0)&&(!target||q.z<target.z)){target=q;if(q.rp)targetPeer=q.peer||''}
+  if(pos+playerZ>p+segL*2&&pos+playerZ<p+segL*32&&(!target||pos+playerZ<target.z)){target={z:pos+playerZ,o:px,w:VW[myV]};targetPeer=myId}
+  objs.push({k:'s',z:p+segL*1.5,o:lane,w:.1,sp:MAX*1.45,t:targetPeer&&targetPeer!==myId?target:null,targetPeer,born:flash,life:2.8,ai:1,owner:myId,id:oid()});
  }
- else if(I===6){for(let n=0;n<3;n++)objs.push({k:'g',z:p+segL*(2+n*1.4),o:lane+(n-1)*.035,w:.05,sp:MAX*2.5,tt:flash,ai:1})}
+ else if(I===6){for(let n=0;n<3;n++)objs.push({k:'g',z:p+segL*(2+n*1.4),o:lane+(n-1)*.035,w:.05,sp:MAX*2.5,tt:flash,ai:1,owner:myId,id:oid()})}
  else if(I===7){c.aiBoost=2.5;c.aiInv=4}
  else {c.aiInv=4;c.aiBoost=1.8}
 }
@@ -2093,9 +2093,9 @@ function pollPad(){if(inputMode!=='controller'){gpad.g=gpad.b=0;padAx=0;return}c
  if(B(2)&&!pp[2])useItem();if((B(3)||B(5))&&!pp[3])toggleGear();if(B(4)&&!pp[4])horn();if(B(0)&&!pp[0])confirmAct();if(B(9)&&!pp[9])confirmAct();if(B(8)&&!pp[8]&&state!='menu'){if(crManualPaused)crResumeGame();else crPauseGame();}
  pp[0]=B(0);pp[2]=B(2);pp[3]=B(3)||B(5);pp[4]=B(4);pp[8]=B(8);pp[9]=B(9)}
 const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){const q=r.presence;if(q&&q.ver!==VER&&!verWarn[r.peer]){verWarn[r.peer]=1;toast('Joueur '+(q.n||'?')+' : version différente ('+(q.ver||'ancienne')+' / '+VER+')')}}
- if(flash-lastSend>.2){lastSend=flash;netSend({cid,pos:Math.round(pos+playerZ),px:+px.toFixed(2),sp:Math.round(speed),fr:forkRoute,fb:forkRouteBy,n:myName,tm:window.crTeam||'',vn:window.crVehicleLabel||((VEH&&VEH[myV])||''),jAt:window.__crRoomJoinedAt||0,roomMode:MODE,c:myCol,rdy:rdyT,goAt:mpStartAt,stg:stage,sc:Math.floor(score),st:state,v:myV,mp:MP,rts:rts,rr:(state=='podium'||state=='mega')?raceNo-1:raceNo,bn:objs.filter(o=>o.k=='b'||o.k=='o').slice(-3).map(o=>[Math.round(o.z),+o.o.toFixed(2),o.id,o.k=='o'?1:0]),sh:myShell,ea:eatQ.slice(-4),at:atq.slice(-8),ch:chaseHits,bh:bnd?bnd.hp:null,cpk:cposk,mk:musk>0?1:0})}
+ if(flash-lastSend>.2){lastSend=flash;netSend({cid,pos:Math.round(pos+playerZ),px:+px.toFixed(2),sp:Math.round(speed),fr:forkRoute,fb:forkRouteBy,n:myName,tm:window.crTeam||'',vn:window.crVehicleLabel||((VEH&&VEH[myV])||''),jAt:window.__crRoomJoinedAt||0,roomMode:MODE,c:myCol,rdy:rdyT,goAt:mpStartAt,stg:stage,sc:Math.floor(score),st:state,v:myV,mp:MP,rts:rts,rr:(state=='podium'||state=='mega')?raceNo-1:raceNo,bn:objs.filter(o=>o.k=='b'||o.k=='o').slice(-12).map(o=>[Math.round(o.z),+o.o.toFixed(2),o.id,o.k=='o'?1:0]),ab:objs.filter(o=>o.ai&&o.owner===myId&&(o.k==='s'||o.k==='g')).slice(-12).map(o=>[o.id,o.k,Math.round(o.z),+o.o.toFixed(3),o.sp,o.targetPeer||'',o.born||o.tt||flash,o.life||0]),sh:myShell,ea:eatQ.slice(-4),at:atq.slice(-8),ch:chaseHits,bh:bnd?bnd.hp:null,cpk:cposk,mk:musk>0?1:0})}
  for(const r of remotes){const q=r.presence;if(!q)continue;let c=prox[r.peer];if(!c){c=prox[r.peer]={rp:1,k:'r',peer:r.peer,z:-1e9,o:0,w:.18,sp:0,c:'#fff',nm:'?',hit:0};cars.push(c)}
-  (q.ea||[]).forEach(id=>{const i=objs.findIndex(o=>o.id==id);if(i>=0)objs.splice(i,1)});
+  (q.ea||[]).forEach(id=>{const i=objs.findIndex(o=>o.id==id);if(i>=0)objs.splice(i,1)});\n  const remoteAI=q.ab||[],remoteAIIds=new Set(remoteAI.map(a=>r.peer+a[0]));\n  for(let ai=objs.length-1;ai>=0;ai--)if(objs[ai].remoteAI&&objs[ai].owner===r.peer&&!remoteAIIds.has(objs[ai].id))objs.splice(ai,1);\n  for(const a of remoteAI){const id=r.peer+a[0];let ob=objs.find(o=>o.id===id);if(!ob){ob={id,k:a[1],z:a[2],o:a[3],sp:a[4],targetPeer:a[5],born:a[6],life:a[7]||2.8,tt:flash,ai:1,remoteAI:1,owner:r.peer,w:.1};objs.push(ob)}else{ob.z=a[2];ob.o=a[3];ob.sp=a[4];ob.targetPeer=a[5];ob.born=a[6];ob.life=a[7]||2.8}}
   if(q.cid!==cid||q.st=='over'){c.z=-1e9;continue}if(MODE===0&&MP&&forkRoute<0&&r.peer===outrunLeaderId()&&Number.isInteger(q.fr)&&q.fr>=0&&q.fr<=1){forkRoute=q.fr;forkRouteBy=r.peer;remoteLeaderRoute=q.fr;}if(MODE==2&&bnd&&q.bh!=null)bnd.hp=Math.min(bnd.hp,q.bh);for(const a of(q.at||[])){if(a.to===myId&&!seenAt[a.id]){seenAt[a.id]=1;if(state=='play'&&star<=0){crash=Math.max(crash,.55);speed*=.82;bang();shake=.35}}}
   const tz=q.pos+q.sp*.25;if(c.z<0)c.z=tz;c.z+=(tz-c.z)*Math.min(1,dt*8);c.o+=(q.px-c.o)*Math.min(1,dt*8);c.sp=q.sp;c.c=q.c||'#fff';c.nm=q.n||'?';c.v=q.v|0;c.w=VW[c.v];
   if(q.sh&&q.sh.t==myPeer&&!seenSh[q.sh.id]){seenSh[q.sh.id]=1;setTimeout(()=>{if(state=='play'&&star<=0){mini=4;crash=.7;bang();voice();shake=.5}},600)}
@@ -2267,13 +2267,13 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   }
   if(c.z>trackLen-(FORK+10)*segL){c.z=-1e9;continue}
   // IA solo : collecte les bonus placés sur sa voie puis les utilise avec un délai.
-  if(!MP&&useItems&&state==='play'&&!c.b&&!c.rp&&!c.aiItem){
+  if((!MP||isOutrunLeader())&&useItems&&state==='play'&&!c.b&&!c.rp&&!c.aiItem){
    const si=Math.floor(c.z/segL),sg=segs[si];
    if(sg&&sg.sp)for(const pick of sg.sp)if(pick.t==='I'&&!(flash<(pick.off||0))&&Math.abs(c.o-pick.o)<.34){
     c.aiItem=pick.k||1+(Math.random()*7|0);pick.off=flash+7;break;
    }
   }
-  if(!MP&&c.aiItem&&(c.aiCooldown||0)<=0&&state==='play')__crAIUseItem(c);
+  if((!MP||isOutrunLeader())&&c.aiItem&&(c.aiCooldown||0)<=0&&state==='play')__crAIUseItem(c);
   __crAddSegmentCar(Math.floor(c.z/segL),c);
   const dz=c.z-(pos+playerZ),pd=c.pdz;c.pdz=dz;if(pd>0&&dz<=0&&state=='play'&&!c.rp&&Math.abs(px-c.o)<.9&&flash-lastPass>.12){lastPass=flash;passSfx(Math.min(1,speed/MAX))}
   if(crash>0||state!='play'||musk>0||c.hit>0||pd===undefined)continue;
@@ -2321,7 +2321,8 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
    }
    if(b.born!=null&&flash-b.born>(b.life||2.4))dead=true;
   }
-  if(b.k=='g'){const z0=b.z;b.z+=b.sp*dt;for(const c of cars)if(c.z>0&&!(c.hit>0&&!c.b)&&c.z>=z0-segL*.5&&c.z<=b.z+segL*.5&&Math.abs(c.o-b.o)<(c.b?.22:.18)){hitCar(c,4,Math.sign(c.o-b.o)||1);dead=true;break}}
+  if(!dead&&b.k==='s'&&b.ai&&state==='play'&&crash<=0&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<segL*.8&&Math.abs(b.o-px)<.34){crash=.85;speed*=.82;bang();voice();shake=.4;if(b.id)eatQ.push(b.id);dead=true}
+  if(b.k=='g'){const z0=b.z;b.z+=b.sp*dt;for(const c of cars)if(c.z>0&&!(c.hit>0&&!c.b)&&c.z>=z0-segL*.5&&c.z<=b.z+segL*.5&&Math.abs(c.o-b.o)<(c.b?.22:.18)){hitCar(c,4,Math.sign(c.o-b.o)||1);dead=true;break}}\n  if(!dead&&b.k==='g'&&b.ai&&state==='play'&&crash<=0&&musk<=0&&star<=0&&b.z>=pos+playerZ-segL*.5&&b.z<=pos+playerZ+segL*.5&&Math.abs(b.o-px)<.22){crash=.75;speed*=.85;bang();shake=.35;if(b.id)eatQ.push(b.id);dead=true}
   if((b.k!='b'&&b.k!='o'&&b.k!='x'&&b.z<pos-segL*5)||b.z>=trackLen||(b.tt&&flash-b.tt>(b.k=='x'?.5:b.k=='g'?1.5:15)))dead=true;
   if(!dead&&(b.k=='b'||b.k=='o')){const oil=b.k=='o';for(const c of cars)if(!c.rp&&c.z>0&&!(c.hit>0)&&Math.abs(c.z-b.z)<segL*.6&&Math.abs(c.o-b.o)<(oil?.28:.2)){hitCar(c,oil?2:1);if(!oil)dead=true;break}
    if(!dead&&state=='play'&&!crash&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<segL*.8&&Math.abs(px-b.o)<(oil?.28:.17)){if(oil){if(slip<=0){slip=1.6;squeal();shake=.2}}else{crash=.9;bang();voice();shake=.3;dead=true}}}

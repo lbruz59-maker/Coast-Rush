@@ -2154,10 +2154,10 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  const farLodBoost=1+Math.min(.85,Math.max(0,(n-18)/Math.max(1,DN-18))*.85);
-  // Agrandit les sprites lointains sans déplacer leur point d'ancrage : ils restent sur les bas-côtés.
-  // Le rendu de tous les segments visibles est conservé, y compris sur Firestick/Lite.
-  __crDrawDecoGroup(s,a.x,a.y,a.sc,farLodBoost);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK){
+  // V204 : échelle de perspective naturelle pour toutes les familles de décors.
+  // Ne plus grossir artificiellement les objets lointains : ce boost les faisait
+  // rétrécir à l'approche de la voiture malgré l'augmentation de l'échelle projetée.
+  __crDrawDecoGroup(s,a.x,a.y,a.sc,1);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK){
    // Fermeture complète de la branche opposée : plusieurs modules de barrière
    // couvrent toute l'entrée de la voie, avec une glissière continue visuellement.
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;

@@ -1163,7 +1163,8 @@ function __crLocalSprite(sp,x,y,sc){
  // monuments, ports, gondoles et feuilles pratiquement invisibles.
  if(t==='M')s=Math.min(s,H*.055);
  else if(t==='Z')s=Math.min(s,H*.075);
- else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.035:.018));
+ else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.035:(BLD.has(sp.k)||['hau','hut','cot','tik','mos','oli'].includes(sp.k))?.03:.018));
+ else if(t==='Z')s=Math.min(s,H*.09);
  else if(t==='K')s=Math.min(s,H*.035);
  const T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
  const R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a*s*F-(F<0?w*s:0),y-(b+h)*s,w*s,h*s)},E=(c,a,b,rx,ry)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x+a*s*F,y-b*s,rx*s,ry*s,0,0,7);ctx.fill()},Q=(c,...p)=>{ctx.fillStyle=c;ctx.beginPath();for(let i=0;i<p.length;i+=2){const X=x+p[i]*s*F,Y=y-p[i+1]*s;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.fill()};

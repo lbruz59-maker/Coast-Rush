@@ -839,7 +839,7 @@ $('tvhide').addEventListener('click',()=>{const ids=['l','r','g','br','gr','it',
 $('fs').addEventListener('click',()=>{const d=document,el=d.documentElement;
  if(d.fullscreenElement||d.webkitFullscreenElement)(d.exitFullscreen||d.webkitExitFullscreen).call(d);
  else{const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f)f.call(el);else toast(isIOS?"iPhone : touche Partager ⬆ puis « Sur l'écran d'accueil » pour jouer en plein écran.":"Plein écran indisponible ici.");if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}});
-$('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;$('mm').textContent='♪ Musique : '+(musOn?'ON':'OFF');if(mus)mus.gain.value=musOn?1:0});$('mm').onclick=()=>$('mu').click();
+$('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;$('mm').textContent='♪ Musique : '+(musOn?'ON':'OFF');if(mus)mus.gain.value=musOn?1:0;if(window.__crMusicOut)window.__crMusicOut.gain.setTargetAtTime(musOn?1:0,ac?ac.currentTime:0,.015)});$('mm').onclick=()=>$('mu').click();
 $('sf').addEventListener('click',()=>{vm^=1;if(vm&&window.speechSynthesis)speechSynthesis.cancel();$('sf').style.opacity=vm?.4:1;if(master)master.gain.value=vm?0:.9});
 document.querySelectorAll('.st[data-t]').forEach(b=>b.onclick=()=>{tr=+b.dataset.t;document.querySelectorAll('.st[data-t]').forEach(x=>x.classList.toggle('sel',x==b))});
 $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').onclick=()=>{inputMode='controller';applyInputMode()};$('ui-touch').onclick=()=>{inputMode='touch';applyInputMode()};applyInputMode();
@@ -889,7 +889,7 @@ function initAudio(){
  const AC=window.AudioContext||window.webkitAudioContext;
  if(!AC){toast('Audio non pris en charge par ce navigateur.');return}
  try{ac=new AC()}catch(err){toast('Impossible de démarrer le moteur audio : '+(err.message||err));return}
- master=ac.createGain();master.gain.value=.9;const cmp=ac.createDynamicsCompressor();master.connect(cmp);cmp.connect(ac.destination);if(ac.resume)ac.resume().catch(()=>{});mus=ac.createGain();mus.gain.value=musOn?1:0;mus.connect(master);
+ master=ac.createGain();master.gain.value=.9;const cmp=ac.createDynamicsCompressor();master.connect(cmp);cmp.connect(ac.destination);if(ac.resume)ac.resume().catch(()=>{});mus=ac.createGain();mus.gain.value=1;window.__crMusicOut=ac.createGain();window.__crMusicOut.gain.value=musOn?1:0;window.__crMusicOut.connect(master);mus.connect(window.__crMusicOut);
  nb=ac.createBuffer(1,ac.sampleRate*.3,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
  // Create tunnel reverb before connecting the engine send to it.
  tunnelRev=ac.createConvolver();const tir=ac.createBuffer(2,Math.floor(ac.sampleRate*1.35),ac.sampleRate);for(let ch=0;ch<2;ch++){const td=tir.getChannelData(ch);for(let z=0;z<td.length;z++)td[z]=(Math.random()*2-1)*Math.pow(1-z/td.length,2.1)}tunnelRev.buffer=tir;
@@ -900,7 +900,7 @@ function initAudio(){
  const dsf=ac.createBiquadFilter();dsf.type='bandpass';dsf.frequency.value=1850;dsf.Q.value=1.15;
  const dss=ac.createBufferSource();dss.buffer=nb;dss.loop=true;dss.connect(dsf);dsf.connect(window.__driftSqueal);window.__driftSqueal.connect(SFX||master);dss.start();
  tb=ac.createOscillator();tb.type='sine';tbg=ac.createGain();tbg.gain.value=0;tb.connect(tbg);tbg.connect(SFX||master);tb.start();
- rev=ac.createConvolver();const ir=ac.createBuffer(2,ac.sampleRate*2.2|0,ac.sampleRate);for(let c2=0;c2<2;c2++){const d=ir.getChannelData(c2);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}rev.buffer=ir;const rsd=ac.createGain();rsd.gain.value=.28;mus.connect(rsd);rsd.connect(rev);rev.connect(master);PB=ac.createGain();PB.connect(mus);
+ rev=ac.createConvolver();const ir=ac.createBuffer(2,ac.sampleRate*2.2|0,ac.sampleRate);for(let c2=0;c2<2;c2++){const d=ir.getChannelData(c2);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.6)}rev.buffer=ir;const rsd=ac.createGain();rsd.gain.value=.28;mus.connect(rsd);rsd.connect(rev);rev.connect(window.__crMusicOut);PB=ac.createGain();PB.connect(mus);
  SFX=ac.createGain();SFX.gain.value=1;tunnelLP=ac.createBiquadFilter();tunnelLP.type='lowpass';tunnelLP.frequency.value=19000;tunnelLP.Q.value=.7;tunnelWet=ac.createGain();tunnelWet.gain.value=0;SFX.connect(tunnelLP);tunnelLP.connect(master);SFX.connect(tunnelRev);tunnelRev.connect(tunnelWet);tunnelWet.connect(master);
  const lpn=(f,ty,q)=>{const s=ac.createBufferSource(),b=ac.createBiquadFilter(),g=ac.createGain();s.buffer=nb;s.loop=true;b.type=ty;b.frequency.value=f;b.Q.value=q;g.gain.value=0;s.connect(b);b.connect(g);g.connect(BUS||SFX||master);s.start();return g};sk=lpn(2300,'bandpass',4);rb=lpn(260,'lowpass',1);rn=lpn(2600,'highpass',.4);nxt=ac.currentTime+.1;setInterval(sched,25)}
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+d+.05)}

@@ -2636,7 +2636,7 @@ const crShowModes=()=>{
   };
   modeSelect.onchange=()=>{if(!host)return;MODE=+modeSelect.value;MODE0=MODE;renderRoomTimeTrialPicker();try{localStorage.setItem('cr_room_mode_'+curRoom,String(MODE))}catch(e){}};
   const join=btn('REJOINDRE / CRÉER LA SALLE',()=>{curRoom=(roomInput.value||'ARCADE').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,12)||'ARCADE';$('room').value=curRoom;joined=true;try{const saved=localStorage.getItem('cr_room_mode_'+curRoom);if(saved!==null)MODE=+saved;const ttSaved=localStorage.getItem('cr_room_tt_'+curRoom);if(ttSaved!==null&&Number.isInteger(+ttSaved)&&+ttSaved>=0&&+ttSaved<THI.length)selectedTimeTrialCircuit=+ttSaved}catch(e){}modeSelect.value=String(MODE);renderRoomTimeTrialPicker();$('mp').click();refresh();toast('Salle '+curRoom+' : connexion en cours')},true);actions.insertBefore(join,actions.firstChild);
-  actions.insertBefore(btn('DÉMARRER LA COURSE',()=>{if(!joined){toast('Rejoins une salle avant de démarrer');return}refresh();close();safeClick('go')},false),actions.children[1]||null);
+  actions.insertBefore(btn('DÉMARRER LA COURSE',()=>{if(!joined){toast('Rejoins une salle avant de démarrer');return}refresh();if(MODE===3&&!host){const hp=remotes.find(r=>r.peer===outrunLeaderId());if(!hp||!hp.presence||!Number.isInteger(+hp.presence.ttc)){toast('Attends la synchronisation du circuit choisi par l’hôte');return}selectedTimeTrialCircuit=+hp.presence.ttc}close();safeClick('go')},false),actions.children[1]||null);
   refresh();const poll=setInterval(()=>{if(!layer.isConnected){clearInterval(poll);return}refresh()},900);
  };
  const crShowCommands=()=>{

@@ -661,7 +661,7 @@ function crRequestAndroidFullscreen(){
 }
 document.addEventListener('fullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
 document.addEventListener('webkitfullscreenchange',()=>{try{window.dispatchEvent(new Event('resize'))}catch(e){}});
-function startGame(){try{if(ac&&SFX)SFX.gain.setTargetAtTime(1,ac.currentTime,.02)}catch(e){}crRequestAndroidFullscreen();applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;if(MODE===5&&NET())brCircuit=__crBrRoomCircuit();cid=__crStartCid();cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=(MODE===0||MODE===6)?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;glueT=0;loopA=inLoop=0;slip=mini=gun=0;crGunHeat=crGunLock=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()&&(window.DUEL||mpRaces||MODE===5||MODE===6)){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:(MODE===6?10:MODE===5?1:5);raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(__crStartCid());if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();else if(MODE===5)crSpreadBRPlayer();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
+function startGame(){try{if(ac&&SFX)SFX.gain.setTargetAtTime(1,ac.currentTime,.02)}catch(e){}crRequestAndroidFullscreen();applyInputMode();if(inputMode==='controller'&&!(navigator.getGamepads&&[...navigator.getGamepads()].some(g=>g&&g.connected)))toast('Aucune manette détectée. Connecte une manette ou choisis Clavier / Tactile.');$('menu').style.display='none';initAudio();pos=0;px=0;pxVel=0;carTurn=0;speed=0;gear=0;drift=0;driftSide=0;driftHold=0;brakeWasDown=0;driftMarkClock=0;driftTrail.length=0;time=DF[dfi].t;score=0;chaseHits=0;chaseCircuitsDone=0;bnd=null;musk=0;stage=1;if(MODE===5&&NET())brCircuit=__crBrRoomCircuit();cid=__crStartCid();cposk=0;forkRoute=-1;forkRouteBy='';outrunVisited=(MODE===0||MODE===6)?[0]:[];outrunTurnChoices=[];crash=0;forkSaid=0;lowSaid=0;saved=0;item=boost=star=0;glueT=0;loopA=inLoop=0;slip=mini=gun=0;crGunHeat=crGunLock=0;wxSalt=NET()?0:Math.random()*1e5|0;MP=0;if(NET()){MP=1;if(MODE!=3)MODE0=MODE;RL=window.DUEL?3:(MODE===6?10:MODE===5?1:MODE===0?5:5);raceNo=1;raceT=0;rts=[];mpStartAt=0;mpRaceStartAt=0}buildCourse(__crStartCid());if(wx=='snow'&&MODE!=2)time*=1.1;if(NET())gridStart();else if(MODE===5)crSpreadBRPlayer();if(NET()){state='wait';waitT=0;rdyT=Date.now();mpStartAt=0;mpRaceStartAt=0}else{if(MODE==2)startBrief();else{state='count';cd=3.9;countShown=0}}}
 $('go').onclick=startGame;
 // ---- AUDIO (compositions originales)
 const TR=[{bpm:140,q:'mMMMmMMM',r:[45,41,48,43,45,41,43,40],L:[[69,8],[72,4],[76,4],[77,6],[76,2],[72,8],[67,4],[72,4],[76,4],[79,4],[74,8],[71,4],[67,4],[69,4],[72,4],[76,4],[81,4],[79,6],[77,2],[72,8],[71,4],[74,4],[79,4],[77,4],[76,12],[0,4]]},
@@ -1253,19 +1253,15 @@ function drawVehPose(x,y,w,c,v,pose,ph){
 }
 function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];for(const q of remotes){const p=q.presence;if(p&&p.mp)L.push({id:q.peer,n:p.n,c:p.c,v:p.v|0,rt:p.rts||[]})}
  const o=L.map(e=>{let t;if(mega){t=0;for(let i=0;i<NR();i++){if(e.rt[i]==null){t=null;break}t+=e.rt[i]}}else t=e.rt[r]==null?null:e.rt[r];return{id:e.id,n:e.n,c:e.c,v:e.v,t}});o.sort((a,b)=>(a.t==null)-(b.t==null)||a.t-b.t);return o}
-function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function crSpreadBRPlayer(){if(MODE!==5||!brWrap)return;const ids=[myId];for(const r of remotes)if(r.presence&&r.presence.mp&&r.peer&&!ids.includes(r.peer))ids.push(r.peer);ids.sort();const k=Math.max(0,ids.indexOf(myId));pos=brWrap*(k+.5)/Math.max(1,ids.length);px=k%2?-.35:.35;pxVel=0;speed=0;}
+function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function __crSpawnSlot(id){let h=2166136261;const v=String(id||'PLAYER');for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h%128}
+function crSpreadBRPlayer(){if(MODE!==5||!brWrap)return;const k=__crSpawnSlot(myId)%32;pos=brWrap*(k+.5)/32;px=k%2?-.38:.38;pxVel=0;speed=0;}
 function gridStart(){
+ // Emplacement déterministe propre à chaque identifiant : indépendant de l'ordre
+ // et du délai d'arrivée des présences réseau sur les différents appareils.
+ const slot=__crSpawnSlot(myId);
  if(MODE===5){crSpreadBRPlayer();return}
- // Même liste et même ordre de participants sur chaque appareil : aucun emplacement partagé.
- const ids=[myId];
- for(const r of remotes)if(r.presence&&(r.presence.mp||r.presence.cid===-1)&&r.peer&&!ids.includes(r.peer))ids.push(r.peer);
- let order=ids.slice().sort();
- if(raceNo>1){const pr=podEntries(raceNo-2).map(e=>e.id).filter(i=>ids.includes(i));order=pr.concat(order.filter(i=>!pr.includes(i)))}
- const k=Math.max(0,order.indexOf(myId)),row=Math.floor(k/2),lane=k%2;
- // Deux voitures par rangée, espacées latéralement et longitudinalement.
- const rows=Math.ceil(order.length/2);
- pos=(rows-1-row)*segL*3.2;
- px=lane===0?-.38:.38;
+ pos=slot*segL*2.2;
+ px=slot%2===0?-.38:.38;
  pxVel=0;carTurn=0;speed=0;crash=0;ang=0;
 }
 function finishRace(){rts[raceNo-1]=raceT;state='podium';podT=0;say('Race complete!',1.5,1.1);jingle()}
@@ -1812,7 +1808,7 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
-  if(!window.__CR_LITE||n<34||s.sp.some(o=>o.t==='M'))__crDrawDecoGroup(s,a.x,a.y,a.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK+10){
+  if(!window.__CR_LITE||n<34||s.sp.some(o=>o.t==='M'))__crDrawDecoGroup(s,a.x,a.y,a.sc);if(forkActive&&MP&&forkRoute>=0&&s.i>=N-FORK){
    // Fermeture complète de la branche opposée : plusieurs modules de barrière
    // couvrent toute l'entrée de la voie, avec une glissière continue visuellement.
    const ff=Math.min(1,(s.i-(N-FORK))/FORK),blocked=forkRoute===0?1:-1;
@@ -2577,7 +2573,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(b[3]?.28:.17)){if(b[3]){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v184';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v185';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();
@@ -2675,7 +2671,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(state=='count'){// Verrouillage moteur : aucune accélération ni déplacement avant la fin du compte à rebours.
   speed=0;pxVel=0;const o=Math.ceil(cd);cd=Math.max(0,cd-dt);const n=Math.ceil(cd);if(n!=o&&n>0){beep(440);say(String(n),1.5,1.2)}if(cd<=0){speed=0;pxVel=0;state='play';beep(880);say('Go!',1.4,1.2)}}
  cv.style.transform=(shake>0||crash>0)?'translate('+((Math.random()-.5)*8)+'px,'+((Math.random()-.5)*8)+'px)':'';
- if(state=='play'){if(fk()&&MP&&forkRoute<0&&isOutrunLeader()&&ps.i>=N-FORK+12&&Math.abs(px)>.22){forkRoute=px<0?0:1;forkRouteBy=myId;remoteLeaderRoute=forkRoute;}
+ if(state=='play'){if(fk()&&MP&&forkRoute<0&&isOutrunLeader()&&ps.i>=N-FORK+12){forkRoute=px<0?0:1;forkRouteBy=myId;remoteLeaderRoute=forkRoute;}
    if(fk()&&MP&&forkRoute>=0&&!isOutrunLeader()&&ps.i>=N-FORK+7){
     const allowed=forkRoute===0?-1:1;
     const nearFork=Math.min(1,Math.max(0,(ps.i-(N-FORK+7))/9));

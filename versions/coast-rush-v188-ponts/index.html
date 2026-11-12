@@ -2065,9 +2065,9 @@ function __crDrawOverpasses(vis){
   const s=vis[n];if(s.overpass!==1||!s.a||!s.b)continue;
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
-  // V202 : ponts abaissés pour mieux voir la chaussée supérieure.
-  const hA=Math.max(5,wa*1.2),hB=Math.max(2.5,wb*1.2);
-  const fasciaA=Math.max(2.5,wa*.22),fasciaB=Math.max(1.25,wb*.22);
+  // V203 : tablier plus épais vers le dessous, sans relever la chaussée.
+  const hA=Math.max(4.3,wa*1.04),hB=Math.max(2.15,wb*1.04);
+  const fasciaA=Math.max(3.2,wa*.38),fasciaB=Math.max(1.6,wb*.38);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);

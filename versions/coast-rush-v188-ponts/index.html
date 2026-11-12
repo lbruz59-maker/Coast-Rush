@@ -1154,7 +1154,7 @@ const UNI={COAST:['hut','dtp','umb','lmp','ban','gon'],DESERT:['adb','yuc','dun'
 LEAF={COAST:'#3a9a4a',DESERT:'#9a9a4a',ALPS:'#1b6a3a',MEADOW:'#3a9a3a',SUNSET:'#4a6a3a',CITY:'#3a8a4a',NIGHT:'#2a6a5a',CANYON:'#8a8a4a',AUTUMN:'#d8801a',ISLAND:'#2aa05a',PARIS:'#5aa04a',LONDRES:'#3a8a3a',TOKYO:'#f08aa8','NEW YORK':'#4a9a3a',ROME:'#4a8a3a','LE CAIRE':'#6a9a3a',RIO:'#1f9a4a',SYDNEY:'#4a9a5a',MOSCOU:'#2a5a3a','DUBAÏ':'#4a9a4a',LILLE:'#5a9a4a',BARCELONE:'#5a9a3a',VENISE:'#4a8a4a',SANTORIN:'#6a8a4a',FJORDS:'#2a6a3a',VEGAS:'#3a7a4a',ISLANDE:'#6a8a5a',AMAZONIE:'#1f9a3a',PATAGONIE:'#3a6a3a',MEXIQUE:'#6a9a3a','SAINT-POL-SUR-TERNOISE':'#72934f'},
 BLD=new Set(['bkh','brn','adb','skl','mes','dun','bel','ons']),GEN=new Set(['p','c','t','h','l','r','a','n','eu','sk']);
 const AK={sheep:.85,camel:1.4,cow:1.2,deer:.7,ibex:.65,bear:.9,fox:.55,coyote:.6,cat:.45,dog:.75,squirrel:1,hare:.5,pigeon:.55,gull:.6,toucan:.65,parrot:.55,crab:.65,kanga:1.2},MK={blued:1.8,campa:1.3,geys:1.2,church:.68},ZK={tenn:1.6,play:1.8,fair:1.8,gym:1.55,cine:1.4,hotel:1.2,mall:1.65,stad:1.1},
-DK={leaf:2.4,hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:3,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
+DK={leaf:2.4,hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:1.8,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
 function __crLocalSprite(sp,x,y,sc){
  const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1)*(['arch','sagrada','basil','colo','liberty','ben','pyr','opera','ttower','burj','belf'].includes(sp.k)?2:1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
  // V186 : limite universelle des sprites locaux géants, sur TOUS les circuits.
@@ -1163,7 +1163,7 @@ function __crLocalSprite(sp,x,y,sc){
  // monuments, ports, gondoles et feuilles pratiquement invisibles.
  if(t==='M')s=Math.min(s,H*.055);
  else if(t==='Z')s=Math.min(s,H*.09);
- else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.035:(BLD.has(sp.k)||['hau','hut','cot','tik','mos','oli'].includes(sp.k))?.03:.018));
+ else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.022:(BLD.has(sp.k)||['hau','hut','cot','tik','mos','oli'].includes(sp.k))?.03:.018));
  else if(t==='K')s=Math.min(s,H*.035);
  const T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
  const R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a*s*F-(F<0?w*s:0),y-(b+h)*s,w*s,h*s)},E=(c,a,b,rx,ry)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x+a*s*F,y-b*s,rx*s,ry*s,0,0,7);ctx.fill()},Q=(c,...p)=>{ctx.fillStyle=c;ctx.beginPath();for(let i=0;i<p.length;i+=2){const X=x+p[i]*s*F,Y=y-p[i+1]*s;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.fill()};

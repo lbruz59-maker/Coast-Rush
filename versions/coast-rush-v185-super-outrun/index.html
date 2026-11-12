@@ -2736,8 +2736,8 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(MODE==2&&state=='play'){sirT-=dt;if(sirT<=0&&ac){sirT=.45;sirF^=1;tone(sirF?960:720,ac.currentTime,.4,'sawtooth',.035)}}
  netTick(dt);
  if(MODE===5)brUpdate(dt);
- for(const c of cars){if(MODE===5)break;if(c.z<0)continue;if(c.glueT>0){c.glueT=Math.max(0,c.glueT-dt);if(c.glueT>0)c.sp=0;else c.sp=c.glueBaseSp||MAX*.4}c.bt=(c.bt||0)-dt;if(c.b&&!(c.hit>0)){c.o=Math.sin(flash*1.4+c.ph)*.6;c.cool-=dt}
-  if(c.rp){}else if(c.hit>0){c.hit-=dt;c.o+=c.vo*dt;c.z+=c.sp*dt*.5;if(c.hit<=0){c.vo=0;if(c.noTp)c.lane=Math.max(-.7,Math.min(.7,c.o));else c.o=c.lane;if(!c.noTp)c.z+=segL*45;c.noTp=0}}else{c.z+=c.sp*dt*(c.sft>0?c.sf:(c.shr>0?.55:1));if(!c.b&&!c.rp)c.o+=(c.lane-c.o)*Math.min(1,dt*3)}if(c.shr>0)c.shr-=dt;if(c.sft>0)c.sft-=dt;
+ for(const c of cars){if(MODE===5)break;if(c.z<0)continue;if(c.glueT>0){c.glueT=Math.max(0,c.glueT-dt);if(c.glueT>0)c.sp=0;else c.sp=c.glueBaseSp||MAX*.4}c.oilT=Math.max(0,(c.oilT||0)-dt);c.bt=(c.bt||0)-dt;if(c.b&&!(c.hit>0)&&!(c.oilT>0)){c.o=Math.sin(flash*1.4+c.ph)*.6;c.cool-=dt}
+  if(c.rp){}else if(c.oilT>0){c.o+=c.oilDir*3.1*dt;c.z+=c.sp*dt*.42;if(c.oilT<=0){c.o=c.oilDir*1.35;c.lane=c.o;c.sp*=.72;c.shr=0}}else if(c.hit>0){c.hit-=dt;c.o+=c.vo*dt;c.z+=c.sp*dt*.5;if(c.hit<=0){c.vo=0;if(c.noTp)c.lane=Math.max(-.7,Math.min(.7,c.o));else c.o=c.lane;if(!c.noTp)c.z+=segL*45;c.noTp=0}}else{c.z+=c.sp*dt*(c.sft>0?c.sf:(c.shr>0?.55:1));if(!c.b&&!c.rp)c.o+=(c.lane-c.o)*Math.min(1,dt*3)}if(c.shr>0)c.shr-=dt;if(c.sft>0)c.sft-=dt;
   // LOD simulation : les véhicules éloignés avancent à coût minimal.
   // Leur IA de voie, collisions et interactions ne tournent qu'à proximité.
   const carDistance=Math.abs(c.z-(pos+playerZ));
@@ -2798,7 +2798,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   }
   if(b.k=='g'){const z0=b.z;b.z+=b.sp*dt;for(const c of cars)if(c.z>0&&!(c.hit>0&&!c.b)&&c.z>=z0-segL*.5&&c.z<=b.z+segL*.5&&Math.abs(c.o-b.o)<(c.b?.22:.18)){hitCar(c,4,Math.sign(c.o-b.o)||1);dead=true;break}}
   if((b.k!='b'&&b.k!='o'&&b.k!='y'&&b.k!='x'&&b.z<pos-segL*5)||b.z>=trackLen||(b.tt&&flash-b.tt>(b.k=='x'?.5:b.k=='g'?1.5:15)))dead=true;
-  if(!dead&&(b.k=='b'||b.k=='o'||b.k=='y')){const oil=b.k=='o',glue=b.k=='y';for(const c of cars)if(c.z>0&&!(c.hit>0)&&Math.abs(c.z-b.z)<30&&Math.abs(c.o-b.o)<(glue?.3:oil?.28:.2)){if(glue){if(c.rp)atq.push({to:c.peer,id:Date.now()+Math.random(),kind:'glue'});else{c.glueT=.85;c.glueBaseSp=c.sp;c.sp=0}}else if(!c.rp)hitCar(c,oil?2:1);if(!oil)dead=true;break}
+  if(!dead&&(b.k=='b'||b.k=='o'||b.k=='y')){const oil=b.k=='o',glue=b.k=='y';for(const c of cars)if(c.z>0&&!(c.hit>0)&&Math.abs(c.z-b.z)<30&&Math.abs(c.o-b.o)<(glue?.3:oil?.28:.2)){if(glue){if(c.rp)atq.push({to:c.peer,id:Date.now()+Math.random(),kind:'glue'});else{c.glueT=.85;c.glueBaseSp=c.sp;c.sp=0}}else if(!c.rp){if(oil){c.oilT=1.35;c.oilDir=(c.o>=0?1:-1);c.sp*=.55;c.hit=0;c.vo=0;c.noTp=0;c.shr=4.5}else hitCar(c,1)}if(!oil)dead=true;break}
    if(!dead&&state=='play'&&!crash&&musk<=0&&star<=0&&Math.abs(b.z-(pos+playerZ))<30&&Math.abs(px-b.o)<(glue?.3:oil?.28:.17)){if(glue){crDamageFlash();glueT=.85;speed=0;crash=0;msg='GLUE ! ARRÊT';msgT=1.2;dead=true}else if(oil){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else{crDamageFlash();crash=.9;bang();voice();shake=.3;dead=true}}}
   if(dead)objs.splice(i,1);else __crAddSegmentCar(Math.floor(b.z/segL),b)}
  __crOppEngines();const __crAudioOffRoad=offRoad();

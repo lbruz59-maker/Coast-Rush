@@ -2065,9 +2065,9 @@ function __crDrawOverpasses(vis){
   const s=vis[n];if(s.overpass!==1||!s.a||!s.b)continue;
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
-  // Hauteur plus importante : le pont doit être clairement séparé de la chaussée.
-  const hA=Math.max(10,wa*2.4),hB=Math.max(5,wb*2.4);
-  const fasciaA=Math.max(5,wa*.42),fasciaB=Math.max(2.5,wb*.42);
+  // V202 : ponts abaissés pour mieux voir la chaussée supérieure.
+  const hA=Math.max(5,wa*1.2),hB=Math.max(2.5,wb*1.2);
+  const fasciaA=Math.max(2.5,wa*.22),fasciaB=Math.max(1.25,wb*.22);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
@@ -2102,7 +2102,7 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
   // Garde-corps supérieurs continus.
-  const railA=Math.max(4,wa*.42),railB=Math.max(2,wb*.42);
+  const railA=Math.max(2,wa*.22),railB=Math.max(1,wb*.22);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
   __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
   ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);

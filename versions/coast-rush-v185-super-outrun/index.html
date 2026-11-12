@@ -1304,7 +1304,7 @@ function gridStart(){
  pxVel=0;carTurn=0;speed=0;crash=0;ang=0;
 }
 function finishRace(){rts[raceNo-1]=raceT;state='podium';podT=0;say('Race complete!',1.5,1.1);jingle()}
-function nextRace(){raceNo++;raceT=0;stage++;cid=stage-1;buildCourse(cid);forkSaid=0;gridStart();state='wait';waitT=0;msg='COURSE '+raceNo+' / '+NR();msgT=3}
+function nextRace(){raceNo++;raceT=0;mpStartAt=0;mpRaceStartAt=0;stage++;cid=stage-1;buildCourse(cid);forkSaid=0;gridStart();state='wait';waitT=0;msg='COURSE '+raceNo+' / '+NR();msgT=3}
 function __crSilence(){try{speechSynthesis.cancel()}catch(e){}if(!ac)return;const t0=ac.currentTime;
  for(const g of[eg,tbg,sk,rb,rn,window.__driftSqueal])try{if(g){g.gain.cancelScheduledValues(t0);g.gain.setTargetAtTime(0,t0,.03)}}catch(e){}
  for(const v of(typeof __oppV!=='undefined'?__oppV:[]))try{v.g.gain.cancelScheduledValues(t0);v.g.gain.setTargetAtTime(0,t0,.03)}catch(e){}
@@ -2601,7 +2601,7 @@ function pollPad(){if(inputMode!=='controller'){gpad.g=gpad.b=0;padAx=0;return}c
  pp[0]=B(0);pp[2]=B(2);pp[3]=B(3)||B(5);pp[4]=B(4);pp[8]=B(8);pp[9]=B(9)}
 const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){const q=r.presence;if(q&&q.ver!==VER&&!verWarn[r.peer]){verWarn[r.peer]=1;toast('Joueur '+(q.n||'?')+' : version différente ('+(q.ver||'ancienne')+' / '+VER+')')}}
  if(flash-lastSend>.2){lastSend=flash;netSend({cid,pos:Math.round(pos+playerZ),px:+px.toFixed(2),sp:Math.round(speed),fr:forkRoute,fb:forkRouteBy,n:myName,tm:window.crTeam||'',vn:window.crVehicleLabel||((VEH&&VEH[myV])||''),jAt:window.__crRoomJoinedAt||0,roomMode:MODE,c:myCol,rdy:rdyT,goAt:mpStartAt,stg:stage,sc:Math.floor(score),st:state,v:myV,mp:MP,br:Math.round(brHp),rts:rts,rr:(state=='podium'||state=='mega')?raceNo-1:raceNo,bn:objs.filter(o=>o.k=='b'||o.k=='o').slice(-3).map(o=>[Math.round(o.z),+o.o.toFixed(2),o.id,o.k=='o'?1:0]),sh:myShell,ea:eatQ.slice(-4),at:atq.slice(-8),ch:chaseHits,bh:bnd?bnd.hp:null,cpk:cposk,mk:musk>0?1:0})}
- for(const r of remotes){const q=r.presence;if(!q)continue;let c=prox[r.peer];if(!c){c=prox[r.peer]={rp:1,k:'r',peer:r.peer,z:-1e9,o:0,w:.18,sp:0,c:'#fff',nm:'?',hit:0};cars.push(c)}
+ for(const r of remotes){const q=r.presence;if(!q)continue;if(MP&&q.mp&&r.peer===outrunLeaderId()&&q.rr===raceNo&&Number.isFinite(q.goAt)&&q.goAt>0)mpStartAt=q.goAt;let c=prox[r.peer];if(!c){c=prox[r.peer]={rp:1,k:'r',peer:r.peer,z:-1e9,o:0,w:.18,sp:0,c:'#fff',nm:'?',hit:0};cars.push(c)}
   (q.ea||[]).forEach(id=>{const i=objs.findIndex(o=>o.id==id);if(i>=0)objs.splice(i,1)});
   if(q.cid!==cid||q.st=='over'){c.z=-1e9;continue}if((MODE===0||MODE===6)&&MP&&forkRoute<0&&r.peer===outrunLeaderId()&&Number.isInteger(q.fr)&&q.fr>=0&&q.fr<=1){forkRoute=q.fr;forkRouteBy=r.peer;remoteLeaderRoute=q.fr;}if(MODE==2&&bnd&&q.bh!=null)bnd.hp=Math.min(bnd.hp,q.bh);for(const a of(q.at||[])){if(a.to===myId&&!seenAt[a.id]){seenAt[a.id]=1;if(state==='play'){
     if(a.kind==='shell'){if(MODE===5)brHurt(22);else{crDamageFlash();crash=Math.max(crash,.65);speed*=.72;bang();shake=.3}}
@@ -2708,11 +2708,11 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(state=='brief'){briefT+=dt;if(briefT>BL){state=MODE==2?'play':'count';if(MODE!=2)cd=3.9;else{speed=MAX*.35;msg='POURSUITE !';msgT=2}}}
  if(state=='arrest'){arT+=dt;if(arT>3.8){state='play';endCourse()}}
  if(state=='escape'){escT+=dt;if(escT>3.6){bnd.hp=0;state='over';winT=0;msg='RETOUR À LA CIRCULATION';sayF('Échec de mission. Vous êtes rétrogradé à la circulation.')}}
- if(state=='wait'){waitT+=dt;speed=0;pxVel=0;const R=remotes.filter(r=>r.presence&&(MP?r.presence.mp:r.presence.cid!==undefined));if(waitT>14||(waitT>1.5&&R.every(r=>MP?(r.presence.rr||0)>=raceNo:r.presence.rdy>0))){gridStart();state='count';cd=3.9;speed=0;pxVel=0;inp.g=0;gpad.g=0;autoGas=0}}
+ if(state=='wait'){waitT+=dt;speed=0;pxVel=0;const R=remotes.filter(r=>r.presence&&(MP?r.presence.mp:r.presence.cid!==undefined)),ready=waitT>1.5&&R.every(r=>MP?(r.presence.rr||0)>=raceNo:r.presence.rdy>0);if(MP){if(isOutrunLeader()&&(waitT>14||ready)&&!mpStartAt)mpStartAt=Date.now()+3900;if(mpStartAt>0){gridStart();state='count';cd=Math.max(0,(mpStartAt-Date.now())/1000);speed=0;pxVel=0;inp.g=0;gpad.g=0;autoGas=0}}else if(waitT>14||ready){gridStart();state='count';cd=3.9;speed=0;pxVel=0;inp.g=0;gpad.g=0;autoGas=0}}
  if(state=='podium'){podT+=dt;if(podEntries(raceNo-1).every(e=>e.t!=null)&&podT>8||podT>30){if(raceNo>=NR()){state='mega';podT=0}else nextRace()}}
  if(state=='mega')podT+=dt;
- if(state=='count'){// Verrouillage moteur : aucune accélération ni déplacement avant la fin du compte à rebours.
-  speed=0;pxVel=0;const o=Math.ceil(cd);cd=Math.max(0,cd-dt);const n=Math.ceil(cd);if(n!=o&&n>0){beep(440);say(String(n),1.5,1.2)}if(cd<=0){speed=0;pxVel=0;state='play';beep(880);say('Go!',1.4,1.2)}}
+ if(state=='count'){// Verrouillage moteur : compte à rebours local ou horodatage commun en multijoueur.
+  speed=0;pxVel=0;const o=Math.ceil(cd);if(MP&&mpStartAt>0)cd=Math.max(0,(mpStartAt-Date.now())/1000);else cd=Math.max(0,cd-dt);const n=Math.ceil(cd);if(n!=o&&n>0){beep(440);say(String(n),1.5,1.2)}if(cd<=0){speed=0;pxVel=0;if(MP)mpRaceStartAt=mpStartAt;state='play';beep(880);say('Go!',1.4,1.2)}}
  cv.style.transform=(shake>0||crash>0)?'translate('+((Math.random()-.5)*8)+'px,'+((Math.random()-.5)*8)+'px)':'';
  if(state=='play'){if(fk()&&MP&&forkRoute<0&&isOutrunLeader()&&ps.i>=N-FORK+12){forkRoute=px<0?0:1;forkRouteBy=myId;remoteLeaderRoute=forkRoute;}
    if(fk()&&MP&&forkRoute>=0&&!isOutrunLeader()&&ps.i>=N-FORK+7){
@@ -2721,7 +2721,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     if(px*allowed<.12)px=allowed*(.12+nearFork*.24);
     pxVel=0;
    }if(fk()&&!forkSaid&&ps.i>=N-FORK){forkSaid=1;say('Left or right?',1.6,1.1)}if(time<10&&!lowSaid){lowSaid=1;say('Hurry up!',1.3,1.25)}if(time>12)lowSaid=0}
- if(state=='play'&&MP){raceT+=dt;time=99}else if(state=='play'&&MODE!=2&&MODE!==5){time-=dt;if(time<=0){time=0;state='over';winT=0;say('Time up!',1.4,1.1)}}
+ if(state=='play'&&MP){if(mpRaceStartAt>0)raceT=Math.max(0,(Date.now()-mpRaceStartAt)/1000);else raceT+=dt;time=99}else if(state=='play'&&MODE!=2&&MODE!==5){time-=dt;if(time<=0){time=0;state='over';winT=0;say('Time up!',1.4,1.1)}}
  if(crash>0){crash-=dt;ang+=dt*12;speed=Math.max(0,speed-MAX*2*dt);if(crash<=0){ang=0;px=Math.max(-.8,Math.min(.8,px))}}
  else{const gm=gear?1:.62,accelRate=gear?.2:.36;
   if(state=='play'&&glueT<=0&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm*__vp()[0])speed+=MAX*accelRate*__vp()[1]*(1-sp*.55)*dt;else speed-=MAX*.15*dt}

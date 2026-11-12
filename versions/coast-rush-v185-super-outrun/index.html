@@ -2721,7 +2721,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     if(px*allowed<.12)px=allowed*(.12+nearFork*.24);
     pxVel=0;
    }if(fk()&&!forkSaid&&ps.i>=N-FORK){forkSaid=1;say('Left or right?',1.6,1.1)}if(time<10&&!lowSaid){lowSaid=1;say('Hurry up!',1.3,1.25)}if(time>12)lowSaid=0}
- if(state=='play'&&MP){if(mpRaceStartAt>0)raceT=Math.max(0,(Date.now()-mpRaceStartAt)/1000);else raceT+=dt;time=99}else if(state=='play'&&MODE!=2&&MODE!==5){time-=dt;if(time<=0){time=0;state='over';winT=0;say('Time up!',1.4,1.1)}}
+ if(state=='play'&&MP){if(mpRaceStartAt>0)raceT=Math.max(0,(Date.now()-mpRaceStartAt)/1000);else raceT+=dt}if(state=='play'&&MODE!=2&&MODE!==5){time-=dt;if(time<=0){time=0;state='over';winT=0;say('Time up!',1.4,1.1)}}
  if(crash>0){crash-=dt;ang+=dt*12;speed=Math.max(0,speed-MAX*2*dt);if(crash<=0){ang=0;px=Math.max(-.8,Math.min(.8,px))}}
  else{const gm=gear?1:.62,accelRate=gear?.2:.36;
   if(state=='play'&&glueT<=0&&(inp.g||gpad.g||autoGas)){if(speed<MAX*gm*__vp()[0])speed+=MAX*accelRate*__vp()[1]*(1-sp*.55)*dt;else speed-=MAX*.15*dt}

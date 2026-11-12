@@ -1867,8 +1867,10 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
    ctx.restore();
   }
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
-  for(const c of s.cars){const pct=((c.zr!=null?c.zr:c.z)%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(s.tun&&cw>2){const s2=segs[s.i+1],fb=(s2&&s2.v&&s2.b)?s2.b:b;if(fb.y<sy-1){const ow=c.w||.2;ctx.save();ctx.globalCompositeOperation='lighter';for(const sd of[-1,1]){const nx=cxs+sd*cw*.3,hn=cw*.1,fx=fb.x+fb.w*(c.o+sd*ow*.3),hf=fb.w*(ow*.1+.07);const g=ctx.createLinearGradient(0,sy,0,fb.y);g.addColorStop(0,'rgba(255,230,160,.26)');g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(nx-hn,sy);ctx.lineTo(fx-hf,fb.y);ctx.lineTo(fx+hf,fb.y);ctx.lineTo(nx+hn,sy);ctx.closePath();ctx.fill()}ctx.restore()}}drawObj(c,cxs,sy,cw)}
+  for(const c of s.cars){const pct=((c.zr!=null?c.zr:c.z)%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(s.tun&&cw>2){const s2=segs[s.i+1],fb=(s2&&s2.v&&s2.b)?s2.b:b;if(fb.y<sy-1){const ow=c.w||.2;ctx.save();ctx.globalCompositeOperation='lighter';for(const sd of[-1,1]){const nx=cxs+sd*cw*.3,hn=cw*.1,fx=fb.x+fb.w*(c.o+sd*ow*.3),hf=fb.w*(ow*.1+.07);const g=ctx.createLinearGradient(0,sy,0,fb.y);g.addColorStop(0,'rgba(255,230,160,.26)');g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(nx-hn,sy);ctx.lineTo(fx-hf,fb.y);ctx.lineTo(fx+hf,fb.y);ctx.lineTo(nx+hn,sy);ctx.closePath();ctx.fill()}ctx.restore()}}if(c.k!=='t')drawObj(c,cxs,sy,cw)}
   if(clip)ctx.restore();ctx.globalAlpha=1}
+ // Projectiles lancés : rendu en surimpression pour qu'ils restent visibles au-dessus de la chaussée, même sur les petits écrans.
+ for(const thrown of objs){if(thrown.k==='t'){const tx=W/2+Math.max(-1,Math.min(1,thrown.o||0))*W*.27,ty=H*.82,tw=Math.max(10,Math.min(22,W*.04));ctx.save();ctx.globalAlpha=1;drawObj(thrown,tx,ty,tw);ctx.restore()}}
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

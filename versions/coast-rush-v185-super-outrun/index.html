@@ -2860,7 +2860,7 @@ try{$('go').focus()}catch(e){}
 requestAnimationFrame(loop);
 </script><script>
 if('serviceWorker' in navigator){
- const refreshKey='cr-sw-auto-refresh-v184';
+ const refreshKey='cr-sw-auto-refresh-v185-fix1';
  navigator.serviceWorker.addEventListener('controllerchange',()=>{
   try{if(sessionStorage.getItem(refreshKey)==='1')return;sessionStorage.setItem(refreshKey,'1')}catch(e){}
   location.reload();

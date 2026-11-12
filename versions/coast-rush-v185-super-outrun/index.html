@@ -397,6 +397,23 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots .music{left:80.5%!important;top:3.5%!important;width:17.5%!important;height:5.4%!important}
 #crMenuHotspots .sound{left:80.5%!important;top:8.32%!important;width:17.5%!important;height:5.4%!important}
 #crMenuHotspots .music::before,#crMenuHotspots .sound::before{right:10.5%!important;top:31%!important;width:12.5%!important;height:65%!important}
+
+/* V187 — cases audio : hitboxes limitées aux petits carrés visibles du visuel. */
+#crMenuHotspots .music,#crMenuHotspots .sound{
+ left:93.3%!important;width:2.8%!important;height:4.1%!important;
+ border:0!important;border-radius:2px!important;background:transparent!important;
+ box-shadow:none!important;clip-path:none!important;
+}
+#crMenuHotspots .music{top:5.2%!important}
+#crMenuHotspots .sound{top:10.0%!important}
+#crMenuHotspots .music::before,#crMenuHotspots .sound::before{
+ left:0!important;right:auto!important;top:0!important;
+ width:100%!important;height:100%!important;border-radius:3px!important;
+}
+#crMenuHotspots .music:focus,#crMenuHotspots .sound:focus,
+#crMenuHotspots .music.cr-active,#crMenuHotspots .sound.cr-active{
+ outline:none!important;background:transparent!important;box-shadow:none!important;
+}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V185 - V184 préservée; Super Outrun 10 arrivées; 55 circuits; Afrique et Asie enrichies"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>

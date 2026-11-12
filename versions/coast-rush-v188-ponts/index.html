@@ -1156,14 +1156,14 @@ BLD=new Set(['bkh','brn','adb','skl','mes','dun','bel','ons']),GEN=new Set(['p',
 const AK={sheep:.85,camel:1.4,cow:1.2,deer:.7,ibex:.65,bear:.9,fox:.55,coyote:.6,cat:.45,dog:.75,squirrel:1,hare:.5,pigeon:.55,gull:.6,toucan:.65,parrot:.55,crab:.65,kanga:1.2},MK={blued:1.8,campa:1.3,geys:1.2,church:.68},ZK={tenn:1.6,play:1.8,fair:1.8,gym:1.55,cine:1.4,hotel:1.2,mall:1.65,stad:1.1},
 DK={leaf:2.4,hay:1.13,dun:2.8,rock:1.2,fnt:3.4,gon:3,lmp:2.6,lant:2.8,hut:2.35,cot:2.35,bkh:2.5,hau:4.35,tik:2.8,mos:3.4,oli:3.4,col:2.8,taxi:3.8,phone:3.4,tulip:2,pumpkin:2,matry:2.2,sakura:3.2,torii:3.4};
 function __crLocalSprite(sp,x,y,sc){
- const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1)*(['arch','sagrada','basil','colo','liberty','ben','pyr','opera','ttower','burj','belf'].includes(sp.k)?4.5:1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
+ const t=sp.t;let s=sc*H/2*100*(sp.z||1)*(t=='M'?.75*(MK[sp.k]||1)*(['arch','sagrada','basil','colo','liberty','ben','pyr','opera','ttower','burj','belf'].includes(sp.k)?2:1):t=='Z'?1.2*(ZK[sp.k]||1):t=='K'?.6:t=='D'?.6*(DK[sp.k]||3)*(BLD.has(sp.k)?2:1):.6*(AK[sp.a]||1));
  // V186 : limite universelle des sprites locaux géants, sur TOUS les circuits.
  // Les monuments/bâtiments restent lisibles mais ne peuvent plus remplir l'écran.
  // V198 : limites distinctes par famille. Le plafond uniforme de 0,3 % rendait
  // monuments, ports, gondoles et feuilles pratiquement invisibles.
- if(t==='M')s=Math.min(s,H*.10);
+ if(t==='M')s=Math.min(s,H*.055);
  else if(t==='Z')s=Math.min(s,H*.075);
- else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.022:.018));
+ else if(t==='D')s=Math.min(s,H*(sp.k==='leaf'?.018:sp.k==='gon'?.035:.018));
  else if(t==='K')s=Math.min(s,H*.035);
  const T=flash;if(s<.01)return;const F=(t=='M'||t=='Z'||t=='K'||t=='D')?1:(sp.o>0?-1:1);
  const R=(c,a,b,w,h)=>{ctx.fillStyle=c;ctx.fillRect(x+a*s*F-(F<0?w*s:0),y-(b+h)*s,w*s,h*s)},E=(c,a,b,rx,ry)=>{ctx.fillStyle=c;ctx.beginPath();ctx.ellipse(x+a*s*F,y-b*s,rx*s,ry*s,0,0,7);ctx.fill()},Q=(c,...p)=>{ctx.fillStyle=c;ctx.beginPath();for(let i=0;i<p.length;i+=2){const X=x+p[i]*s*F,Y=y-p[i+1]*s;i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)}ctx.fill()};
@@ -1176,10 +1176,32 @@ function __crLocalSprite(sp,x,y,sc){
   else if(k=='christ'){Q('#4a8a52',-40,0,-18,14,18,14,40,0);R('#f2f2f2',-1.5,14,3,22);R('#f2f2f2',-13,32,26,2.6);E('#f2f2f2',0,38,2.4,2.8)}
   else if(k=='opera'){Q('#f6f3ec',-30,0,-26,22,-10,0);Q('#efe9de',-18,0,-10,30,8,0);Q('#f6f3ec',-2,0,8,34,22,0);Q('#efe9de',12,0,24,24,34,0);R('#c9b99a',-34,0,70,4)}
   else if(k=='liberty'){R('#9a9a92',-8,0,16,12);Q('#6fb59a',-5,12,-6,34,6,34,5,12);E('#6fb59a',0,38,3.4,4);R('#6fb59a',3,36,2,16);E('#ffd24a',4,54,2,2.6);Q('#6fb59a',-3,41,-5,47,-1.5,42,0,48,1.5,42,5,47,3,41)}
-  else if(k=='basil'){R('#c84a3a',-12,0,24,22);R('#e8d8c0',-3,22,6,16);E('#2aa06a',-10,26,4,4);E('#e0c040',10,26,4,4);E('#2a6ad0',-5,32,3.4,3.4);E('#e07a2a',5,32,3.4,3.4);E('#c8323a',0,44,5,6);R('#ffd400',-.4,50,.8,6)}
+  else if(k=='basil'){
+   // Basilique de Venise : façade à cinq arches et dômes.
+   R('#d9c29a',-30,0,60,24);R('#b89b72',-30,0,60,3);
+   for(let j=-2;j<=2;j++){const xx=j*11;
+    R('#f0dfba',xx-4,4,8,15);E('#8b7659',xx,18,4,4);
+    R('#b08e65',xx-1,0,2,12);
+   }
+   for(const[xx,yy,rr]of[[-20,26,8],[-7,30,9],[7,30,9],[20,26,8]]){
+    E('#c8ae80',xx,yy,rr,rr*.72);Q('#b99c70',xx-rr,yy,xx,yy+rr*.9,xx+rr,yy);
+   }
+   Q('#b89a6e',-30,24,0,39,30,24);R('#e6d4b0',-2,0,4,24);
+  }
   else if(k=='burj'){Q('#c8d4de',-4,0,-3,30,-2,60,-1,88,0,104,1,88,2,60,3,30,4,0);Q('#e8eef4',0,0,0,104,1,88,2,60,3,30,4,0)}
   else if(k=='ttower'){Q('#e8532a',-12,0,-3,30,-2,52,0,60,2,52,3,30,12,0,6,0,0,22,-6,0);R('#fff',-4.5,30,9,2);R('#fff',-3,46,6,2);R('#e8532a',-.5,58,1,12)}
-  else if(k=='sagrada'){R('#cdb68c',-20,0,40,18);for(const[a,h]of[[-14,38],[-5,54],[5,58],[14,40]]){R('#d6c29a',a-2.4,18,4.8,h-18);Q('#c8b088',a-2.4,h,a,h+10,a+2.4,h)}}
+  else if(k=='sagrada'){
+   // Sagrada Família : nef centrale et tours élancées à pointes distinctes.
+   Q('#bda77f',-29,0,-29,20,-22,27,22,27,29,20,29,0);
+   R('#d5c29b',-25,4,50,3);R('#9b896a',-18,0,3,16);R('#9b896a',15,0,3,16);
+   for(const[a,hh]of[[-22,44],[-11,57],[0,70],[11,58],[22,45]]){
+    R('#c9b48c',a-3.2,20,6.4,hh-20);
+    R('#e0cfaa',a-2.2,hh-10,4.4,7);
+    Q('#b99f72',a-3.4,hh-10,a,hh+5,a+3.4,hh-10);
+    R('#8b7759',a-.8,hh-19,1.6,5);
+   }
+   R('#8b7759',-2,28,4,5);
+  }
   else if(k=='belf'){R('#a8503a',-5,0,10,40);R('#8a4030',-6,40,12,3);Q('#5a6a7a',-4,43,0,64,4,43);E('#fff',0,32,2.6,2.6);R('#a8503a',-14,0,9,16);R('#a8503a',5,0,9,16)}
   else if(k=='matter'){Q('#8a8f9f',-46,0,-4,70,2,64,46,0);Q('#f4f6fb',-12,48,-4,70,2,64,8,50,3,54,-3,50)}
   else if(k=='light'){Q('#f2f2f2',-5,0,-3.5,40,3.5,40,5,0);R('#d8323a',-4.6,10,9.2,7);R('#d8323a',-4,26,8,7);R('#3a3f4a',-4.5,40,9,5);E('#ffe27a',0,45,3,3);Q('#d8323a',-5.5,48,0,57,5.5,48)}
@@ -1187,7 +1209,16 @@ function __crLocalSprite(sp,x,y,sc){
   else if(k=='mosq'){R('#e8d8b0',-18,0,36,16);E('#e8d8b0',0,16,12,10);R('#efe2bc',-26,0,5,50);R('#efe2bc',21,0,5,50);Q('#2a9a8a',-27,50,-23.5,60,-19,50);Q('#2a9a8a',19,50,23.5,60,27,50)}
   else if(k=='mill'){Q('#c9b08a',-8,0,-5,34,5,34,8,0);Q('#8a4a2a',-7,34,0,44,7,34);ctx.strokeStyle='#6a4a2a';ctx.lineWidth=s*1.3;ctx.beginPath();for(let j=0;j<4;j++){const a=T*.6+j*1.5708;ctx.moveTo(x,y-36*s);ctx.lineTo(x+Math.cos(a)*28*s,y-36*s-Math.sin(a)*28*s)}ctx.stroke()}
   else if(k=='castle'){R('#8d8070',-26,0,52,26);R('#8d8070',-32,0,10,38);R('#8d8070',22,0,10,38);R('#8d8070',-6,0,12,44);Q('#7a3a2a',-33,38,-27,50,-21,38);Q('#7a3a2a',21,38,27,50,33,38);Q('#7a3a2a',-7,44,0,56,7,44);R('#3a2a20',-3,0,6,9)}
-  else if(k=='arch'){R('#b25a34',-34,0,16,44);R('#b25a34',18,0,16,44);Q('#b25a34',-34,44,-30,56,30,56,34,44,18,38,-18,38)}
+  else if(k=='arch'){
+   // Arc de Triomphe : masse en pierre, grande arche centrale et reliefs.
+   Q('#b9a17d',-38,0,-38,48,-33,54,33,54,38,48,38,0);
+   Q('#d3bd98',-31,0,-29,43,-24,47,24,47,29,43,31,0);
+   Q('#8a765c',-15,0,-15,24,-12,29,12,29,15,24,15,0);
+   R('#8f795d',-38,0,76,4);R('#d8c4a2',-36,47,72,5);
+   for(let j=-2;j<=2;j++)R('#8c775e',j*10-1.2,34,2.4,7);
+   R('#8c775e',-34,15,4,8);R('#8c775e',30,15,4,8);
+   R('#e0caa7',-3,29,6,2);
+  }
   else if(k=='port'){R('#d0bda0',-62,0,124,7);R('#8a9aa8',-58,7,116,3);for(let j=0;j<5;j++){R('#d8c9ae',-54+j*25,7,3,34+(j%2)*10);R('#f0e5d2',-58+j*25,39+(j%2)*10,12,3)}R('#a8b7c2',-72,0,14,22);R('#a8b7c2',58,0,14,22);R('#fff',-45,16,88,2);R('#e8e0d0',-38,22,76,2)}
   else if(k=='needle'){Q('#dfe6ee',-1.5,0,-3,42,3,42,1.5,0);E('#dfe6ee',0,48,16,3.2);E('#9fd0ff',0,51,9,3.2);R('#dfe6ee',-.8,52,1.6,14)}
   else if(k=='campa'){R('#b8503a',-5,0,10,56);R('#8a3a2a',-6,56,12,2);Q('#4a8a6a',-5.5,58,0,76,5.5,58);R('#d8b050',-.4,76,.8,5);R('#7a2a1a',-2,44,4,6)}
@@ -1287,7 +1318,14 @@ function __crLocalSprite(sp,x,y,sc){
  else if(k=='mos'){R('#c8b078',-2,0,4,3);E('#e8c850',0,6,4.5,4.5);for(let j=0;j<8;j++)E(['#e8433a','#2a8ad8','#2ecc71','#fff'][j&3],Math.cos(j)*3.2,6+Math.sin(j)*3.2,1.1,1.1)}
  else if(k=='bel'){R(cc,-3.5,0,7,18);R('#5a2a1a',-4,18,8,1.4);Q('#3a5a6a',-3.4,19.4,0,28,3.4,19.4);E('#fff',0,14,1.4,1.4);R('#2a1a1a',-1,0,2,4)}
  else if(k=='lmp'){R('#2a3a3a',-.4,0,.8,14);R('#2a3a3a',-1.4,0,2.8,1.4);Q('#2a3a3a',-1.6,14,0,17,1.6,14);E('#ffe9a0',0,13.4,1.1,1.4)}
- else if(k=='gon'){R('#fff',-.6,0,1.2,12);for(let j=0;j<4;j++)R('#2a4a9a',-.6,j*3,1.2,1.2);E('#d8b050',0,12.6,1.2,.8)}
+ else if(k=='gon'){
+   // Gondole vue de côté : coque effilée, liseré et rame.
+   Q('#171d2c',-15,3,-11,0,11,0,15,3,8,6,-8,6);
+   Q('#252f49',-12,3,-8,1,8,1,12,3,7,4,-7,4);
+   R('#d6b36a',-8,3,16,.8);
+   R('#5b3d25',-1,5,2,8);Q('#d8c39a',-4,12,0,15,4,12);
+   R('#5a3d24',10,4,1.2,13);Q('#b58a50',8,16,12,16,12,19,9,18);
+  }
  else if(k=='ice'){Q('#cfe8f4',-5,0,-3,12,-1,6,1,16,3,8,5,0);Q('#ffffffaa',-1,6,1,16,.2,6)}
  else if(k=='rock'){E('#3a3a42',0,3,6,3.6);E('#4a4a54',-2,4,3,2)}
  else if(k=='fnt'){R('#c8ccd4',-6,0,12,2);R('#c8ccd4',-.8,2,1.6,6);E('#9ad0f0',0,9,3,1.2);E('#cfe8f8',0,10.2,.8,1.4)}
@@ -2905,7 +2943,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v199';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v200';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();

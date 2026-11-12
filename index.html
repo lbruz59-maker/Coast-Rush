@@ -2031,6 +2031,51 @@ function useItem(){if(!useItems||state!='play'||!item||crash>0)return;const I=it
  else if(I==3){let t=null;for(const c of cars)if(c.z>p&&!(c.hit>0)&&(!t||c.z<t.z))t=c;if(MODE==2&&bnd&&bnd.hp>0&&bnd.z>p)t=bnd;if(t&&t.rp){myShell={t:t.peer,id:Date.now()};setTimeout(()=>{myShell=null},1500)}objs.push({k:'s',z:p+segL*3,o:px,w:.1,sp:MAX*1.5,t,born:flash,life:2.4});whoosh()}
  else if(I==7){musk=6;boost=2.5;boostSfx();say('Musk flight!',1.5,1.1);msg='MUSK : VOL AU-DESSUS DU TRAFIC';msgT=2.2}else{star=6;boostSfx();say('Invincible!',1.5,1.1)}}
 
+/* V186 — AI opponents collect and use track bonuses in every game mode. */
+function crAiCanPublishBonus(){
+ return !NET() || window.__crRoomHost===true || (window.DUEL===1);
+}
+function crAiBonus(c,dt){
+ if(!c||c.rp||c.z<=0||state!=='play')return;
+ if(c.aiBonusCd==null)c.aiBonusCd=.8+((Math.abs(c.z|0)%17)/20);
+ c.aiBonusCd=Math.max(0,c.aiBonusCd-dt);
+ const ci=Math.floor(c.z/segL);
+ if(!c.aiItem){
+  for(let di=-1;di<=1&&!c.aiItem;di++){
+   const sg=segs[ci+di];if(!sg||!sg.sp)continue;
+   for(const pick of sg.sp){
+    if(pick.t!=='I'||flash<(pick.off||0)||Math.abs(c.o-pick.o)>.62)continue;
+    pick.off=flash+7;
+    c.aiItem=pick.k||1+(Math.abs((c.z|0)+ci*13)%8);
+    break;
+   }
+  }
+ }
+ if(!c.aiItem||c.aiBonusCd>0)return;
+ const item=c.aiItem,p=pos+playerZ,authority=crAiCanPublishBonus();
+ c.aiItem=0;c.aiBonusCd=2.4+((Math.abs(c.z|0)%13)/10);
+ if(item===1){c.sp=Math.min(MAX*1.18,c.sp+MAX*.24);c.aiBoostT=1.8;return}
+ if(item===4||item===8){c.aiStarT=3.2;c.sp=Math.min(MAX*1.22,c.sp+MAX*.16);return}
+ if(item===7){c.aiMuskT=4;c.sp=Math.min(MAX*1.2,c.sp+MAX*.2);return}
+ if(item===6){
+  if(authority)objs.push({k:'g',z:c.z+segL*2,o:c.o,w:.05,sp:MAX*3,tt:flash,aiOwner:1});
+  return;
+ }
+ if(item===3){
+  let target=null;
+  for(const other of cars)if(other!==c&&other.z>c.z+segL*2&&other.z<c.z+segL*30&&(!target||other.z<target.z))target=other;
+  if(authority&&target)objs.push({k:'s',z:c.z+segL*2,o:c.o,w:.12,sp:MAX*1.5,t:target,born:flash,life:2.8,aiOwner:1});
+  else if(authority&&Math.abs(p-c.z)<segL*28)objs.push({k:'b',z:p+segL*4,o:px,w:.2,sp:0,id:Math.random()*1e9|0,tt:flash,aiOwner:1});
+  return;
+ }
+ if(item===2||item===5){
+  if(!authority)return;
+  const targetZ=Math.abs(p-c.z)<segL*28?p+segL*(4+(Math.abs(c.z|0)%3)):c.z+segL*6;
+  objs.push({k:item===5?'o':'b',z:Math.max(0,targetZ),o:Math.abs(p-c.z)<segL*28?px:c.o,w:item===5?.3:.2,sp:0,id:Math.random()*1e9|0,tt:flash,aiOwner:1});
+ }
+}
+
+
 const DF=[{n:'FACILE',t:120,k:28,b:45,s:65},{n:'NORMAL',t:90,k:40,b:60,s:55},{n:'DIFFICILE',t:65,k:56,b:80,s:45}];let dfi=1,saved=0,best=0,myShell=null,waitT=0,rdyT=0,cd=0,countShown=0,padAx=0,tiltAx=0,tiltMode=0,gyInit=0,pp=[],drift=0,driftSide=0,driftHold=0,brakeWasDown=0,driftMarkClock=0,driftTrail=[];
 const prox={},seenSh={},ate={},eatQ=[],smoke=[],gpad={g:0,b:0};
 // Pools de particules : réutilisation des objets pour limiter le garbage collector.
@@ -2237,7 +2282,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(MODE==2&&state=='play'){sirT-=dt;if(sirT<=0&&ac){sirT=.45;sirF^=1;tone(sirF?960:720,ac.currentTime,.4,'sawtooth',.035)}}
  netTick(dt);
  for(const c of cars){if(c.z<0)continue;c.bt=(c.bt||0)-dt;if(c.b&&!(c.hit>0)){c.o=Math.sin(flash*1.4+c.ph)*.6;c.cool-=dt}
-  if(c.rp){}else if(c.hit>0){c.hit-=dt;c.o+=c.vo*dt;c.z+=c.sp*dt*.5;if(c.hit<=0){c.vo=0;if(c.noTp)c.lane=Math.max(-.7,Math.min(.7,c.o));else c.o=c.lane;if(!c.noTp)c.z+=segL*45;c.noTp=0}}else{c.z+=c.sp*dt*(c.sft>0?c.sf:(c.shr>0?.55:1));if(!c.b&&!c.rp)c.o+=(c.lane-c.o)*Math.min(1,dt*3)}if(c.shr>0)c.shr-=dt;if(c.sft>0)c.sft-=dt;
+  if(c.rp){}else if(c.hit>0){c.hit-=dt;c.o+=c.vo*dt;c.z+=c.sp*dt*.5;if(c.hit<=0){c.vo=0;if(c.noTp)c.lane=Math.max(-.7,Math.min(.7,c.o));else c.o=c.lane;if(!c.noTp)c.z+=segL*45;c.noTp=0}}else{c.z+=c.sp*dt*(c.sft>0?c.sf:(c.shr>0?.55:1));if(!c.b&&!c.rp)c.o+=(c.lane-c.o)*Math.min(1,dt*3)}if(c.shr>0)c.shr-=dt;if(c.sft>0)c.sft-=dt;crAiBonus(c,dt);
   // LOD simulation : les véhicules éloignés avancent à coût minimal.
   // Leur IA de voie, collisions et interactions ne tournent qu'à proximité.
   const carDistance=Math.abs(c.z-(pos+playerZ));

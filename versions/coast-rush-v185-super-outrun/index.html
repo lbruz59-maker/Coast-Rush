@@ -503,6 +503,8 @@ TH.push(
 {n:'SÉOUL',sky:['#788fce','#e5edf2'],g:['#818f87','#818f87'],d:'sk',cv:0.94,hl:0.62},
 {n:'SAMOA',sky:['#55c8d7','#e5edf2'],g:['#3c9366','#3c9366'],d:'p',w:1,cv:1.08,hl:0.7}
 );
+// Garantit les deux palettes de matières utilisées par le décor pour chaque destination ajoutée.
+TH.forEach(t=>{if(!Array.isArray(t.m)||t.m.length<2)t.m=['#8a7058','#5f4a3a']});
 const THI=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,22,23,24,25,26,15,16,17,18,19,20,21,27,28,29,...Array.from({length:25},(_,i)=>30+i),55,56,57,58,59],HC=['#f4efe0','#e8b88a','#d85a4a','#9ac0e0','#e8d070'],HC2=['#ff5a8a','#ffd400','#ffffff','#ff8a3a','#c06aff'],ADS=['TURBO','NEON','SUN CLUB','BOOST','RADIO 5','HOTEL','DINER'];
 const ADREG={
  ALPS:['ALPINE','CHALET','MONT BLANC','SKI CLUB','NEIGE','THERMES'],

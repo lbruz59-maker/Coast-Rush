@@ -1878,7 +1878,7 @@ function crDrawHUD(){
   // quel que soit le mode ou l'identifiant de circuit (OutRun / Super OutRun inclus).
   const distancePeers=MP?remotes.filter(r=>{const q=r&&r.presence;return q&&q.mp&&q.st!=='over'&&Number.isFinite(Number(q.pos))}):[];
   if(MP){
-   const bx=W*.28,bw=W*.44,by=72,center=bx+bw/2,range=segL*18;
+   const bx=W*.28,bw=W*.44,by=64,center=bx+bw/2,range=segL*18;
    ctx.fillStyle='#000b';rrp(bx,by-5,bw,10,5);ctx.fill();
    ctx.strokeStyle='#ffffff88';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(bx+5,by);ctx.lineTo(bx+bw-5,by);ctx.stroke();
    ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(center,by,3.2,0,Math.PI*2);ctx.fill();

@@ -1257,14 +1257,16 @@ function podEntries(r,mega){const L=[{id:myId,n:myName,c:myCol,v:myV,rt:rts}];fo
 function outrunLeaderId(){const ids=[myId].concat(remotes.filter(r=>r.presence&&(r.presence.mp||r.presence.cid===-1)).map(r=>r.peer));return ids.sort()[0]||myId}function isOutrunLeader(){return myId===outrunLeaderId()}function __crSpawnSlot(id){let h=2166136261;const v=String(id||'PLAYER');for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h%256}
 function crSpreadBRPlayer(){if(MODE!==5||!brWrap)return;const k=__crSpawnSlot(myId)%64;pos=brWrap*(k+.5)/64;px=k%2?-.38:.38;pxVel=0;speed=0;}
 function gridStart(){
- // Emplacement déterministe propre à chaque identifiant : indépendant de l'ordre
- // et du délai d'arrivée des présences réseau sur les différents appareils.
- const slot=__crSpawnSlot(myId);
+ // Battle Royale conserve ses départs répartis sur le circuit.
  if(MODE===5){crSpreadBRPlayer();return}
- const spreadSlot=slot%64;
- // Répartir les départs sur toute la longueur du circuit, comme en Battle Royale.
- pos=trackLen*(spreadSlot+.5)/64;
- px=spreadSlot%2===0?-.38:.38;
+ // Les autres modes : vraie grille compacte au départ, avec un ordre identique
+ // sur chaque appareil grâce au tri des identifiants de la salle.
+ const ids=[myId,...remotes.filter(r=>r&&r.peer&&r.presence&&(r.presence.mp||r.presence.cid!==undefined)).map(r=>r.peer)].sort();
+ const slot=Math.max(0,ids.indexOf(myId));
+ const lanes=[-.72,-.24,.24,.72];
+ const row=Math.floor(slot/lanes.length);
+ px=lanes[slot%lanes.length];
+ pos=row*segL*1.6;
  pxVel=0;carTurn=0;speed=0;crash=0;ang=0;
 }
 function finishRace(){rts[raceNo-1]=raceT;state='podium';podT=0;say('Race complete!',1.5,1.1);jingle()}
@@ -2669,7 +2671,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
  if(state=='brief'){briefT+=dt;if(briefT>BL){state=MODE==2?'play':'count';if(MODE!=2)cd=3.9;else{speed=MAX*.35;msg='POURSUITE !';msgT=2}}}
  if(state=='arrest'){arT+=dt;if(arT>3.8){state='play';endCourse()}}
  if(state=='escape'){escT+=dt;if(escT>3.6){bnd.hp=0;state='over';winT=0;msg='RETOUR À LA CIRCULATION';sayF('Échec de mission. Vous êtes rétrogradé à la circulation.')}}
- if(state=='wait'){waitT+=dt;speed=0;pxVel=0;const R=remotes.filter(r=>r.presence&&(MP?r.presence.mp:r.presence.cid!==undefined));if(waitT>14||(waitT>1.5&&R.every(r=>MP?(r.presence.rr||0)>=raceNo:r.presence.rdy>0))){state='count';cd=3.9;speed=0;pxVel=0;inp.g=0;gpad.g=0;autoGas=0}}
+ if(state=='wait'){waitT+=dt;speed=0;pxVel=0;const R=remotes.filter(r=>r.presence&&(MP?r.presence.mp:r.presence.cid!==undefined));if(waitT>14||(waitT>1.5&&R.every(r=>MP?(r.presence.rr||0)>=raceNo:r.presence.rdy>0))){gridStart();state='count';cd=3.9;speed=0;pxVel=0;inp.g=0;gpad.g=0;autoGas=0}}
  if(state=='podium'){podT+=dt;if(podEntries(raceNo-1).every(e=>e.t!=null)&&podT>8||podT>30){if(raceNo>=NR()){state='mega';podT=0}else nextRace()}}
  if(state=='mega')podT+=dt;
  if(state=='count'){// Verrouillage moteur : aucune accélération ni déplacement avant la fin du compte à rebours.

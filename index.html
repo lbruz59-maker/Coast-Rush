@@ -2310,10 +2310,13 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     b.o+=(target.o-b.o)*Math.min(1,dt*8);
     // Déclencher l'impact avant de franchir la voiture cible.
     if(dz<=segL*.6){
-     const dir=Math.sign(target.o-b.o)||((Math.random()<.5)?-1:1);
-     if(target.b&&MODE==2){hitCar(target,3,dir);target.hp=Math.max(0,target.hp-1);target.hit=1.25;target.vo=dir*3.8;target.sft=1;target.noTp=1;target.shr=4.5;objs.push({k:'x',z:target.z,o:target.o,w:.55,tt:flash});shake=.45}
-     else{hitCar(target,3,dir);objs.push({k:'x',z:target.z,o:target.o,w:.3,tt:flash})}
-     dead=true;
+     if(target.rp){b.z=target.z-segL*.55;b.o=target.o}
+     else{
+      const dir=Math.sign(target.o-b.o)||((Math.random()<.5)?-1:1);
+      if(target.b&&MODE==2){hitCar(target,3,dir);target.hp=Math.max(0,target.hp-1);target.hit=1.25;target.vo=dir*3.8;target.sft=1;target.noTp=1;target.shr=4.5;objs.push({k:'x',z:target.z,o:target.o,w:.55,tt:flash});shake=.45}
+      else{hitCar(target,3,dir);objs.push({k:'x',z:target.z,o:target.o,w:.3,tt:flash})}
+      dead=true;
+     }
     }else{
      b.z+=Math.min(b.sp*dt,Math.max(segL*.06,dz-segL*.32));
     }

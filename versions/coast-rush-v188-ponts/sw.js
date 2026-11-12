@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v195-real-bridges";
+const CACHE_NAME="coast-rush-v197-real-bridges";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

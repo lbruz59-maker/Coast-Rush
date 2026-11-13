@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v210-mp3-soundtracks";
+const CACHE_NAME="coast-rush-v211-mp3-continuity";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

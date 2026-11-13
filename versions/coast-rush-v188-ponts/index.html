@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V185 – Super OutRun 10 arrivées</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V210 – correction menu tactile</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>:root{--vw:1vw;--vh:1vh;--dvh:1dvh;--pw:100vw;--ph:100vh}html.crRot{--vw:1vh;--vh:1vw;--dvh:1dvw}
 html.crRot,html.crRot body{overflow:hidden!important}html.crRot body{position:fixed!important;top:0!important;left:var(--pw)!important;width:var(--ph)!important;height:var(--pw)!important;margin:0!important;transform:rotate(90deg)!important;transform-origin:0 0!important}
@@ -570,7 +570,24 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots.cr-modal-open{pointer-events:auto!important;z-index:1000!important}
 #crMenuHotspots.cr-modal-open>button{pointer-events:none!important;visibility:hidden!important}
 #crMenuHotspots .crMenuLayer{pointer-events:auto!important;z-index:1001!important}
-</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V185 - V184 préservée; Super Outrun 10 arrivées; 55 circuits; Afrique et Asie enrichies"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
+
+/* V210 — correction robuste du menu tactile et du démarrage. */
+#menu{position:fixed!important;inset:0!important;isolation:isolate!important;z-index:100!important;pointer-events:auto!important}
+#crMenuHotspots{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ z-index:9999!important;pointer-events:auto!important;touch-action:manipulation!important;
+}
+#crMenuHotspots>button{
+ pointer-events:auto!important;visibility:visible!important;touch-action:manipulation!important;
+ -webkit-tap-highlight-color:rgba(0,238,255,.24)!important;z-index:1000!important;
+}
+#crMenuHotspots .play{
+ left:24%!important;top:78%!important;width:42%!important;height:19%!important;
+ min-width:0!important;min-height:0!important;z-index:1002!important;
+ pointer-events:auto!important;clip-path:none!important;
+}
+#crMenuHotspots .careerBig{z-index:1003!important}
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V210 – correction démarrage et zones tactiles; contenu de jeu préservé"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>

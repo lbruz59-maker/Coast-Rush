@@ -2588,6 +2588,7 @@ function renderScene(){
   else if(st==='escape')drawEscape(escT);
   else if(st==='podium')drawPodium(podEntries(raceNo-1),'COURSE '+raceNo+' / '+NR(),podT,false);
   else if(st==='mega')drawPodium(podEntries(0,true),'CLASSEMENT FINAL',podT,true);
+  else if(st==='ttfinish')drawTimeTrialFinish();
   else if(st==='win'){if(MODE===2)drawChaseVictory(winT);else if(MODE===0||MODE===6)(winT<8?drawOutrunVictoryCine:drawOutrunMap)(winT);else if(MODE===5)__crBRWin(winT);else drawEnding(winT)}
   else if(st==='over'){if((MODE===0||MODE===6)&&winT>=3.5)drawOutrunMap(winT);else drawDefeat(winT)}
   return;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V210 – correction menu tactile</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V207 restaurée + fin chrono</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>:root{--vw:1vw;--vh:1vh;--dvh:1dvh;--pw:100vw;--ph:100vh}html.crRot{--vw:1vh;--vh:1vw;--dvh:1dvw}
 html.crRot,html.crRot body{overflow:hidden!important}html.crRot body{position:fixed!important;top:0!important;left:var(--pw)!important;width:var(--ph)!important;height:var(--pw)!important;margin:0!important;transform:rotate(90deg)!important;transform-origin:0 0!important}
@@ -562,32 +562,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots>button.sound[aria-pressed="false"]::before{
  background:transparent!important;box-shadow:none!important;
 }
-
-/* V209 — menu tactile : garantir que les hitboxes restent au-dessus du visuel et captent les clics/touches. */
-#menu{isolation:isolate!important;z-index:100!important;pointer-events:auto!important}
-#crMenuHotspots{position:absolute!important;inset:0!important;z-index:999!important;pointer-events:none!important}
-#crMenuHotspots>button{pointer-events:auto!important;visibility:visible!important;touch-action:manipulation!important;-webkit-tap-highlight-color:rgba(0,238,255,.22)!important}
-#crMenuHotspots.cr-modal-open{pointer-events:auto!important;z-index:1000!important}
-#crMenuHotspots.cr-modal-open>button{pointer-events:none!important;visibility:hidden!important}
-#crMenuHotspots .crMenuLayer{pointer-events:auto!important;z-index:1001!important}
-
-/* V210 — correction robuste du menu tactile et du démarrage. */
-#menu{position:fixed!important;inset:0!important;isolation:isolate!important;z-index:100!important;pointer-events:auto!important}
-#crMenuHotspots{
- position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
- z-index:9999!important;pointer-events:auto!important;touch-action:manipulation!important;
-}
-#crMenuHotspots>button{
- pointer-events:auto!important;visibility:visible!important;touch-action:manipulation!important;
- -webkit-tap-highlight-color:rgba(0,238,255,.24)!important;z-index:1000!important;
-}
-#crMenuHotspots .play{
- left:24%!important;top:78%!important;width:42%!important;height:19%!important;
- min-width:0!important;min-height:0!important;z-index:1002!important;
- pointer-events:auto!important;clip-path:none!important;
-}
-#crMenuHotspots .careerBig{z-index:1003!important}
-</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V210 – correction démarrage et zones tactiles; contenu de jeu préservé"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V185 - V184 préservée; Super Outrun 10 arrivées; 55 circuits; Afrique et Asie enrichies"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
@@ -2579,7 +2554,6 @@ function drawWeather(){
  if(wx==='storm'){const c=flash%7,k=Math.floor(flash/7);if(c<.45){const a=1-c/.45;ctx.fillStyle='rgba(235,240,255,'+(a*((c<.12||(c>.2&&c<.3))?.5:.2)).toFixed(2)+')';ctx.fillRect(0,0,W,H);if(c<.3&&!window.__CR_LITE){let x=((k*173)%100)/100*W*.8+W*.1,y=0;ctx.strokeStyle='rgba(255,255,255,'+a.toFixed(2)+')';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x,y);for(let j=1;j<9;j++){x+=Math.sin(k*7+j*2.3)*14;y=j*H/17;ctx.lineTo(x,y)}ctx.stroke()}}}
  ctx.restore();
 }
-
 function crFmtTime(v){v=Math.max(0,Number(v)||0);return Math.floor(v/60)+':'+(v%60).toFixed(2).padStart(5,'0')}
 function drawTimeTrialFinish(){
  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#07172d');g.addColorStop(.58,'#123d62');g.addColorStop(1,'#07101f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
@@ -2613,7 +2587,6 @@ function renderScene(){
   else if(st==='arrest')drawArrest(arT);
   else if(st==='escape')drawEscape(escT);
   else if(st==='podium')drawPodium(podEntries(raceNo-1),'COURSE '+raceNo+' / '+NR(),podT,false);
-  else if(st==='ttfinish')drawTimeTrialFinish();
   else if(st==='mega')drawPodium(podEntries(0,true),'CLASSEMENT FINAL',podT,true);
   else if(st==='win'){if(MODE===2)drawChaseVictory(winT);else if(MODE===0||MODE===6)(winT<8?drawOutrunVictoryCine:drawOutrunMap)(winT);else if(MODE===5)__crBRWin(winT);else drawEnding(winT)}
   else if(st==='over'){if((MODE===0||MODE===6)&&winT>=3.5)drawOutrunMap(winT);else drawDefeat(winT)}
@@ -2902,7 +2875,7 @@ function offRoad(){const N=segs.length,i=Math.floor((pos+playerZ)/segL);if(fk()&
 function endCourse(){if(MODE==2&&bnd&&bnd.hp>0&&state=='play'){chaseCircuitsDone++;if(chaseCircuitsDone>=2){time-=20;startEscape(bnd);return}}
  if(MP&&MODE!=2&&MODE!==5&&stage%RL==0){finishRace();return}
  if(MODE===3){ttFinishAt=performance.now();ttFinishTime=ttStartAt>0?(ttFinishAt-ttStartAt)/1000:0;ttFinishScore=Math.floor(score);ttFinishCircuit=selectedTimeTrialCircuit;let oldBest=0;try{const records=JSON.parse(localStorage.getItem('cr_tt_records')||'{}');oldBest=Number(records[ttFinishCircuit])||0;if(!oldBest||ttFinishScore>oldBest){records[ttFinishCircuit]=ttFinishScore;localStorage.setItem('cr_tt_records',JSON.stringify(records))}}catch(e){}ttFinishBest=Math.max(oldBest,ttFinishScore);ttFinishNewBest=ttFinishScore>=ttFinishBest;try{const done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0,1,2,9,12]');[0,1,2,9,12].forEach(id=>{if(!done.includes(id))done.push(id)});if(!done.includes(selectedTimeTrialCircuit))done.push(selectedTimeTrialCircuit);crUnlockNextTimeTrial(done,selectedTimeTrialCircuit);localStorage.setItem('cr_time_trial_done',JSON.stringify(done))}catch(e){}state='ttfinish';winT=0;speed=0;return}
- if(isLast()){[0,1,2,9,12].forEach(id=>{if(!done.includes(id))done.push(id)});if(!done.includes(selectedTimeTrialCircuit))done.push(selectedTimeTrialCircuit);crUnlockNextTimeTrial(done,selectedTimeTrialCircuit);localStorage.setItem('cr_time_trial_done',JSON.stringify(done))}catch(e){}toMenu();if(typeof window.__crShowTimeTrialCourses==='function')window.__crShowTimeTrialCourses();return}if((MODE===0||MODE===6)&&!outrunVisited.includes(cid))outrunVisited.push(cid);state='win';winT=0;if(MODE==2){chaseRank=Math.min(5,chaseRank+1);try{localStorage.setItem('cr_chase_rank',chaseRank)}catch(e){}sayF('Mission accomplie ! Médaille remise. Promotion accordée.');}else say('Congratulations!',1.7,1);return}
+ if(isLast()){if(MODE===3){try{const done=JSON.parse(localStorage.getItem('cr_time_trial_done')||'[0,1,2,9,12]');[0,1,2,9,12].forEach(id=>{if(!done.includes(id))done.push(id)});if(!done.includes(selectedTimeTrialCircuit))done.push(selectedTimeTrialCircuit);crUnlockNextTimeTrial(done,selectedTimeTrialCircuit);localStorage.setItem('cr_time_trial_done',JSON.stringify(done))}catch(e){}toMenu();if(typeof window.__crShowTimeTrialCourses==='function')window.__crShowTimeTrialCourses();return}if((MODE===0||MODE===6)&&!outrunVisited.includes(cid))outrunVisited.push(cid);state='win';winT=0;if(MODE==2){chaseRank=Math.min(5,chaseRank+1);try{localStorage.setItem('cr_chase_rank',chaseRank)}catch(e){}sayF('Mission accomplie ! Médaille remise. Promotion accordée.');}else say('Congratulations!',1.7,1);return}
  if(!MODE||MODE===6){const turn=forkRoute>=0?forkRoute:(px<0?0:1);cposk=MODE===6?soNext(stage,cposk,turn):cposk+turn;outrunTurnChoices.push(turn);}stage++;forkRoute=-1;forkRouteBy='';cid=MODE==4?14+stage:MODE===6?orId(stage,cposk):MODE?stage-1:stage*(stage-1)/2+cposk;if(MODE===0||MODE===6)outrunVisited.push(cid);buildCourse(cid);forkSaid=0;pos=0;say('Checkpoint!',1.5,1.1);jingle();px=0;time+=DF[dfi].s*(wx=='snow'?1.1:1);msg='STAGE '+stage+' · '+th.n;msgT=3;/* Chase HQ : pas de seconde cinématique au passage du circuit 1 au circuit 2. La poursuite continue directement avec le même suspect. */}
 let rm=null,lastSend=0,remotes=[],myPeer=null,mpStartAt=0,mpRaceStartAt=0;let myName='J'+Math.random().toString(36).slice(2,5).toUpperCase();const sm={};try{const sv=localStorage.getItem('cr_name');if(sv)myName=sv}catch(e){}let myCol='#ff2a2a';
 let useItems=1,slip=0,mini=0,lastPass=0,gun=0,gunT=0,gunSide=0,crGunHeat=0,crGunLock=0,musk=0,chaseHits=0,chaseRank=0,remoteLeaderRoute=0,forkRoute=-1,forkRouteBy='';try{chaseRank=+(localStorage.getItem('cr_chase_rank')||0)}catch(e){}let atq=[],seenAt={};let brArmor=0,brHp=100,brLap=1,brAlive=10,brRank=0,brHitFlash=0,brCircuit=0,brWrap=0,brKills=0,glueT=0,antiMissile=0;const BRIT=[6,6,3,3,8,9,9,10,11,12,13],BRTH=[0,25,2,1,12],BRN=['CÔTE ÉCLAIR','NÉON VEGAS','COL DES ALPES','ARÈNE DU DÉSERT','TOKYO DRIFT'];

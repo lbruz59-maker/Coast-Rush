@@ -928,7 +928,7 @@ let vm=0,forkSaid=0,lowSaid=0,shake=0,musOn=1,crRaceTrack=0,BUS=null;
 const crRaceMusic=[new Audio('./assets/menu-music.mp3'),new Audio('./assets/sunset-racers.mp3'),new Audio('./assets/endless-horizon.mp3')];
 crRaceMusic.forEach(a=>{a.loop=true;a.preload='auto';a.volume=.7});
 const crMenuMusic=crRaceMusic[0];
-function crMenuMusicPlay(){if(!musOn||state!=='menu')return;crRaceMusicStop();crMenuMusic.currentTime=0;const p=crMenuMusic.play();if(p&&p.catch)p.catch(()=>{});}
+function crMenuMusicPlay(){if(!musOn||state!=='menu'||!crMenuMusic.paused)return;const p=crMenuMusic.play();if(p&&p.catch)p.catch(()=>{});}
 function crMenuMusicStop(){crMenuMusic.pause();}
 function crRaceMusicPlay(){if(!musOn||state!=='play')return;crMenuMusic.pause();const a=crRaceMusic[crRaceTrack];if(!a)return;crRaceMusic.forEach((x,i)=>{if(i!==crRaceTrack)x.pause()});const p=a.play();if(p&&p.catch)p.catch(()=>{});}
 function crRaceMusicStop(){crRaceMusic.forEach(a=>{a.pause()});}

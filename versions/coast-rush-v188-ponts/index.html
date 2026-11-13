@@ -851,7 +851,7 @@ $('tvhide').addEventListener('click',()=>{const ids=['l','r','g','br','gr','it',
 $('fs').addEventListener('click',()=>{const d=document,el=d.documentElement;
  if(d.fullscreenElement||d.webkitFullscreenElement)(d.exitFullscreen||d.webkitExitFullscreen).call(d);
  else{const f=el.requestFullscreen||el.webkitRequestFullscreen;if(f)f.call(el);else toast(isIOS?"iPhone : touche Partager ⬆ puis « Sur l'écran d'accueil » pour jouer en plein écran.":"Plein écran indisponible ici.");if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{})}});
-$('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;$('mm').textContent='♪ Musique : '+(musOn?'ON':'OFF');if(mus)mus.gain.value=musOn?1:0;if(window.__crMusicOut)window.__crMusicOut.gain.setTargetAtTime(musOn?1:0,ac?ac.currentTime:0,.015)});$('mm').onclick=()=>$('mu').click();
+$('mu').addEventListener('click',()=>{musOn^=1;$('mu').style.opacity=musOn?1:.4;$('mm').textContent='♪ Musique : '+(musOn?'ON':'OFF');if(mus)mus.gain.value=musOn?1:0;if(window.__crMusicOut)window.__crMusicOut.gain.setTargetAtTime(musOn?.7:0,ac?ac.currentTime:0,.015)});$('mm').onclick=()=>$('mu').click();
 $('sf').addEventListener('click',()=>{vm^=1;if(vm&&window.speechSynthesis)speechSynthesis.cancel();$('sf').style.opacity=vm?.4:1;if(master)master.gain.value=vm?0:.9});
 document.querySelectorAll('.st[data-t]').forEach(b=>b.onclick=()=>{tr=+b.dataset.t;document.querySelectorAll('.st[data-t]').forEach(x=>x.classList.toggle('sel',x==b))});
 $('ui-key').onclick=()=>{inputMode='keyboard';applyInputMode()};$('ui-pad').onclick=()=>{inputMode='controller';applyInputMode()};$('ui-touch').onclick=()=>{inputMode='touch';applyInputMode()};applyInputMode();
@@ -901,7 +901,7 @@ function initAudio(){
  const AC=window.AudioContext||window.webkitAudioContext;
  if(!AC){toast('Audio non pris en charge par ce navigateur.');return}
  try{ac=new AC()}catch(err){toast('Impossible de démarrer le moteur audio : '+(err.message||err));return}
- master=ac.createGain();master.gain.value=.9;const cmp=ac.createDynamicsCompressor();master.connect(cmp);cmp.connect(ac.destination);if(ac.resume)ac.resume().catch(()=>{});mus=ac.createGain();mus.gain.value=1;window.__crMusicOut=ac.createGain();window.__crMusicOut.gain.value=musOn?1:0;window.__crMusicOut.connect(master);mus.connect(window.__crMusicOut);
+ master=ac.createGain();master.gain.value=.9;const cmp=ac.createDynamicsCompressor();master.connect(cmp);cmp.connect(ac.destination);if(ac.resume)ac.resume().catch(()=>{});mus=ac.createGain();mus.gain.value=1;window.__crMusicOut=ac.createGain();window.__crMusicOut.gain.value=musOn?.7:0;window.__crMusicOut.connect(master);mus.connect(window.__crMusicOut);
  nb=ac.createBuffer(1,ac.sampleRate*.3,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
  // Create tunnel reverb before connecting the engine send to it.
  tunnelRev=ac.createConvolver();const tir=ac.createBuffer(2,Math.floor(ac.sampleRate*1.35),ac.sampleRate);for(let ch=0;ch<2;ch++){const td=tir.getChannelData(ch);for(let z=0;z<td.length;z++)td[z]=(Math.random()*2-1)*Math.pow(1-z/td.length,2.1)}tunnelRev.buffer=tir;

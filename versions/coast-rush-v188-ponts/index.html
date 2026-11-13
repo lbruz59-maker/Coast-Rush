@@ -562,6 +562,14 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots>button.sound[aria-pressed="false"]::before{
  background:transparent!important;box-shadow:none!important;
 }
+
+/* V209 — menu tactile : garantir que les hitboxes restent au-dessus du visuel et captent les clics/touches. */
+#menu{isolation:isolate!important;z-index:100!important;pointer-events:auto!important}
+#crMenuHotspots{position:absolute!important;inset:0!important;z-index:999!important;pointer-events:none!important}
+#crMenuHotspots>button{pointer-events:auto!important;visibility:visible!important;touch-action:manipulation!important;-webkit-tap-highlight-color:rgba(0,238,255,.22)!important}
+#crMenuHotspots.cr-modal-open{pointer-events:auto!important;z-index:1000!important}
+#crMenuHotspots.cr-modal-open>button{pointer-events:none!important;visibility:hidden!important}
+#crMenuHotspots .crMenuLayer{pointer-events:auto!important;z-index:1001!important}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V185 - V184 préservée; Super Outrun 10 arrivées; 55 circuits; Afrique et Asie enrichies"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>

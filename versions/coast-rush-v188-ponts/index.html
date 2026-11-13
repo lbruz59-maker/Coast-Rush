@@ -562,13 +562,19 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
 #crMenuHotspots>button.sound[aria-pressed="false"]::before{
  background:transparent!important;box-shadow:none!important;
 }
+
+/* V209 — requested in-game title pair; visual-only overlay, no menu hit-area changes. */
+#crGameTitles{position:absolute;z-index:8;top:clamp(10px,3.2vh,34px);left:50%;transform:translateX(-50%);width:94%;display:flex;flex-direction:column;align-items:center;gap:clamp(2px,.6vh,7px);pointer-events:none;text-align:center}
+#crGameTitles .cr-title-main{font:1000 italic clamp(21px,5.1vh,52px)/.95 system-ui,Arial,sans-serif;letter-spacing:.055em;color:#fff;text-shadow:0 3px 0 #142747,0 0 18px #ff9b79,0 0 30px #55dfff;white-space:nowrap}
+#crGameTitles .cr-title-sub{font:900 clamp(11px,2.15vh,22px)/1 system-ui,Arial,sans-serif;letter-spacing:.2em;color:#bff5ff;text-shadow:0 2px 5px #06152a,0 0 12px #3acfff;white-space:nowrap}
+@media(max-width:600px){#crGameTitles{top:clamp(8px,2.2vh,20px);gap:3px}#crGameTitles .cr-title-main{font-size:clamp(18px,5.3vw,32px)}#crGameTitles .cr-title-sub{font-size:clamp(10px,2.7vw,16px)}}
 </style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V185 - V184 préservée; Super Outrun 10 arrivées; 55 circuits; Afrique et Asie enrichies"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
 <div class="b drive-control" id="g" data-k="g">GAZ</div><div class="b drive-control" id="br" data-k="b">FREIN</div>
 <div class="b drive-control" id="it">?</div><div class="b" id="sf">🔊</div><div class="b drive-control" id="hn">📯</div><div class="b drive-control" id="gr">LO/HI</div><div class="b" id="fs">⛶</div><div class="b" id="tvhide" aria-label="Masquer les commandes">⌃</div><div class="b" id="mu">♪</div>
-<div id="menu"><div id="sun"></div><div id="grid"></div><div id="mc"><div id="sub">★ ARCADE RACING ★</div><h1>COAST RUSH</h1>
+<div id="menu"><div id="crGameTitles" aria-label="SUNSET RACERS — ENDLESS HORIZON"><span class="cr-title-main">SUNSET RACERS</span><span class="cr-title-sub">ENDLESS HORIZON</span></div><div id="sun"></div><div id="grid"></div><div id="mc"><div id="sub">★ ARCADE RACING ★</div><h1>COAST RUSH</h1>
 <button class="st" id="go">▶ DÉMARRER</button>
 
 <div class="row"><b>🎮 Interface</b><button class="st" id="ui-key">⌨ CLAVIER</button><button class="st" id="ui-pad">🎮 MANETTE</button><button class="st" id="ui-touch">📱 TACTILE</button><span id="input-hint" style="font:10px monospace;color:#7fe0ff;width:100%"></span></div>

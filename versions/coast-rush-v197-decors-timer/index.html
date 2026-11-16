@@ -2200,6 +2200,7 @@ function __crDrawOverpasses(vis){
    ctx.fillStyle=fg('#f8f8f5',ft);ctx.beginPath();ctx.arc(cx,cy,rr,0,Math.PI*2);ctx.fill();
    ctx.strokeStyle=fg('#d52d2d',ft);ctx.lineWidth=Math.max(1.5,rr*.17);ctx.stroke();
    ctx.fillStyle=fg('#202326',ft);ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold '+Math.max(5,rr*.7)+'px Arial';ctx.fillText('4,0',cx,cy-rr*.08);ctx.font='bold '+Math.max(3,rr*.36)+'px Arial';ctx.fillText('M',cx,cy+rr*.48)
+  }
   // Trafic continu sur toute la largeur du pont et de ses rampes latérales.
   // Vitesse encore réduite et dessin au premier plan pour ne pas être masqué.
   {
@@ -2217,11 +2218,11 @@ function __crDrawOverpasses(vis){
     const count=5,carLen=len*1.55,trainLen=carLen*count,trainH=Math.max(7,ht*1.65);
     const u=(((crBridgeTrafficClock||0)*10)%(W+trainLen+40))/(W+trainLen+40);
     const head=-trainLen+u*(W+trainLen+40);
-    const yA=rampY_A+fasciaA*.32,yB=rampY_B+fasciaB*.32;
+    const yA=deckTopA,yB=deckTopB;
     ctx.save();
     for(let car=0;car<count;car++){
      const x=head+car*carLen,w=carLen;
-     const baseY=lerp(yA,yB,Math.max(0,Math.min(1,(x+w*.5)/W)));
+     const baseY=lerp(yA,yB,Math.max(0,Math.min(1,(x+w*.5-leftA)/Math.max(1,rightA-leftA))));
      ctx.fillStyle='#10182088';ctx.fillRect(x,baseY-trainH*.08,w+1,trainH*.18);
      ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,baseY-trainH*.2,w+1,trainH*.2);
      if(car===0){

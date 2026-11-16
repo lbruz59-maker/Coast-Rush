@@ -855,16 +855,15 @@ if(th.n==='SAINT-POL-SUR-TERNOISE')segs.forEach(seg=>{
  if(i%71===33)seg.sp.push({t:'D',k:'cot',o:side*2.55,z:1.0,c:'#f0e4c8'});
 });
 segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i===s.tS||s.i===s.tEnd-1,k:s.i}]}else if(s.bridge)s.sp=s.sp.filter(o=>o.t==='I')});
- // Un seul portail dessiné à l'entrée réelle du tunnel.
- // Ne jamais répéter cinq arches pleines sur les segments suivants :
- // leur superposition formait le grand rectangle noir avant que l'intérieur
- // soit lisible. Les autres segments restent des parois internes sans plaque.
+ // V248 : rétablir les portails superposés qui formaient le bloc noir
+ // profond du tunnel. Les cinq premières arches internes sont dessinées
+ // comme de vrais portails opaques, derrière l'arche d'entrée.
  for(const tr of tunnelRanges){
   const entry=segs[tr.start];
   if(entry&&entry.tun)entry.sp=[{t:'T',o:0,port:true,k:tr.start}];
-  for(let j=1;j<Math.min(5,tr.len);j++){
+  for(let j=1;j<Math.min(6,tr.len);j++){
    const inner=segs[tr.start+j];
-   if(inner&&inner.tun)inner.sp=[];
+   if(inner&&inner.tun)inner.sp=[{t:'T',o:0,port:true,k:tr.start+j}];
   }
   const exit=segs[tr.start+tr.len];
   if(exit&&!exit.tun)exit.sp.push({t:'T',o:0,port:true,k:tr.start+tr.len});
@@ -1855,7 +1854,7 @@ else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx
   // Aucune plaque rectangulaire noire ne peut apparaître avant l'ouverture.
   ctx.save();ctx.beginPath();__arch();
   const tunnelShade=ctx.createLinearGradient(x,y-hh,x,y);
-  tunnelShade.addColorStop(0,'#101522');tunnelShade.addColorStop(.62,'#182235');tunnelShade.addColorStop(1,'#25384d');
+  tunnelShade.addColorStop(0,'#000000');tunnelShade.addColorStop(.62,'#000000');tunnelShade.addColorStop(1,'#000000');
   ctx.fillStyle=tunnelShade;ctx.fill();ctx.restore();
   ctx.strokeStyle='#b9ad98';ctx.lineWidth=Math.max(1,w*.13);ctx.beginPath();ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.stroke();
   ctx.strokeStyle='#eee4cf';ctx.lineWidth=Math.max(.8,w*.045);ctx.beginPath();ctx.moveTo(x-k*.91,y);ctx.lineTo(x-k*.91,y-hh);ctx.arc(x,y-hh,k*.91,Math.PI,0);ctx.lineTo(x+k*.91,y);ctx.stroke();

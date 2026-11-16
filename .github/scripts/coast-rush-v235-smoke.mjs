@@ -90,21 +90,30 @@ try {
   }
 
   const timeTrial = await desktop.evaluate(() => {
-    MODE = 3; MODE0 = 3; state = 'ttfinish';
-    ttFinishCircuit = 0; ttFinishTime = 73.42; ttFinishScore = 1234;
-    ttFinishBest = 1234; ttFinishNewBest = true;
+    MODE = 3; MODE0 = 3; selectedTimeTrialCircuit = 0;
+    localStorage.setItem('cr_tt_records', JSON.stringify({ '0': 1234 }));
+    localStorage.setItem('cr_time_trial_done', JSON.stringify([0, 1, 2, 9, 12]));
+    ttStartAt = performance.now() - 73420;
+    state = 'play'; score = 1234; endCourse();
+    const equalRecord = ttFinishNewBest;
+    state = 'play'; score = 1235; endCourse();
+    const improvedRecord = ttFinishNewBest;
+    const unlocked = JSON.parse(localStorage.getItem('cr_time_trial_done') || '[]');
     renderScene();
     const screen = typeof drawTimeTrialFinish === 'function';
     const continued = crContinueTimeTrial();
     return {
       screen,
+      equalRecord,
+      improvedRecord,
+      nextCircuitUnlocked: unlocked.includes(4),
       continued,
       menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
       pickerVisible: !!document.querySelector('.crMenuLayer')
     };
   });
   await assertNoRuntimeError(desktop, 'écran de fin du contre-la-montre');
-  if (!timeTrial.screen || !timeTrial.continued || !timeTrial.menuVisible || !timeTrial.pickerVisible) {
+  if (!timeTrial.screen || timeTrial.equalRecord || !timeTrial.improvedRecord || !timeTrial.nextCircuitUnlocked || !timeTrial.continued || !timeTrial.menuVisible || !timeTrial.pickerVisible) {
     throw new Error('Échec de l’écran ou du retour au sélecteur contre-la-montre : ' + JSON.stringify(timeTrial));
   }
   await desktop.keyboard.press('Escape');

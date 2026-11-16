@@ -881,12 +881,18 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
  for(let bi=0;bi<segs.length;){
   if(!segs[bi].bridge){bi++;continue}
   let bj=bi+1;while(bj<segs.length&&segs[bj].bridge===segs[bi].bridge)bj++;
-  let hasOriginalArch=false;
-  for(let ai=bi;ai<bj;ai++)if(segs[ai].sp&&segs[ai].sp.some(o=>o.t==='A')){hasOriginalArch=true;break}
-  if(hasOriginalArch)for(let ai=bi;ai<bj;ai++){
+  // Le corridor complet des arches est réservé, y compris les intervalles entre portiques.
+  const overlapsArch=archStart>=0&&bi<archEnd&&bj>archStart;
+  if(overlapsArch)for(let ai=bi;ai<bj;ai++){
    const q=segs[ai];delete q.bridge;delete q.bk;delete q.bd;delete q.bcx;delete q.bc;
   }
   bi=bj;
+ }
+ // Les ponts en hauteur sont également interdits dans le corridor des arches.
+ if(archStart>=0)for(const at of overpassZones){
+  if(at+2>=archStart&&at-2<archEnd){
+   for(let ai=at-2;ai<=at+2;ai++){const q=segs[ai];if(q)delete q.overpass;}
+  }
  }
  segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  // V186 : tous les monuments, bâtiments et décors locaux sont repoussés hors chaussée.

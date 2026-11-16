@@ -2811,6 +2811,27 @@ const crShowModes=()=>{
   actions.insertBefore(btn('DÉMARRER LA COURSE',()=>{if(!joined){toast('Rejoins une salle avant de démarrer');return}refresh();if(MODE===3&&!host){const hp=remotes.find(r=>r.peer===outrunLeaderId());if(!hp||!hp.presence||!Number.isInteger(+hp.presence.ttc)){toast('Attends la synchronisation du circuit choisi par l’hôte');return}selectedTimeTrialCircuit=+hp.presence.ttc}close();safeClick('go')},false),actions.children[1]||null);
   refresh();const poll=setInterval(()=>{if(!layer.isConnected){clearInterval(poll);return}refresh()},900);
  };
+ // Préférences du menu COMMANDES : chargées depuis cet appareil.
+ const CR_COMMAND_SETTINGS_KEY='coast_rush_command_settings_v1';
+ const crRestoreCommandSettings=()=>{
+  try{
+   const v=JSON.parse(localStorage.getItem(CR_COMMAND_SETTINGS_KEY)||'null');
+   if(!v||typeof v!=='object')return;
+   if(['touch','keyboard','controller'].includes(v.inputMode))inputMode=v.inputMode;
+   if(v.autoG===0||v.autoG===1)autoG=v.autoG;
+   if(v.autoGas===0||v.autoGas===1)autoGas=v.autoGas;
+   if(Number.isInteger(v.raceTrack)&&v.raceTrack>=0&&v.raceTrack<crRaceMusic.length)crRaceTrack=v.raceTrack;
+   if(v.useItems===0||v.useItems===1)useItems=v.useItems;
+   if(Number.isInteger(v.difficulty)&&v.difficulty>=0&&v.difficulty<DF.length)dfi=v.difficulty;
+   if(typeof v.monitoring==='boolean')crSetMonitoring(v.monitoring);
+   $('ag').textContent='Boîte : '+(autoG?'AUTO':'MANUELLE');
+   $('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL');
+   $('bn').textContent='Bonus : '+(useItems?'ON':'OFF');
+   $('df').textContent='Difficulté : '+DF[dfi].n;
+   applyInputMode();
+  }catch(e){}
+ };
+ crRestoreCommandSettings();
  const crShowCommands=()=>{
   const {layer,card,actions,btn}=crMakeLayer('COMMANDES ET RÉGLAGES','min(calc(94*var(--vw)),680px)');
   const row=(label,desc,choices,read,write)=>{const box=document.createElement('div');box.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff22;text-align:left';const info=document.createElement('div');const h=document.createElement('strong');h.textContent=label;const p=document.createElement('div');p.textContent=desc;p.style.cssText='font:11px system-ui;color:#b8d9ec';info.append(h,p);const sel=document.createElement('select');sel.style.cssText='max-width:48%;padding:9px;border-radius:8px;background:#07152b;color:white;border:1px solid #72dfff';choices.forEach((v,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=v;sel.appendChild(o)});sel.value=String(read());sel.onchange=()=>write(+sel.value);box.append(info,sel);card.insertBefore(box,actions)};
@@ -2821,6 +2842,14 @@ const crShowModes=()=>{
   row('Bonus','Objets et bonus en course',['Activés','Désactivés'],()=>useItems?0:1,v=>{useItems=v===0?1:0;$('bn').textContent='Bonus : '+(useItems?'ON':'OFF')});
   row('Difficulté','Niveau de pilotage',['Facile','Normal','Difficile'],()=>dfi,v=>{dfi=v;$('df').textContent='Difficulté : '+DF[dfi].n});
   row('Monitoring','Affichage des témoins de performances',['OFF','ON'],()=>window.__CR_PERF_VISIBLE__?1:0,v=>crSetMonitoring(v===1));
+  const save=btn('💾 SAUVEGARDER LES PARAMÈTRES',()=>{
+   try{
+    localStorage.setItem(CR_COMMAND_SETTINGS_KEY,JSON.stringify({inputMode,autoG,autoGas,raceTrack:crRaceTrack,useItems,difficulty:dfi,monitoring:!!window.__CR_PERF_VISIBLE__}));
+    toast('Paramètres sauvegardés sur cet appareil');
+   }catch(e){toast('Impossible de sauvegarder les paramètres');}
+  },true);
+  save.style.cssText+=';width:100%;min-height:46px;margin:14px 0 4px;background:linear-gradient(135deg,#126b82,#174b75);border:1px solid #72dfff;color:#fff;font-weight:900';
+  card.insertBefore(save,actions);
   const help=document.createElement('p');help.textContent='Tactile : boutons à l’écran. Clavier : flèches ou ZQSD, Espace pour les rapports, X pour le bonus, H pour le klaxon. Manette : stick ou croix directionnelle. Bouton BACK/SELECT (8) : pause/reprise. Bouton START (9) : valider.';help.style.cssText='font:12px/1.5 system-ui;color:#cce8fa;text-align:left;margin-top:12px';card.insertBefore(help,actions);
  };
  const statusFor=cls=>{

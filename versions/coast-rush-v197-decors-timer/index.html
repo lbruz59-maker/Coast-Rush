@@ -2060,7 +2060,7 @@ function __crUnderTraffic(a,yb,ya,k,ft){
    // Les cinq éléments sont accolés et dessinés comme une seule rame continue.
    const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
    const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600;
-   const baseY=a.y;
+   const baseY=yb+h*.3;
    if(head>W||head+trainW<0)return;
    ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
    const count=5,carW=trainW/count;

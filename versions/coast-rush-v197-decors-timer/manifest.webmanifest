@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Coast Rush V197 – Décors et timer",
   "short_name": "Coast Rush",
-  "description": "Traits de vitesse supprimés, timer réduit de 5 %, décors urbains animés et enrichis",
+  "description": "Version de référence Coast Rush V197 : timer réduit de 15 %, décors du tunnel agrandis et transitions de circuits fluidifiées",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

@@ -89,6 +89,27 @@ try {
     throw new Error('Le retour au menu ne réinitialise pas correctement l’interface : ' + JSON.stringify(returned));
   }
 
+  const timeTrial = await desktop.evaluate(() => {
+    MODE = 3; MODE0 = 3; state = 'ttfinish';
+    ttFinishCircuit = 0; ttFinishTime = 73.42; ttFinishScore = 1234;
+    ttFinishBest = 1234; ttFinishNewBest = true;
+    renderScene();
+    const screen = typeof drawTimeTrialFinish === 'function';
+    const continued = crContinueTimeTrial();
+    return {
+      screen,
+      continued,
+      menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
+      pickerVisible: !!document.querySelector('.crMenuLayer')
+    };
+  });
+  await assertNoRuntimeError(desktop, 'écran de fin du contre-la-montre');
+  if (!timeTrial.screen || !timeTrial.continued || !timeTrial.menuVisible || !timeTrial.pickerVisible) {
+    throw new Error('Échec de l’écran ou du retour au sélecteur contre-la-montre : ' + JSON.stringify(timeTrial));
+  }
+  await desktop.keyboard.press('Escape');
+  await desktop.waitForTimeout(250);
+  await desktop.evaluate(() => { MODE = 0; MODE0 = 0; });
   await desktop.locator('#crMenuHotspots button.play').click();
   await desktop.waitForTimeout(8000);
   await assertNoRuntimeError(desktop, 'après deuxième démarrage prolongé');

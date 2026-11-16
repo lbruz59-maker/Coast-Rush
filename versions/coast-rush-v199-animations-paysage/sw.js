@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v199-animations-paysage";
+const CACHE_NAME="coast-rush-v199-pont-monumental";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg","../../versions/coast-rush-v188-ponts/assets/menu-music.mp3","../../versions/coast-rush-v188-ponts/assets/sunset-racers.mp3","../../versions/coast-rush-v188-ponts/assets/endless-horizon.mp3"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith("coast-rush-")&&key!==CACHE_NAME).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});

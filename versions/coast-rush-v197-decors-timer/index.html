@@ -2115,7 +2115,9 @@ function __crBridges(vis,bs){
     else{bar(.45,.45,pal[0]);bar(1,.1,pal[2]);bar(.72,.06,pal[2]);if(s.i%4===0){post(0,pal[1]);post(.5,pal[1])}}
     if(s.i%14===0&&T!=='steel'&&T!=='suspension'&&T!=='wood'&&T!=='stone'&&T!=='desert'){const x=lerp(xa,xb,.5),y=lerp(a.y,b.y,.5),hh=lerp(ha,hb,.5);ctx.fillStyle=fg(pal[1],ft);ctx.fillRect(x-hh*.05,y-hh*3.4,Math.max(1,hh*.1),hh*3.4);ctx.fillRect(x-e*hh*.45,y-hh*3.4,Math.max(1,hh*.5),Math.max(1,hh*.08));if(night||T==='neon'){ctx.globalCompositeOperation='lighter';ctx.fillStyle='rgba(255,236,170,.55)';ctx.beginPath();ctx.arc(x-e*hh*.4,y-hh*3.3,Math.max(1.5,hh*.35),0,7);ctx.fill();ctx.globalCompositeOperation='source-over'}}
    }
-   if(s.bc&&s.i===s.bcx&&!window.__CR_LITE)__crUnderTraffic(a,yb,ya,k,ft);
+   // Le trafic est dessiné dans le rendu du pont lui-même, au-dessus de son tablier.
+   // Il reste actif sur les appareils en mode léger également.
+   if(s.bc&&s.i===s.bcx)__crUnderTraffic(a,yb,ya,k,ft);
   }
   ctx.restore();
  }

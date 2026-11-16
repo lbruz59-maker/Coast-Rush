@@ -1,0 +1,15 @@
+{
+  "id": "./",
+  "name": "Coast Rush V189 – OutRun Speed & Long Curves",
+  "short_name": "Coast Rush",
+  "description": "Vitesse de base 293 km/h, tiers +1 %, adversaires plus rapides et longues courbes style OutRun",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

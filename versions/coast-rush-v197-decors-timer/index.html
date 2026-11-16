@@ -2056,23 +2056,33 @@ function __crUnderTraffic(a,yb,ya,k,ft){
    }
    ctx.restore();
   }else{
+   // Train sur le tablier : les roues reposent sur le niveau supérieur des rails.
+   // Les cinq éléments sont accolés et dessinés comme une seule rame continue.
    const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
-   const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600,baseY=yb+h*.56;
+   const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600;
+   const baseY=lerp(a.y,b.y,.5);
    if(head>W||head+trainW<0)return;
    ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
    const count=5,carW=trainW/count;
+   // Ombre commune : la rame forme un seul véhicule visuellement.
+   ctx.fillStyle='#10182088';ctx.fillRect(head,baseY-trainH*.08,trainW,trainH*.16);
    for(let i=0;i<count;i++){
-    const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0);
-    if(i>0){ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x-carW*.075,baseY-trainH*.2,carW*.15,Math.max(2,trainH*.12))}
+    const x=head+i*carW,w=carW,y=baseY;
+    // Châssis jointif, sans espace entre locomotive et wagons.
+    ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.22,w+1,trainH*.2);
     if(i===0){
-     ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.52);ctx.lineTo(x+w*.13,y-trainH*.88);ctx.lineTo(x+w*.68,y-trainH*.88);ctx.lineTo(x+w*.82,y-trainH*.66);ctx.lineTo(x+w,y-trainH*.48);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
-     ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.75,w*.23,trainH*.3);
-     ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.42,Math.max(2,w*.045),Math.max(2,trainH*.12));
+     ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.22);ctx.lineTo(x+w*.12,y-trainH*.82);ctx.lineTo(x+w*.68,y-trainH*.82);ctx.lineTo(x+w*.84,y-trainH*.58);ctx.lineTo(x+w,y-trainH*.42);ctx.lineTo(x+w,y-trainH*.22);ctx.closePath();ctx.fill();
+     ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.72,w*.23,trainH*.29);
+     ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.39,Math.max(2,w*.045),Math.max(2,trainH*.11));
     }else{
-     ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.82,w,trainH*.82);
-     ctx.fillStyle=fg('#9ec6d8',ft);for(let q=0;q<5;q++){const wx=x+w*(.1+q*.17);ctx.fillRect(wx,y-trainH*.7,Math.max(1,w*.105),trainH*.27)}
+     ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.78,w+1,trainH*.56);
+     ctx.fillStyle=fg('#9ec6d8',ft);
+     for(let q=0;q<5;q++){const wx=x+w*(.08+q*.18);ctx.fillRect(wx,y-trainH*.68,Math.max(1,w*.105),trainH*.25)}
     }
-    ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
+    // Bande basse continue et bogies au même niveau pour tous les wagons.
+    ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x,y-trainH*.24,w+1,Math.max(2,trainH*.07));
+    ctx.fillStyle='#17191d';
+    for(const q of [.2,.8]){ctx.beginPath();ctx.arc(x+w*q,y-trainH*.08,Math.max(1.5,trainH*.09),0,Math.PI*2);ctx.fill()}
    }
    ctx.restore();
   }

@@ -2243,8 +2243,9 @@ function __crDrawOverpasses(vis){
      for(let car=0;car<3;car++){
       const u=((car/3+(lane===0?phase:-phase)/travelW)%1+1)%1;
       const x=-len+u*travelW;
-      const yA=rampY_A+fasciaA*(lane===0?.32:.58),yB=rampY_B+fasciaB*(lane===0?.32:.58);
-      drawDeckCar(x,lerp(yA,yB,u),(lane===0?['#e84a4a','#f0c040','#4ca7e8']:['#55bd78','#e78a45','#d7dce2'])[car],lane===0?1:-1);
+      const yA=deckTopA,yB=deckTopB;
+      // Le bas des roues doit toucher la surface du tablier, pas pendre dessous.
+      drawDeckCar(x,lerp(yA,yB,u)-ht*.44,(lane===0?['#e84a4a','#f0c040','#4ca7e8']:['#55bd78','#e78a45','#d7dce2'])[car],lane===0?1:-1);
      }
     }
    }

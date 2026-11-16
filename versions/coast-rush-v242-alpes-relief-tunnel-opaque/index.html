@@ -855,15 +855,16 @@ if(th.n==='SAINT-POL-SUR-TERNOISE')segs.forEach(seg=>{
  if(i%71===33)seg.sp.push({t:'D',k:'cot',o:side*2.55,z:1.0,c:'#f0e4c8'});
 });
 segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i===s.tS||s.i===s.tEnd-1,k:s.i}]}else if(s.bridge)s.sp=s.sp.filter(o=>o.t==='I')});
- // Le bloc de paroi devient visible avant que le portail unique soit assez grand.
- // On étale donc le massif sur les 5 premiers segments intérieurs : la première
- // crête apparaît dès l'entrée du bloc sombre, puis les reliefs se recouvrent en
- // profondeur. Les segments suivants gardent les parois de galerie d'origine.
+ // Un seul portail dessiné à l'entrée réelle du tunnel.
+ // Ne jamais répéter cinq arches pleines sur les segments suivants :
+ // leur superposition formait le grand rectangle noir avant que l'intérieur
+ // soit lisible. Les autres segments restent des parois internes sans plaque.
  for(const tr of tunnelRanges){
-  const entryBand=Math.min(5,tr.len);
-  for(let j=0;j<entryBand;j++){
-   const entry=segs[tr.start+j];
-   if(entry&&entry.tun)entry.sp=[{t:'T',o:0,port:true,k:tr.start+j}];
+  const entry=segs[tr.start];
+  if(entry&&entry.tun)entry.sp=[{t:'T',o:0,port:true,k:tr.start}];
+  for(let j=1;j<Math.min(5,tr.len);j++){
+   const inner=segs[tr.start+j];
+   if(inner&&inner.tun)inner.sp=[];
   }
   const exit=segs[tr.start+tr.len];
   if(exit&&!exit.tun)exit.sp.push({t:'T',o:0,port:true,k:tr.start+tr.len});
@@ -2131,7 +2132,11 @@ function __crDrawSkyMountains(){
  ctx.filter='none';
  const base=H/2+3;
  const drawAlpinePeak=(cx,peakY,halfW,color)=>{
-  ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+  // Réinitialiser explicitement l'état pour chaque sommet, y compris le
+  // canal alpha et le composite, afin qu'aucun fondu météo/décor ne transparaisse.
+  ctx.globalAlpha=1;
+  ctx.globalCompositeOperation='source-over';
+  ctx.filter='none';
   ctx.fillStyle=color;
   ctx.beginPath();
   ctx.moveTo(cx-halfW,base);
@@ -2143,6 +2148,8 @@ function __crDrawSkyMountains(){
   ctx.lineTo(cx+halfW,base);
   ctx.closePath();
   ctx.fill();
+  ctx.globalAlpha=1;
+  ctx.globalCompositeOperation='source-over';
   ctx.fillStyle='#f7f8fb';
   ctx.beginPath();
   ctx.moveTo(cx,peakY);

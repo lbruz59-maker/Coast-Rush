@@ -919,9 +919,10 @@ function initAudio(){
 function tone(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+d+.05)}
 function kick(t){const o=ac.createOscillator(),g=ac.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(40,t+.12);g.gain.setValueAtTime(.35,t);g.gain.exponentialRampToValueAtTime(.001,t+.15);o.connect(g);g.connect(BUS||SFX||master);o.start(t);o.stop(t+.2)}
 function hat(t){const s=ac.createBufferSource(),g=ac.createGain(),f=ac.createBiquadFilter();s.buffer=nb;f.type='highpass';f.frequency.value=7000;g.gain.setValueAtTime(.08,t);g.gain.exponentialRampToValueAtTime(.001,t+.05);s.connect(f);f.connect(g);g.connect(BUS||SFX||master);s.start(t);s.stop(t+.06)}
-let vm=0,forkSaid=0,lowSaid=0,shake=0,musOn=1,crRaceTrack=0,BUS=null;
+let vm=0,forkSaid=0,lowSaid=0,shake=0,musOn=1,crRaceTrack=0,crMusicVolume=.7,BUS=null;
 const crRaceMusic=[new Audio('../../versions/coast-rush-v188-ponts/assets/menu-music.mp3'),new Audio('../../versions/coast-rush-v188-ponts/assets/sunset-racers.mp3'),new Audio('../../versions/coast-rush-v188-ponts/assets/endless-horizon.mp3')];
-crRaceMusic.forEach(a=>{a.loop=true;a.preload='auto';a.volume=.7});
+crRaceMusic.forEach(a=>{a.loop=true;a.preload='auto';a.volume=crMusicVolume});
+function crSetMusicVolume(v){crMusicVolume=Math.max(0,Math.min(1,Number(v)||0));crRaceMusic.forEach(a=>{a.volume=crMusicVolume});}
 const crMenuMusic=crRaceMusic[0];
 function crMenuMusicPlay(){if(!musOn||state!=='menu'||!crMenuMusic.paused)return;const p=crMenuMusic.play();if(p&&p.catch)p.catch(()=>{});}
 function crMenuMusicStop(){crMenuMusic.pause();}
@@ -2821,6 +2822,7 @@ const crShowModes=()=>{
    if(v.autoG===0||v.autoG===1)autoG=v.autoG;
    if(v.autoGas===0||v.autoGas===1)autoGas=v.autoGas;
    if(Number.isInteger(v.raceTrack)&&v.raceTrack>=0&&v.raceTrack<crRaceMusic.length)crRaceTrack=v.raceTrack;
+   if(Number.isFinite(v.musicVolume))crSetMusicVolume(v.musicVolume);
    if(v.useItems===0||v.useItems===1)useItems=v.useItems;
    if(Number.isInteger(v.difficulty)&&v.difficulty>=0&&v.difficulty<DF.length)dfi=v.difficulty;
    if(typeof v.monitoring==='boolean')crSetMonitoring(v.monitoring);
@@ -2839,12 +2841,21 @@ const crShowModes=()=>{
   row('Accélérateur','Gestion de l’accélération',['Automatique','Manuel'],()=>autoGas?0:1,v=>{autoGas=v===0?1:0;$('gz').textContent='Gaz : '+(autoGas?'AUTO':'MANUEL')});
   row('Commandes','Type d’interface',['Tactile','Clavier','Manette'],()=>({touch:0,keyboard:1,controller:2}[inputMode]??0),v=>{inputMode=['touch','keyboard','controller'][v];applyInputMode()});
   row('Musique en course','Choisis la bande-son pendant les circuits',['Neon Highway','Sunset Racers','Endless Horizon'],()=>crRaceTrack,v=>{crRaceTrack=v;if(mus)mus.gain.value=0;if(window.__crMusicOut)window.__crMusicOut.gain.setTargetAtTime(0,ac?ac.currentTime:0,.015);if(state==='play'){crRaceMusicStop();if(musOn){const a=crRaceMusic[v];if(a){try{a.currentTime=0}catch(e){}crRaceMusicPlay()}}}});
+  const volumeBox=document.createElement('div');volumeBox.style.cssText='padding:12px 0;border-bottom:1px solid #ffffff22;text-align:left';
+  const volumeHead=document.createElement('div');volumeHead.style.cssText='display:flex;justify-content:space-between;gap:10px;align-items:center';
+  const volumeTitle=document.createElement('strong');volumeTitle.textContent='Volume de la musique';
+  const volumeValue=document.createElement('strong');volumeValue.textContent=Math.round(crMusicVolume*100)+' %';volumeValue.style.color='#7fe0ff';
+  volumeHead.append(volumeTitle,volumeValue);
+  const volumeDesc=document.createElement('div');volumeDesc.textContent='Réglage du volume du menu et des circuits';volumeDesc.style.cssText='font:11px system-ui;color:#b8d9ec;margin:3px 0 8px';
+  const volumeSlider=document.createElement('input');volumeSlider.type='range';volumeSlider.min='0';volumeSlider.max='100';volumeSlider.step='1';volumeSlider.value=String(Math.round(crMusicVolume*100));volumeSlider.setAttribute('aria-label','Volume de la musique');volumeSlider.style.cssText='width:100%;accent-color:#42cfff';
+  volumeSlider.oninput=()=>{crSetMusicVolume(+volumeSlider.value/100);volumeValue.textContent=volumeSlider.value+' %'};
+  volumeBox.append(volumeHead,volumeDesc,volumeSlider);card.insertBefore(volumeBox,actions);
   row('Bonus','Objets et bonus en course',['Activés','Désactivés'],()=>useItems?0:1,v=>{useItems=v===0?1:0;$('bn').textContent='Bonus : '+(useItems?'ON':'OFF')});
   row('Difficulté','Niveau de pilotage',['Facile','Normal','Difficile'],()=>dfi,v=>{dfi=v;$('df').textContent='Difficulté : '+DF[dfi].n});
   row('Monitoring','Affichage des témoins de performances',['OFF','ON'],()=>window.__CR_PERF_VISIBLE__?1:0,v=>crSetMonitoring(v===1));
   const save=btn('💾 SAUVEGARDER LES PARAMÈTRES',()=>{
    try{
-    localStorage.setItem(CR_COMMAND_SETTINGS_KEY,JSON.stringify({inputMode,autoG,autoGas,raceTrack:crRaceTrack,useItems,difficulty:dfi,monitoring:!!window.__CR_PERF_VISIBLE__}));
+    localStorage.setItem(CR_COMMAND_SETTINGS_KEY,JSON.stringify({inputMode,autoG,autoGas,raceTrack:crRaceTrack,musicVolume:crMusicVolume,useItems,difficulty:dfi,monitoring:!!window.__CR_PERF_VISIBLE__}));
     toast('Paramètres sauvegardés sur cet appareil');
    }catch(e){toast('Impossible de sauvegarder les paramètres');}
   },true);

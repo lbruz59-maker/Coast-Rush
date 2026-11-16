@@ -2338,7 +2338,7 @@ function __crDrawOverpasses(vis,playerSegment){
    ctx.beginPath();ctx.moveTo(xx,deckBottom);ctx.lineTo(xx,curveY);ctx.stroke();
   }
   // Voitures agrandies sur les deux voies du tablier, en sens opposés.
-  const carW=Math.max(2,span*.132),carH=carW*.35,travel=span+carW*2;
+  const carW=Math.max(2,Math.min(W*.075,span*.06)),carH=carW*.35,travel=span+carW*2;
   const drawCar=(cx,cy,color,dir)=>{
    ctx.save();ctx.translate(cx,cy);ctx.scale(dir,1);
    ctx.fillStyle='#171d24';ctx.fillRect(-carW*.49,0,carW*.98,carH*.22);
@@ -2358,7 +2358,7 @@ function __crDrawOverpasses(vis,playerSegment){
   // puis projection avec le tablier. Le mouvement du joueur n'intervient jamais.
   // Trafic autonome sur toute la largeur de l'écran : entrée bord gauche/droit,
   // traversée des raccordements puis du pont, sortie au bord opposé.
-  const screenTravel=W+carW*2,trafficSpeed=6;
+  const screenTravel=W+carW*2,trafficSpeed=42;
   const laneY=(px,lane)=>{
    const deckLane=deckY+deckH*(lane===0?.42:.84);
    const edgeLane=approachTop+deckH*(lane===0?.40:.82);

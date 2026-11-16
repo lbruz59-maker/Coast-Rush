@@ -2202,6 +2202,7 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
  for(const p of driftTrail){ctx.globalAlpha=.28*(1-p.t/1.25);ctx.strokeStyle='#17191d';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y+p.t*34);ctx.lineTo(p.x-p.side*1.2,p.y+18+p.t*34);ctx.stroke()}for(const p of smoke){ctx.globalAlpha=.6*(1-p.t/.7);ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(p.x,p.y,3+p.t*10,0,7);ctx.fill()}ctx.globalAlpha=1;BRK=0;BOOSTF=0;if(gun>0&&Math.floor(flash*24)%2){ctx.fillStyle='#fff3a0';for(const dx of[-9,9]){ctx.beginPath();ctx.arc(W/2+dx,H-34,3+Math.random()*2,0,7);ctx.fill()}}
  ctx.restore();
  {const vk=W+'x'+H;if(vk!==__crVignetteKey){__crVignetteKey=vk;__crVignette=ctx.createRadialGradient(W/2,H/2,H*.4,W/2,H/2,W*.62);__crVignette.addColorStop(0,'#0000');__crVignette.addColorStop(1,'#0007')}ctx.fillStyle=__crVignette;ctx.fillRect(0,0,W,H)}
+ crDrawHUD();crDrawBanditMarker();
 }
 function drawWeather(){
  // Aucune precipitation dessinee au-dessus ou a l'interieur d'un tunnel.
@@ -2476,6 +2477,58 @@ function drawOutrunMap(t){
  ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,176,(W-16)*pct/100,2);
  ctx.textAlign='right';ctx.font='bold 5.8px '+FT;ctx.fillStyle='#fff';
  ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,175);
+}
+function crDrawHUD(){
+ if(state!=='play'&&state!=='count'&&state!=='escape')return;
+ ctx.save();
+ const T=(t,x,y,sz,c,al)=>{ctx.textAlign=al||'left';ctx.textBaseline='alphabetic';ctx.font='bold '+sz+'px '+FT;ctx.lineWidth=Math.max(2,sz*.2);ctx.strokeStyle='#000c';ctx.lineJoin='round';ctx.strokeText(t,x,y);ctx.fillStyle=c;ctx.fillText(t,x,y)};
+ const E=(t,x,y,sz)=>{ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font=sz+'px sans-serif';ctx.fillStyle='#fff';ctx.fillText(t,x,y)};
+ const chase=MODE===2,c1=W*.188,c2=W*.397,c3=W*.614,L=15;
+ const hi=!!gear;
+ if(chase){
+  T('BANDIT',c1,17,L,'#ffd400');
+  if(bnd&&bnd.hp>0){const bw=Math.min(W*.17,92),fr=Math.max(0,Math.min(1,bnd.hp/(bnd.mx||bnd.hp||1)));
+   ctx.fillStyle='#000b';rrp(c1-2,22,bw+4,12,5);ctx.fill();ctx.fillStyle=fr>.5?'#ff4a3a':fr>.25?'#ffb02e':'#ffe14a';rrp(c1,24,Math.max(3,bw*fr),8,4);ctx.fill()}
+ }else{
+  const low=time<10;T('TEMPS',c1,17,L,'#ffd400');T(String(Math.max(0,Math.ceil(time))),c1,35,L+4,low&&Math.floor(flash*4)%2?'#ffffff':'#ff3860');
+ }
+ {const IC={1:'\uD83C\uDF44',2:'\uD83C\uDF4C',3:'\uD83D\uDC22',4:'\u2B50',5:'\uD83D\uDEE2\uFE0F',6:'\uD83D\uDD2B',7:'\uD83D\uDE80'},NM={1:'BOOST',2:'BANANE',3:'CARAPACE',4:'INVINCIBLE',5:'HUILE',6:'MITRAILLETTE',7:'MUSK'};
+  ctx.fillStyle='#000a';ctx.beginPath();ctx.arc(c1+13,56,17,0,7);ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=item?'#ffd400':'#ffffff55';ctx.stroke();
+  if(useItems!==false){if(item){E(IC[item]||'\u2753',c1+1,63,22);T(NM[item]||'BONUS',c1+34,60,9,'#ffd400')}else{T('?',c1+8,63,18,'#ffffff66')}}
+  if(star>0)T('\u2605 '+Math.ceil(star),c1+34,72,9,'#ffd400');else if(gun>0)T('\u25CF '+Math.ceil(gun),c1+34,72,9,'#ffd400');else if(musk>0)T('\u25CF '+Math.ceil(musk),c1+34,72,9,'#4dd2ff');else if(boost>0)T('\u25B6 '+Math.ceil(boost),c1+34,72,9,'#ff8a00')}
+ T('SCORE',c2,17,L,'#ffd400');T(String(Math.floor(score||0)).padStart(7,'0'),c2,35,L+4,'#fff');
+ T('ÉTAPE '+(stage||1),c3,17,L,'#4dd2ff');
+ const kmh=Math.round(Math.max(0,speed)/(typeof MAX==='number'&&MAX>0?MAX:1)*320);
+ T(String(kmh).padStart(3,'0')+' km/h',c3,35,L+4,'#fff');
+ T(hi?'HI':'LO',c3,52,L,'#ff8a00');
+ {const WN={clear:'D\u00C9GAG\u00C9',cloud:'NUAGEUX',rain:'PLUIE',snow:'NEIGE',fog:'BROUILLARD'},WE={clear:'\u2600\uFE0F',cloud:'\u2601\uFE0F',rain:'\uD83C\uDF27\uFE0F',snow:'\u2744\uFE0F',fog:'\uD83C\uDF2B\uFE0F'};ctx.font='bold '+L+'px '+FT;const lw=ctx.measureText(hi?'HI':'LO').width+10;
+  E(WE[wx]||'',c3+lw,52,L+1);T(WN[wx]||'',c3+lw+22,52,11,'#bfe8ff')}
+ const wi={clear:'\u2600\uFE0F',cloud:'\u2601\uFE0F',rain:'\uD83C\uDF27\uFE0F',snow:'\u2744\uFE0F',fog:'\uD83C\uDF2B\uFE0F'}[wx]||'';
+ let nm=String((th&&th.n)||''),fs=L,maxw=W*.19-24;ctx.font='bold '+fs+'px '+FT;while(fs>8&&ctx.measureText(nm).width>maxw){fs--;ctx.font='bold '+fs+'px '+FT}
+ T(nm,c3,69,fs,'#fff');
+ if(msgT>0&&msg){ctx.globalAlpha=Math.min(1,msgT*2);T(String(msg),W/2,H*.34,15,'#ffd400','center')}
+ ctx.restore();
+}
+function crDrawBanditMarker(){
+ if(MODE!==2||state!=='play'||!bnd||!(bnd.hp>0))return;
+ const dz=bnd.z-(pos+playerZ),dx=bnd.o-px,meters=Math.round(Math.abs(dz)/20),R=segL*60,beh=dz<0;
+ ctx.save();ctx.textAlign='center';
+ const rw=46,rh=96,rx=Math.round(W*.155),ry=Math.round(H*.3),cx=rx+rw/2,cy=ry+rh/2,hw=rw*.3,hh=rh/2-7;
+ ctx.globalAlpha=.8;ctx.fillStyle='#06122a';rrp(rx,ry,rw,rh,6);ctx.fill();ctx.globalAlpha=1;
+ ctx.strokeStyle='#7fe0ff';ctx.lineWidth=1;rrp(rx,ry,rw,rh,6);ctx.stroke();
+ ctx.fillStyle='#ffffff22';ctx.fillRect(cx-hw,ry+4,hw*2,rh-8);
+ ctx.strokeStyle='#ffffff66';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(cx,ry+4);ctx.lineTo(cx,ry+rh-4);ctx.stroke();ctx.setLineDash([]);
+ ctx.strokeStyle='#ffffff33';ctx.beginPath();ctx.moveTo(rx+3,cy-hh/2);ctx.lineTo(rx+rw-3,cy-hh/2);ctx.moveTo(rx+3,cy+hh/2);ctx.lineTo(rx+rw-3,cy+hh/2);ctx.stroke();
+ const pxm=Math.max(-1.2,Math.min(1.2,px)),bxm=Math.max(-1.2,Math.min(1.2,bnd.o)),k=Math.max(-1,Math.min(1,dz/R)),by=cy-k*hh,inR=Math.abs(dz)<=R;
+ poly('#ffffff',[cx+pxm*hw-4,cy+4,cx+pxm*hw+4,cy+4,cx+pxm*hw,cy-5]);
+ const pulse=.8+.2*Math.sin(flash*10);ctx.globalAlpha=pulse;
+ if(inR){ctx.fillStyle='#ff2a2a';ctx.beginPath();ctx.arc(cx+bxm*hw,by,4,0,7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke()}
+ else{const ey=by+(k>0?3:-3);poly('#ff2a2a',k>0?[cx+bxm*hw-5,ey+5,cx+bxm*hw+5,ey+5,cx+bxm*hw,ey-3]:[cx+bxm*hw-5,ey-5,cx+bxm*hw+5,ey-5,cx+bxm*hw,ey+3])}
+ ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='bold 7px '+FT;ctx.fillText((beh?'\u25BC ':'\u25B2 ')+meters+' m',cx,ry+rh+9);
+ if(beh){const mx=Math.max(14,Math.min(W-14,W/2+dx*320)),my=H-84;
+  ctx.globalAlpha=pulse;poly('#ff2a2a',[mx-9,my-9,mx+9,my-9,mx,my+5]);ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(mx-9,my-9);ctx.lineTo(mx,my+5);ctx.lineTo(mx+9,my-9);ctx.closePath();ctx.stroke();
+  ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText(meters+' m',mx,my-13)}
+ ctx.restore();
 }
 function renderScene(){
  const st=state;

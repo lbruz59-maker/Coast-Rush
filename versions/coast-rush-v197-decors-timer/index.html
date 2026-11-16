@@ -827,7 +827,7 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
   else {bnd.z=playerZ+segL*25;bnd.o=0;bnd.lane=0;bnd.cool=0;bnd.hit=0;bnd.vo=0;}
   cars.push(bnd);arrestT=0;
  }}
-let chaseCircuitsDone=0,crChaseOdometer=0,crChaseLaneBlend=0;let pos=0,px=0,pxVel=0,carTurn=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,bgScroll=0,flash=0,msg='',msgT=0,tr=0;
+let chaseCircuitsDone=0,crChaseOdometer=0,crChaseLaneBlend=0;let pos=0,px=0,pxVel=0,carTurn=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,bgScroll=0,flash=0,crBridgeTrafficClock=0,msg='',msgT=0,tr=0;
 let crManualPaused=false;
 function crClearDriveInput(){for(const k in inp)inp[k]=0;document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('on'));}
 function crPauseGame(){if(crManualPaused||state==='menu'||state==='over'||state==='win'||state==='podium'||state==='mega')return;crManualPaused=true;crClearDriveInput();$('pauseLayer').style.display='flex';$('pauseBtn').style.display='none';try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -2027,7 +2027,7 @@ const __crForkBlockSprite={t:'X'};
 
 // Trafic animé sous les ponts : sprites latéraux de voitures et trains.
 function __crUnderTraffic(a,yb,ya,k,ft){
- const ux=a.sc*160,uy=a.sc*H/2,h=ya-yb,wrap=(v,m)=>((v%m)+m)%m,T=flash;
+ const ux=a.sc*160,uy=a.sc*H/2,h=ya-yb,wrap=(v,m)=>((v%m)+m)%m,T=crBridgeTrafficClock;
  const sideCar=(x,y,w,color,dir)=>{
   if(w<3)return;
   const hh=Math.max(3,w*.43),wheel=Math.max(1.4,w*.12);
@@ -2052,11 +2052,21 @@ function __crUnderTraffic(a,yb,ya,k,ft){
   ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
   const count=5,carW=trainW/count;
   for(let i=0;i<count;i++){
-   const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0);
-   ctx.fillStyle=fg(i===0?'#b9c6d0':'#43566a',ft);
-   ctx.beginPath();ctx.moveTo(x,y-trainH*.78);ctx.lineTo(x+w*.12,y-trainH);ctx.lineTo(x+w*.88,y-trainH);ctx.lineTo(x+w,y-trainH*.78);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
-   ctx.fillStyle=fg(i===0?'#dce5eb':'#9ec6d8',ft);
-   for(let q=0;q<5;q++){const wx=x+w*(.12+q*.17);ctx.fillRect(wx,y-trainH*.78,Math.max(1,w*.12),trainH*.34)}
+   const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0),isEngine=i===0;
+   // Attelage visible entre chaque élément : les wagons restent reliés à la locomotive.
+   if(i>0){ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x-carW*.075,baseY-trainH*.2,carW*.15,Math.max(2,trainH*.12));}
+   if(isEngine){
+    // Locomotive avec nez avant, cabine, cheminée et phare.
+    ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.52);ctx.lineTo(x+w*.13,y-trainH*.88);ctx.lineTo(x+w*.68,y-trainH*.88);ctx.lineTo(x+w*.82,y-trainH*.66);ctx.lineTo(x+w,y-trainH*.48);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
+    ctx.fillStyle=fg('#e0edf4',ft);ctx.fillRect(x+w*.55,y-trainH*1.03,w*.13,trainH*.19);
+    ctx.fillStyle=fg('#d5e4ec',ft);ctx.fillRect(x+w*.72,y-trainH*.66,w*.17,trainH*.28);
+    ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.42,Math.max(2,w*.045),Math.max(2,trainH*.12));
+    ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.75,w*.23,trainH*.3);
+   }else{
+    // Wagons voyageurs fermés, caisse uniforme avec fenêtres régulières.
+    ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.82,w,trainH*.82);
+    ctx.fillStyle=fg('#9ec6d8',ft);for(let q=0;q<5;q++){const wx=x+w*(.1+q*.17);ctx.fillRect(wx,y-trainH*.7,Math.max(1,w*.105),trainH*.27)}
+   }
    ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
    ctx.fillStyle=fg('#e8c45a',ft);ctx.fillRect(x+w*.04,y-trainH*.24,Math.max(1,w*.035),trainH*.12);
   }
@@ -2180,7 +2190,7 @@ function __crDrawOverpasses(vis){
   // Vitesse encore réduite et dessin au premier plan pour ne pas être masqué.
   {
    const len=Math.max(9,Math.min(wa*.34,34)),ht=Math.max(4,Math.min(fasciaA*.3,10));
-   const travelW=W+len*2,phase=((flash||0)*12);
+   const travelW=W+len*2,phase=((crBridgeTrafficClock||0)*12);
    const drawDeckCar=(x,y,color,dir)=>{
     ctx.save();ctx.fillStyle='#11182088';ctx.fillRect(x-len*.52,y-ht*.05,len*1.04,ht*.9);
     ctx.fillStyle=fg(shade(color,-.2),ft);ctx.beginPath();ctx.moveTo(x-len*.5,y-ht*.38);ctx.lineTo(x-len*.38,y-ht*.9);ctx.lineTo(x+len*.34,y-ht*.9);ctx.lineTo(x+len*.5,y-ht*.38);ctx.lineTo(x+len*.5,y+ht*.38);ctx.lineTo(x-len*.5,y+ht*.38);ctx.closePath();ctx.fill();
@@ -3181,7 +3191,7 @@ let fsDone=0;function goFS(){if(window.DUEL)return;if(isIOS&&!navigator.standalo
 setInterval(()=>{if(!curRoom&&!remotes.length)return;refreshPeers();if(state=='menu'&&NET()){netSend({cid:-1,n:myName,c:myCol,rdy:0,host:window.__crRoomHost===true,jAt:window.__crRoomJoinedAt||0,roomMode:MODE,ttc:selectedTimeTrialCircuit});if(curRoom)$('mp').textContent='🌐 Salle '+curRoom+' · '+(remotes.length+1)+' joueur(s) · '+VER+' · relais '+sigOpen+'/'+sigTot+' · reçus '+rxN+' · liens '+links.filter(c=>c.dc&&c.dc.readyState=='open').length}},700);
 function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N],sp=speed/MAX;
  if(MODE==2&&state=='play'){crChaseOdometer+=Math.max(0,speed)*dt;if(crChaseLaneBlend>0){crChaseLaneBlend=Math.max(0,crChaseLaneBlend-dt/1.25);const ease=crChaseLaneBlend*crChaseLaneBlend;px+=(0-px)*Math.min(1,dt*(.55+ease*1.8));pxVel*=Math.max(0,1-dt*2.2);}}
- flash+=dt;msgT-=dt;shake=Math.max(0,shake-dt);boost-=dt;star-=dt;slip-=dt;musk=Math.max(0,musk-dt);mini-=dt;glueT=Math.max(0,glueT-dt);antiMissile=Math.max(0,antiMissile-dt);if(MODE===5){gun=1;const gunOrigin=pos+playerZ,gunTarget=cars.filter(c=>!c.dead&&(c.ai||c.rp)&&c.z>gunOrigin&&c.z-gunOrigin<=segL*Math.min(drawN,55)&&Math.abs(c.o-px)<.17).sort((a,b)=>a.z-b.z)[0];const gunFiring=!!gunTarget&&state==='play'&&crash<=0&&crGunLock<=0;crGunHeat=Math.max(0,crGunHeat-dt*(gunFiring?.09:.29));if(crGunLock>0){crGunLock=Math.max(0,crGunLock-dt);if(crGunLock===0)crGunHeat=.25}if(gunFiring&&crGunLock<=0){gunT-=dt;if(gunT<=0){gunT=.09;objs.push({k:'g',z:gunOrigin+segL*2,o:px,w:.05,sp:MAX*3,tt:flash});gunSfx();crGunHeat=Math.min(1,crGunHeat+.036);if(crGunHeat>=1){crGunLock=3;msg='MITRAILLETTE SURCHAUFFÉE';msgT=1.5}}}}else if(gun>0&&state==='play'&&crash<=0){gun-=dt;gunT-=dt;if(gunT<=0){gunT=.09;gunSide^=1;objs.push({k:'g',z:pos+playerZ+segL*2,o:px+(gunSide?.1:-.1),w:.05,sp:MAX*3,tt:flash});gunSfx()}}if(autoG&&state=='play'){const q2=speed/MAX;if(!gear&&q2>.58)gear=1;else if(gear&&q2<.42)gear=0}if(slip>0&&Math.random()<.5)__crEmitSmoke(W/2+(Math.random()<.5?-20:20),H-8,(Math.random()-.5)*24);
+ flash+=dt;crBridgeTrafficClock+=dt;msgT-=dt;shake=Math.max(0,shake-dt);boost-=dt;star-=dt;slip-=dt;musk=Math.max(0,musk-dt);mini-=dt;glueT=Math.max(0,glueT-dt);antiMissile=Math.max(0,antiMissile-dt);if(MODE===5){gun=1;const gunOrigin=pos+playerZ,gunTarget=cars.filter(c=>!c.dead&&(c.ai||c.rp)&&c.z>gunOrigin&&c.z-gunOrigin<=segL*Math.min(drawN,55)&&Math.abs(c.o-px)<.17).sort((a,b)=>a.z-b.z)[0];const gunFiring=!!gunTarget&&state==='play'&&crash<=0&&crGunLock<=0;crGunHeat=Math.max(0,crGunHeat-dt*(gunFiring?.09:.29));if(crGunLock>0){crGunLock=Math.max(0,crGunLock-dt);if(crGunLock===0)crGunHeat=.25}if(gunFiring&&crGunLock<=0){gunT-=dt;if(gunT<=0){gunT=.09;objs.push({k:'g',z:gunOrigin+segL*2,o:px,w:.05,sp:MAX*3,tt:flash});gunSfx();crGunHeat=Math.min(1,crGunHeat+.036);if(crGunHeat>=1){crGunLock=3;msg='MITRAILLETTE SURCHAUFFÉE';msgT=1.5}}}}else if(gun>0&&state==='play'&&crash<=0){gun-=dt;gunT-=dt;if(gunT<=0){gunT=.09;gunSide^=1;objs.push({k:'g',z:pos+playerZ+segL*2,o:px+(gunSide?.1:-.1),w:.05,sp:MAX*3,tt:flash});gunSfx()}}if(autoG&&state=='play'){const q2=speed/MAX;if(!gear&&q2>.58)gear=1;else if(gear&&q2<.42)gear=0}if(slip>0&&Math.random()<.5)__crEmitSmoke(W/2+(Math.random()<.5?-20:20),H-8,(Math.random()-.5)*24);
  for(let i=smoke.length-1;i>=0;i--){const p=smoke[i];p.t+=dt;p.y-=18*dt;p.x+=p.vx*dt;if(p.t>.7){const last=smoke.pop();if(i<smoke.length)smoke[i]=last;if(__crSmokePool.length<160)__crSmokePool.push(p)}}
  for(let i=driftTrail.length-1;i>=0;i--){const p=driftTrail[i];p.t+=dt;if(p.t>1.25){const last=driftTrail.pop();if(i<driftTrail.length)driftTrail[i]=last;if(__crDriftPool.length<240)__crDriftPool.push(p)}}
  if((state=='over'||state=='win')&&!saved){saved=1;saveScore()}

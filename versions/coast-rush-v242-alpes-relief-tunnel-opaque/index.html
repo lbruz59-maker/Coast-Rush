@@ -860,9 +860,6 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i===s.tS||s.i===s.tEnd-1,k:s.
  // crête apparaît dès l'entrée du bloc sombre, puis les reliefs se recouvrent en
  // profondeur. Les segments suivants gardent les parois de galerie d'origine.
  for(const tr of tunnelRanges){
-  // Chaîne alpine d'annonce : 4 reliefs espacés entre 9,6 km et 4,8 km avant l'entrée.
-  // Ils ne dessinent aucun portail : seule la silhouette montagneuse apparaît au loin.
-  for(const ahead of [24,20,16,12]){const at=tr.start-ahead;if(at>=0&&segs[at]&&!segs[at].tun)segs[at].sp.push({t:'T',o:0,ridge:true,k:at});}
   const entryBand=Math.min(5,tr.len);
   for(let j=0;j<entryBand;j++){
    const entry=segs[tr.start+j];
@@ -1835,14 +1832,14 @@ const s=sc*(t==='c'?317000:t==='l'?96000:t==='a'?118000:3200*H/2);if('ptacl'.inc
 else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx.fillStyle='#223';ctx.fillRect(x-h*.07,y-h*.45,h*.14,h*.45);ctx.fillStyle='#e32636';ctx.fillRect(x-h*.09,y-h*.8,h*.18,h*.36);ctx.beginPath();ctx.ellipse(x,y-h*.56,h*.17,h*.15,0,0,7);ctx.fill();ctx.strokeStyle='#8f1420';ctx.lineWidth=Math.max(1,h*.012);ctx.beginPath();ctx.arc(x,y-h*.56,h*.17,.25,Math.PI-.25);ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(x-h*.17,y-h*.5,h*.34,h*.03);ctx.fillStyle='#ffd400';ctx.fillRect(x-h*.025,y-h*.505,h*.05,h*.04);ctx.fillStyle='#c91e2c';ctx.fillRect(x-h*.12,y-h*.77,h*.24,h*.09);ctx.fillStyle='#f1c19a';ctx.beginPath();ctx.arc(x,y-h*.88,h*.075,0,7);ctx.fill();ctx.fillStyle='#d51f32';ctx.beginPath();ctx.arc(x,y-h*.94,h*.082,Math.PI,0);ctx.fill();ctx.fillRect(x-h*.09,y-h*.94,h*.18,h*.025);
   const q=x+h*.1,pt=y-h*1.5;ctx.strokeStyle='#999';ctx.lineWidth=Math.max(1,h*.02);ctx.beginPath();ctx.moveTo(x+h*.09,y-h*.7);ctx.lineTo(q+wv*h*.08,pt);ctx.stroke();
   for(let i=0;i<5;i++)for(let j=0;j<4;j++){ctx.fillStyle=(i+j)%2?'#111':'#fff';ctx.fillRect(q+wv*h*.08+i*h*.105+Math.sin(flash*8+i)*h*.025,pt+j*h*.085,h*.105,h*.085)}}
- else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;const __arch=()=>{ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath()};if(sp.ridge){ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';const mw=w*8,profile=[4.5,7.2,5.1,8.6,5.4,7.7,4.8,6.8,4.1];ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<profile.length;i++){const px=x-mw+mw*2*i/(profile.length-1),py=y-w*profile[i];ctx.lineTo(px,py)}ctx.lineTo(x+mw,y);ctx.closePath();const rg=ctx.createLinearGradient(0,y-w*9,0,y);rg.addColorStop(0,'#8798aa');rg.addColorStop(.55,'#687b8b');rg.addColorStop(1,'#465c60');ctx.fillStyle=rg;ctx.fill();ctx.fillStyle='#f2f6fa';for(let i=1;i<profile.length-1;i+=2){const px=x-mw+mw*2*i/(profile.length-1),py=y-w*profile[i];ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-w*.9,py+w*1.1);ctx.lineTo(px-w*.25,py+w*.72);ctx.lineTo(px+w*.25,py+w*.72);ctx.lineTo(px+w*.9,py+w*1.1);ctx.closePath();ctx.fill()}ctx.restore();return;}if(sp.port){const mw=w*8,rg=(pf,col,snow)=>{const n=pf.length-1;ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<=n;i++)ctx.lineTo(x-mw+mw*2*i/n,y-w*pf[i]);ctx.lineTo(x+mw,y);ctx.closePath();__arch();ctx.fillStyle=col;ctx.fill('evenodd');if(snow){ctx.fillStyle='#f2f6fa';for(let i=1;i<n;i+=2){const qx=x-mw+mw*2*i/n,qy=y-w*pf[i];ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(qx-w*.8,qy+w*.9);ctx.lineTo(qx-w*.3,qy+w*.62);ctx.lineTo(qx,qy+w*.95);ctx.lineTo(qx+w*.25,qy+w*.6);ctx.lineTo(qx+w*.8,qy+w*.9);ctx.closePath();ctx.fill()}}};const drawReliefGroup=()=>{ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';rg([4.5,7.8,5.2,9.0,5.7,8.2,5.0,7.4,4.2],'#8197ad',1);rg([3.4,5.4,3.7,6.1,4.0,5.6,3.5,4.9,3.1],'#5f6f55',0);rg([2.6,3.3,2.8,3.8,3.0,3.6,2.7,3.2,2.5],'#46563a',0);ctx.restore()};
+ else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;const __arch=()=>{ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath()};if(sp.port){const mw=w*8,rg=(pf,col,snow)=>{const n=pf.length-1;ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<=n;i++)ctx.lineTo(x-mw+mw*2*i/n,y-w*pf[i]);ctx.lineTo(x+mw,y);ctx.closePath();ctx.fillStyle=col;ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.fill();if(snow){ctx.fillStyle='#f2f6fa';for(let i=1;i<n;i+=2){const qx=x-mw+mw*2*i/n,qy=y-w*pf[i];ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(qx-w*.8,qy+w*.9);ctx.lineTo(qx-w*.3,qy+w*.62);ctx.lineTo(qx,qy+w*.95);ctx.lineTo(qx+w*.25,qy+w*.6);ctx.lineTo(qx+w*.8,qy+w*.9);ctx.closePath();ctx.fill()}}};const drawReliefGroup=()=>{ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';rg([4.5,7.8,5.2,9.0,5.7,8.2,5.0,7.4,4.2],'#8197ad',1);rg([3.4,5.4,3.7,6.1,4.0,5.6,3.5,4.9,3.1],'#5f6f55',0);rg([2.6,3.3,2.8,3.8,3.0,3.6,2.7,3.2,2.5],'#46563a',0);ctx.restore()};
   // Découpe stricte autour de l'ouverture : aucune pointe ni neige ne doit
   // être dessinée dans le vide de l'arche du tunnel.
   ctx.save();ctx.beginPath();ctx.rect(x-k*30,y-w*22,k*60,w*22);
   ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();
   ctx.clip('evenodd');
-  // Relief principal agrandi x2 ; l'ouverture du tunnel reste strictement dégagée.
-  ctx.save();ctx.translate(x,y);ctx.scale(1.18,1.18);ctx.translate(-x,-y);drawReliefGroup();ctx.restore();
+  // Relief réduit pour épouser l'ouverture, sans déborder dans la chaussée.
+  ctx.save();ctx.translate(x,y);ctx.scale(.82,.82);ctx.translate(-x,-y);drawReliefGroup();ctx.restore();
   // Deux petites montagnes de chaque côté du grand ensemble.
   for(const side of [-1,1])for(const offset of [2.05,2.65]){
    ctx.save();
@@ -2023,7 +2020,7 @@ function deco(sp,x,y,sc){
  const radius=Math.ceil(projectedQ*2.7)+2;
  if(radius>320||qsc<=0){decoRaster(sp,x,y,sc);return;}
  let params=__crDecoParamCache.get(sp);
- if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0,sp.ridge?1:0]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
+ if(params===undefined){try{params=JSON.stringify([t,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0,]);__crDecoParamCache.set(sp,params)}catch(_){decoRaster(sp,x,y,sc);return;}}
  const themeKey=__crGetDecoThemeKey();
  const key=[t,qsc,params,W,H,roadW,themeKey].join('|');
  const ratio=sc/qsc;
@@ -2063,7 +2060,7 @@ function __crDrawDecoGroup(seg,baseX,baseY,sc,spriteBoost=1){
  if(!stat.length)return;
  // Signature recalculée : supporte aussi les segments dont la liste de décors évolue.
  let sig='';
- try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0,sp.ridge?1:0].join(':')).join(';')}
+ try{sig=stat.map(sp=>[sp.t,sp.o,sp.c||'',sp.hh||0,sp.txt||'',sp.bg||'',sp.k||0,sp.port?1:0,].join(':')).join(';')}
  catch(_){__crDecoGroupFallbacks++;for(const sp of stat)deco(sp,baseX+offsetSc*sp.o*roadW*160,baseY,sc*spriteBoost);return}
  const key=[seg.i,sig,qsc,Math.round(offsetSc*64)/64,W,H,roadW,__crGetDecoThemeKey(),isTV?1:0].join('|');
  const ratio=(sc*spriteBoost)/qsc;

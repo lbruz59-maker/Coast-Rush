@@ -2500,7 +2500,7 @@ function crDrawBanditMarker(){
  if(MODE!==2||state!=='play'||!bnd||!(bnd.hp>0))return;
  const dz=bnd.z-(pos+playerZ),dx=bnd.o-px,meters=Math.round(Math.abs(dz)/20),R=segL*60,beh=dz<0;
  ctx.save();ctx.textAlign='center';
- const rw=34,rh=72,rx=Math.round(W*.155)+8,ry=Math.round(H*.3),cx=rx+rw/2,cy=ry+rh/2,hw=rw*.3,hh=rh/2-6;
+ const rw=29,rh=62,rx=Math.round(W*.19),ry=Math.round(H*.3),cx=rx+rw/2,cy=ry+rh/2,hw=rw*.3,hh=rh/2-5;
  ctx.globalAlpha=.8;ctx.fillStyle='#06122a';rrp(rx,ry,rw,rh,6);ctx.fill();ctx.globalAlpha=1;
  ctx.strokeStyle='#7fe0ff';ctx.lineWidth=1;rrp(rx,ry,rw,rh,6);ctx.stroke();
  ctx.fillStyle='#ffffff22';ctx.fillRect(cx-hw,ry+4,hw*2,rh-8);

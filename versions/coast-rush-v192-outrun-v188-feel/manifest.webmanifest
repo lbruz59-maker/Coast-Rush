@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "Coast Rush V190 – OutRun Grand Tour",
+  "short_name": "Coast Rush",
+  "description": "Circuits deux fois plus longs, checkpoints, voitures rivales à 60–97 % de la vitesse joueur et scrolling OutRun",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

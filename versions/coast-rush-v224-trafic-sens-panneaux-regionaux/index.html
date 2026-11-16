@@ -763,7 +763,7 @@ const cpSegments=[1,2,3].map(n=>Math.floor((N-FORK)*n/4));segs.forEach(s=>{s.sea
   if(Math.abs(s.curve)>3.5&&i%5==0)s.sp.push({t:'S',o:-Math.sign(s.curve)*1.3,txt:s.curve>0?'▶':'◀',bg:'#ffd400'});
   if(fk()&&i==N-FORK-6){const L1=TH[THI[__crOrChild(0)]],R1=TH[THI[__crOrChild(1)]];s.sp.push({t:'S',o:-1.5,txt:'◀ '+L1.n,bg:'#3ddc6a'});s.sp.push({t:'S',o:1.5,txt:R1.n+' ▶',bg:'#3ddc6a'})}
   if(i>=N-FORK&&i%12==0){if(!fk()&&!isLast()){s.sp.push({t:'S',o:-1.3,txt:'CHECK',bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK',bg:'#ffd400'})}else if(fk()){s.sp.push({t:'S',o:0,txt:'◀  ▶',bg:'#3ddc6a'})}else{s.sp.push({t:'S',o:-1.3,txt:'GOAL',bg:'#fff'});s.sp.push({t:'S',o:1.3,txt:'GOAL',bg:'#fff'})}}});
- segs.forEach(s=>{const lc=LOC[th.n];if(!lc)return;const i=s.i;if(s.tun||s.bridge||s.loop||i<60||i>=N-FORK-6)return;const sd=i%2?-1:1;
+ segs.forEach(s=>{const lc=LOC[th.n];if(!lc)return;const i=s.i,f=i>=N-FORK-8;if(s.tun||s.bridge||s.loop||i<60||i>=N-FORK-6)return;const sd=i%2?-1:1;
  if(i%11===4)s.sp.push({t:'L',a:lc[1][(i/11|0)%lc[1].length],o:sd*(((i*13)%5)<4?1.35+((i*7)%10)*.06:2.4+(i%7)*.08),ph:i});
  if(i%13===6)s.sp.push({t:'L',pe:lc[2],o:-sd*(((i*11)%5)<4?1.3+((i*3)%9)*.07:2.3+(i%5)*.1),ph:i});
  const mt=lc[0]=='matter';if(i%(mt?29:94)===21)s.sp.push({t:'M',k:lc[0],o:(i%94<47?-1:1)*(mt?5.4:4.8),z:mt?3.4:1});

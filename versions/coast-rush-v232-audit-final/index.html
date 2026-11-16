@@ -2040,7 +2040,7 @@ function renderBackdrop(){
 function __crProjectPoint(out,wx,wy,z,cx,cy){const sc=camD/z;out.x=W/2+sc*(wx-cx)*160;out.y=H/2-sc*(wy-cy)*H/2;out.w=sc*roadW*160;out.sc=sc;return out}
 const __crForkBlockSprite={t:'X'};
 
-// Trafic animé sous les ponts : sprites latéraux de voitures et trains.
+// Trafic routier animé sous les ponts : véhicules latéraux uniquement.
 function __crUnderTraffic(a,yb,ya,k,ft){
  const ux=a.sc*160,h=ya-yb,wrap=(v,m)=>((v%m)+m)%m,T=crBridgeTrafficClock;
  const lanes=[{dir:1,y:.68,c:['#e84a4a','#f0c040','#40a8e8','#f2f2f2']},{dir:-1,y:.34,c:['#58c878','#f08040','#d7dce2','#7d8fe8']}];

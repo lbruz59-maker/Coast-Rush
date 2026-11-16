@@ -769,7 +769,8 @@ const cpSegments=[1,2,3].map(n=>Math.floor((N-FORK)*n/4));segs.forEach(s=>{s.sea
  const mt=lc[0]=='matter';if(i%(mt?29:94)===21)s.sp.push({t:'M',k:lc[0],o:(i%94<47?-1:1)*(mt?5.4:4.8),z:mt?3.4:1});
  if(i%82===17){const zl=ZL[th.n];if(zl)s.sp.push({t:'Z',k:zl[(i/41|0)%zl.length],o:(i%82<41?1:-1)*(5.2+(i%5)*.12)})}
  // V196 : monuments emblématiques, gondoles, ports et feuillage saisonnier.
- if(i%95===46&&!s.tun&&!s.loop){const landmark={PARIS:'arch',BARCELONE:'sagrada',VENISE:'basil',ROME:'colo','NEW YORK':'liberty',LONDRES:'ben','LE CAIRE':'pyr',SYDNEY:'opera',TOKYO:'ttower',DUBAÏ:'burj',LILLE:'belf'}[th.n];if(landmark)s.sp.push({t:'M',k:landmark,o:(i%380<190?-1:1)*5.8,z:1.2})}
+ if(i%157===68&&!f&&!s.tun&&!s.bridge&&!s.loop)s.sp.push({t:'rc',o:(i%314<157?-1:1)*1.48,k:i});
+  if(i%95===46&&!s.tun&&!s.loop){const landmark={PARIS:'arch',BARCELONE:'sagrada',VENISE:'basil',ROME:'colo','NEW YORK':'liberty',LONDRES:'ben','LE CAIRE':'pyr',SYDNEY:'opera',TOKYO:'ttower',DUBAÏ:'burj',LILLE:'belf'}[th.n];if(landmark)s.sp.push({t:'M',k:landmark,o:(i%380<190?-1:1)*5.8,z:1.2})}
  if(th.n==='VENISE'&&s.sea&&i%29===14&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'gon',o:(i%74<37?-1:1)*3.8,z:1.15});
  const waterPort=['VENISE','BARCELONE','RIO','SYDNEY','COAST','ISLAND','SUNSET','SANTORIN','FJORDS','ISLANDE','AMAZONIE','ÎLE DE LA RÉUNION'];if(waterPort.includes(th.n)&&i%95===46&&!s.tun&&!s.loop)s.sp.push({t:'M',k:'port',o:(i%310<155?-1:1)*7.2,z:1.25});
  if(th.n==='AUTUMN'&&i%6===3&&!s.tun&&!s.loop)s.sp.push({t:'D',k:'leaf',o:(i%18<9?-1:1)*(2.8+(i%5)*.12),z:.9});
@@ -1703,6 +1704,26 @@ const s=sc*(t==='c'?317000:t==='l'?96000:t==='a'?118000:3200*H/2);if('ptacl'.inc
  else{ctx.fillStyle='#ffd400';ctx.fillRect(x-b/2,yy-b/2,b,b);ctx.strokeStyle='#e8203a';ctx.lineWidth=Math.max(1,b*.08);ctx.strokeRect(x-b/2,yy-b/2,b,b);ctx.fillStyle='#e8203a';ctx.font='bold '+Math.max(4,b*.9|0)+'px "Arial Black",Impact,sans-serif';ctx.fillText('?',x,yy+b*.32)}}
  else if(t=='X'){const w=Math.max(3,sc*roadW*160*.22),h=Math.max(2,w*.16);ctx.save();ctx.fillStyle='#d9dce5';ctx.fillRect(x-w/2,y-h*2,w,h*2);ctx.fillStyle='#e8203a';for(let j=0;j<5;j++)poly('#e8203a',[x-w/2+j*w/5,y-h*2,x-w/2+(j+1)*w/5,y-h*2,x-w/2+(j+1)*w/5-w*.1,y-h,x-w/2+j*w/5-w*.1,y-h]);ctx.fillStyle='#fff';ctx.fillRect(x-w*.48,y-h*.65,w*.96,h*.3);ctx.restore()}
  else if(t=='R'){const w=sc*roadW*160*1.12;ctx.lineWidth=Math.max(1,w*.07);ctx.strokeStyle='#fff';ctx.beginPath();ctx.ellipse(x,y-w*.95,w,w,0,0,7);ctx.stroke();ctx.lineWidth=Math.max(1,w*.03);ctx.strokeStyle='#2a6aff';ctx.beginPath();ctx.ellipse(x,y-w*.95,w*.93,w*.93,0,0,7);ctx.stroke()}
+ else if(t==='rc'){
+  const u=sc*3200*H/2*.62,pole=u*1.75,camW=u*.72,camH=u*.46,top=y-pole;
+  ctx.fillStyle='#0004';ctx.beginPath();ctx.ellipse(x,y,u*.42,u*.075,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#727b85';ctx.fillRect(x-u*.045,y-pole,u*.09,pole);
+  ctx.fillStyle='#46515d';ctx.fillRect(x-u*.13,y-u*.12,u*.26,u*.12);
+  ctx.fillStyle='#d9e0e7';rrp(x-camW*.5,top-camH*.5,camW,camH,camW*.09);ctx.fill();
+  ctx.fillStyle='#8996a2';ctx.fillRect(x-camW*.48,top-camH*.5,camW*.96,camH*.16);
+  ctx.fillStyle='#172638';ctx.beginPath();ctx.arc(x+camW*.23,top-camH*.08,camH*.22,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#4b9dca';ctx.beginPath();ctx.arc(x+camW*.23,top-camH*.08,camH*.13,0,Math.PI*2);ctx.fill();
+  const ahead=(Number(sp.k)||0)*segL-(pos+playerZ);
+  const passing=ahead<segL*1.15&&ahead>-segL*.22&&speed>MAX*.82&&Math.abs(px-(Number(sp.o)||0))<2.8;
+  if(passing&&Math.floor(flash*18)%2===0){
+   ctx.save();ctx.globalCompositeOperation='screen';
+   const glow=ctx.createRadialGradient(x+camW*.23,top-camH*.08,0,x+camW*.23,top-camH*.08,u*.72);
+   glow.addColorStop(0,'rgba(255,255,255,.95)');glow.addColorStop(.24,'rgba(210,240,255,.72)');glow.addColorStop(1,'rgba(255,255,255,0)');
+   ctx.fillStyle=glow;ctx.beginPath();ctx.arc(x+camW*.23,top-camH*.08,u*.72,0,Math.PI*2);ctx.fill();
+   ctx.fillStyle='#fff';ctx.fillRect(x+camW*.12,top-camH*.2,camW*.22,camH*.24);ctx.restore();
+  }
+  ctx.fillStyle='#f0f2f4';ctx.fillRect(x-u*.19,y-u*.025,u*.38,u*.05);
+ }
  else if(t=='h'){const w=sc*900*160*1.68,hh=w*(sp.hh||1)*.9,tall=sp.hh>=1.4,g1=ctx.createLinearGradient(x-w/2,0,x+w/2,0);g1.addColorStop(0,shade(sp.c,.15));g1.addColorStop(1,shade(sp.c,-.25));ctx.fillStyle=g1;ctx.fillRect(x-w/2,y-hh,w,hh);
  const rows=Math.max(1,Math.floor(hh/(w*.3)));for(let i=0;i<rows;i++)for(let j=0;j<3;j++){ctx.fillStyle=((i*3+j+(sp.hh*7|0))%4)?'#1c2540':'#ffd36a';rrp(x-w*.38+j*w*.27,y-hh+w*.1+i*w*.3,w*.17,w*.17,w*.02);ctx.fill()}
  if(!tall){poly('#9a3a30',[x-w*.62,y-hh,x+w*.62,y-hh,x+w*.3,y-hh-w*.42,x-w*.3,y-hh-w*.42]);ctx.fillStyle='#00000030';ctx.fillRect(x,y-hh-w*.42,w*.3,w*.42)}else{ctx.fillStyle='#454a58';ctx.fillRect(x-w*.54,y-hh-w*.06,w*1.08,w*.06)}
@@ -1881,7 +1902,7 @@ else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx
 // Les objets animés/contextuels restent dessinés en direct. Le cache est borné en mémoire.
 const __crDecoCache=new Map();
 const __crDecoCacheable=new Set(['p','c','t','h','l','r','a','n','R','A','sk','bs','gs','py','cl','sm','ap','sc','rt','cf','ht','ho','ec','X','P','B','W','ws','u','S','ch','an','lf','eu','fa','D']); // décors fixes, bâtiments et signalétique pré-rendus
-const __crDecoDynamic=new Set(['I','F','G','C']);
+const __crDecoDynamic=new Set(['I','F','G','C','rc']);
 let __crDecoCacheHits=0,__crDecoCacheMisses=0,__crDecoCacheBytes=0;
 const __crDecoTypeHits=Object.create(null),__crDecoTypeMisses=Object.create(null);
 // V80 : mémoriser la signature des sprites statiques et du thème.

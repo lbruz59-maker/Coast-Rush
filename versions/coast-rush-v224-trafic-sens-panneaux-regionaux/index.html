@@ -724,7 +724,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[
  const roadSections=MODE===5?14:18,profile=[];
  let curveBias=0;
  for(let k=0;k<roadSections;k++){
-  const length=9+(R()*15|0),entry=6+(R()*8|0),exit=6+(R()*8|0);
+  const length=42+(R()*24|0),entry=11+(R()*8|0),exit=11+(R()*8|0);
   const turnRoll=R(),turn=turnRoll<.34?-1:turnRoll<.68?1:0;
   const strength=turn===0?0:turn*(2.2+R()*10.5)*(th.cv||1)*dif;
   const nextBias=Math.max(-13,Math.min(13,curveBias*.28+strength));

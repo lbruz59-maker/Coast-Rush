@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "Coast Rush V197 – Décors et timer",
+  "short_name": "Coast Rush",
+  "description": "Traits de vitesse supprimés, timer réduit de 5 %, décors urbains animés et enrichis",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

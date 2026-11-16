@@ -2530,7 +2530,29 @@ function crDrawBanditMarker(){
   ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText(meters+' m',mx,my-13)}
  ctx.restore();
 }
-function renderScene(){
+function drawTimeTrialFinish(){
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#07172d');bg.addColorStop(.62,'#123b58');bg.addColorStop(1,'#1b5b62');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  const glow=ctx.createRadialGradient(W*.5,H*.28,2,W*.5,H*.28,W*.62);glow.addColorStop(0,'#ffd76b55');glow.addColorStop(1,'#ffd76b00');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#77e8ff';ctx.font='bold 8px '+FT;ctx.fillText('COAST RUSH  ·  CONTRE-LA-MONTRE',W/2,19);
+  ctx.fillStyle='#fff';ctx.font='bold 19px '+FT;ctx.fillText('CIRCUIT TERMINÉ !',W/2,45);
+  const circuit=TH[THI[ttFinishCircuit]]||TH[0];ctx.fillStyle='#bfeaff';ctx.font='bold 11px '+FT;ctx.fillText(String(circuit.n||'CIRCUIT').toUpperCase(),W/2,66);
+  ctx.fillStyle='#071426cc';rrp(W*.18,82,W*.64,58,8);ctx.fill();ctx.strokeStyle='#68dfff';ctx.lineWidth=1;rrp(W*.18,82,W*.64,58,8);ctx.stroke();
+  ctx.fillStyle='#8deaff';ctx.font='bold 7px '+FT;ctx.fillText('TEMPS RÉALISÉ',W/2,94);
+  ctx.fillStyle='#fff';ctx.font='bold 17px '+FT;ctx.fillText(fmt(ttFinishTime),W/2,111);
+  ctx.fillStyle='#ffd76b';ctx.font='bold 8px '+FT;ctx.fillText('SCORE  '+Math.max(0,ttFinishScore).toLocaleString('fr-FR'),W/2,130);
+  ctx.fillStyle='#eaf7ff';ctx.font='bold 8px '+FT;ctx.fillText('MEILLEUR SCORE  '+Math.max(0,ttFinishBest).toLocaleString('fr-FR'),W/2,155);
+  if(ttFinishNewBest){ctx.fillStyle='#ffe16b';ctx.font='bold 11px '+FT;ctx.fillText('★ NOUVEAU RECORD ! ★',W/2,174)}
+  else{ctx.fillStyle='#bfeaff';ctx.font='7px '+FT;ctx.fillText('CONTINUE À PROGRESSER POUR DÉBLOQUER LA SUITE',W/2,174)}
+  ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText('APPUYER SUR ENTRÉE OU TOUCHER L’ÉCRAN',W/2,205);
+ }
+ function crContinueTimeTrial(){
+  if(state!=='ttfinish')return false;
+  toMenu();
+  if(typeof window.__crShowTimeTrialCourses==='function')window.__crShowTimeTrialCourses();
+  return true;
+ }
+ function renderScene(){
  const st=state;
  if(NOHUD.includes(st)){
   ctx.setTransform(RS,0,0,RS,0,0);ctx.textBaseline='alphabetic';ctx.textAlign='left';ctx.globalAlpha=1;

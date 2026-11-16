@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "Coast Rush V195 – Vitesse réelle",
+  "short_name": "Coast Rush",
+  "description": "Vitesse réelle augmentée de 33 %, compteur plafonné à 293 km/h",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "icons": [{ "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

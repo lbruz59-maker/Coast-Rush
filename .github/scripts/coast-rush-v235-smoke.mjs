@@ -135,15 +135,36 @@ try {
   if (!mobileLayout.playVisible || mobileLayout.documentWidth > mobileLayout.viewportWidth + 2) {
     throw new Error('Débordement ou bouton JOUER inaccessible sur mobile : ' + JSON.stringify(mobileLayout));
   }
+  const mobileTap = await mobile.evaluate(() => {
+    const b = document.querySelector('#crMenuHotspots button.play');
+    const r = b.getBoundingClientRect();
+    const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return {
+      buttonRect: { x: r.x, y: r.y, width: r.width, height: r.height },
+      topElement: top ? { id: top.id, className: String(top.className || ''), tag: top.tagName } : null,
+      menuScrollTop: document.querySelector('#menu').scrollTop,
+      menuHeight: document.querySelector('#menu').clientHeight,
+      menuScrollHeight: document.querySelector('#menu').scrollHeight
+    };
+  });
   await mobile.locator('#crMenuHotspots button.play').click();
-  await mobile.waitForTimeout(5000);
+  await mobile.waitForTimeout(1200);
+  const afterHotspot = await mobile.evaluate(() => ({
+    menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
+    toast: document.querySelector('#tt')?.textContent || '',
+    errorBanner: document.querySelector('#errb')?.textContent || ''
+  }));
+  if (afterHotspot.menuVisible) await mobile.locator('#go').evaluate(el => el.click());
+  await mobile.waitForTimeout(3500);
   await assertNoRuntimeError(mobile, 'jeu mobile');
   const mobilePlaying = await mobile.evaluate(() => ({
     menuHidden: getComputedStyle(document.querySelector('#menu')).display === 'none',
-    pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none'
+    pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none',
+    toast: document.querySelector('#tt')?.textContent || '',
+    errorBanner: document.querySelector('#errb')?.textContent || ''
   }));
-  if (!mobilePlaying.menuHidden || !mobilePlaying.pauseVisible) {
-    throw new Error('Le démarrage mobile ne passe pas en course : ' + JSON.stringify(mobilePlaying));
+  if (!mobilePlaying.menuHidden || !mobilePlaying.pauseVisible || afterHotspot.menuVisible) {
+    throw new Error('Le démarrage mobile par zone tactile échoue : ' + JSON.stringify({ mobileTap, afterHotspot, mobilePlaying }));
   }
 
   console.log(JSON.stringify({

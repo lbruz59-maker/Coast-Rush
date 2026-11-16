@@ -2132,6 +2132,7 @@ function renderScene(){
 // Toucher l'écran passe les écrans de fin (les boutons tactiles sont masqués sur la carte).
 cv.addEventListener('pointerdown',()=>{if(state==='ttfinish'){crContinueTimeTrial();return}if(state==='brief')briefT=99;else if(state==='podium')podT=99;else if(state==='mega'&&podT>3)toMenu();else if(state==='over'&&winT>1.2){crRetryDefeat()}else if(state==='win'&&winT>1.2)toMenu()});
 
+let __crRouteMapClassState = null;
 let __crPauseButtonVisible = null;
 function loop(t){
  

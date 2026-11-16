@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V197 – OutRun V188 Feel</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V199 – Pont monumental et trafic routier</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>:root{--vw:1vw;--vh:1vh;--dvh:1dvh;--pw:100vw;--ph:100vh}html.crRot{--vw:1vh;--vh:1vw;--dvh:1dvw}
 html.crRot,html.crRot body{overflow:hidden!important}html.crRot body{position:fixed!important;top:0!important;left:var(--pw)!important;width:var(--ph)!important;height:var(--pw)!important;margin:0!important;transform:rotate(90deg)!important;transform-origin:0 0!important}
@@ -2044,7 +2044,7 @@ function __crBridges(vis,bs){
     if(rail){ctx.fillStyle=fg('#c9ced6',ft);const th2=Math.max(1,h*.12);if(s.bc===2&&s.i!==s.bcx){ctx.fillRect(0,yb+h*.5-th2/2,W,th2)}else if(s.i===s.bcx){ctx.fillRect(0,yb+h*.3,W,th2);ctx.fillRect(0,yb+h*.7,W,th2)}ctx.fillStyle=fg('#4a4237',ft);const st=Math.max(5,a.sc*160*260);for(let xx=(s.i*37)%st;xx<W;xx+=st)ctx.fillRect(xx,yb,Math.max(1,st*.22),h)}
     else{ctx.fillStyle=fg('#ffffff',ft);if(s.bc===1)ctx.fillRect(0,yb+h*.5,W,Math.max(1,h*.08));else if(s.i===s.bcx){const st=Math.max(8,a.sc*160*500);for(let xx=0;xx<W;xx+=st)ctx.fillRect(xx,yb+h*.45,st*.5,Math.max(1,h*.1))}}}
    else __crPoly4(fg(wc[s.i&1],ft),0,yb,W,yb,W,ya,0,ya);
-   if(s.bc&&s.i===s.bcx&&!window.__CR_LITE)__crUnderTraffic(a,yb,ya,k,ft);
+   if(s.bc&&s.i===s.bcx&&!window.__CR_LITE&&k!=='l')__crUnderTraffic(a,yb,ya,k,ft);
    if(q===r.length-1){const nx=segs[s.i+1];if(!nx||!nx.bridge){__crPoly4(fg(f.bridge==='stone'||f.bridge==='desert'?'#8a7a64':'#8d939a',ft),0,b.y,W,b.y,W,yb,0,yb);ctx.fillStyle=fg('#00000040',ft);ctx.fillRect(0,yb-Math.max(1,(yb-b.y)*.08),W,Math.max(1,(yb-b.y)*.08))}}
    // piles
    if((s.bc?s.bc===1:s.i%8===2)){for(const e of[-1,1]){const x=a.x+e*aw*1.12,cw=aw*.16;ctx.fillStyle=fg(pal[1],ft);ctx.fillRect(x-cw,a.y,cw*2,ya-a.y);ctx.fillStyle=fg(pal[0],ft);ctx.fillRect(x-cw,a.y,cw*.7,ya-a.y);if(k==='w'){ctx.fillStyle='#ffffff90';ctx.fillRect(x-cw*1.6,ya-cw*.2,cw*3.2,Math.max(1,cw*.3))}}}
@@ -2077,10 +2077,10 @@ function __crDrawOverpasses(vis){
  for(let n=0;n<vis.length;n++){
   const s=vis[n];if(s.overpass!==1||!s.a||!s.b)continue;
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
-  const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
+  const leftA=a.x-wa*2.72,rightA=a.x+wa*2.72,leftB=b.x-wb*2.72,rightB=b.x+wb*2.72;
   // V203 : tablier plus épais vers le dessous, sans relever la chaussée.
-  const hA=Math.max(4.3,wa*1.04),hB=Math.max(2.15,wb*1.04);
-  const fasciaA=Math.max(3.2,wa*.38),fasciaB=Math.max(1.6,wb*.38);
+  const hA=Math.max(6.2,wa*1.34),hB=Math.max(3.1,wb*1.34);
+  const fasciaA=Math.max(5.0,wa*.52),fasciaB=Math.max(2.5,wb*.52);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
@@ -2105,6 +2105,12 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#aeb3b7',ft),a.x-wa*1.36,underA,a.x-wa*1.25,underA,b.x-wb*1.25,b.y,b.x-wb*1.36,b.y);
   __crPoly4(fg('#777d82',ft),a.x+wa*1.25,underA,a.x+wa*1.48,underA,b.x+wb*1.48,b.y,b.x+wb*1.25,b.y);
   __crPoly4(fg('#aeb3b7',ft),a.x+wa*1.25,underA,a.x+wa*1.36,underA,b.x+wb*1.36,b.y,b.x+wb*1.25,b.y);
+  // Quatre piles latérales massives, en laissant le passage central entièrement libre.
+  for(const side of [-1,1])for(const off of [1.42,2.18]){
+   const xa=a.x+side*wa*off,xb=b.x+side*wb*off,cwa=wa*(off>2?.13:.16),cwb=wb*(off>2?.13:.16);
+   __crPoly4(fg('#737b82',ft),xa-cwa,underA,xa+cwa,underA,xb+cwb,b.y,xb-cwb,b.y);
+   __crPoly4(fg('#aeb5ba',ft),xa-cwa*.55,underA,xa+cwa*.55,underA,xb+cwb*.55,b.y,xb-cwb*.55,b.y);
+  }
   // Sous-face et poutres visibles sous le tablier.
   __crPoly4(fg('#292e33',ft),leftA,underA,rightA,underA,rightB,underB,leftB,underB);
   for(const q of [.2,.5,.8]){const yA=underA+fasciaA*q,yB=underB+fasciaB*q;
@@ -2114,6 +2120,26 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#858d94',ft),leftA,deckTopA,rightA,deckTopA,rightB,deckTopB,leftB,deckTopB);
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
+  // Circulation routière sur le pont : silhouettes latérales colorées, jamais de train.
+  {
+   const palette=['#e53935','#f4c430','#2788d8','#f28c28','#8e44ad','#36a66a'];
+   const scale=Math.max(5.5,Math.min(wa*.22,30));
+   for(let ci=0;ci<6;ci++){
+    const u=(ci-2.5)/3.15,x=lerp(a.x+wa*u,b.x+wb*u,.5);
+    const y=lerp(deckTopA,deckTopB,.5)+fasciaA*.64;
+    const cw=scale*2.25,ch=scale*.78,wheel=scale*.22;
+    const drift=Math.sin(flash*.32+ci*1.7)*Math.max(0,scale*.035),cy=y+drift;
+    ctx.save();ctx.globalAlpha*=Math.max(.72,1-ft*.35);
+    ctx.fillStyle='#15191e';
+    for(const wx of [x-cw*.31,x+cw*.31]){ctx.beginPath();ctx.ellipse(wx,cy-wheel*.1,wheel,wheel,0,0,Math.PI*2);ctx.fill()}
+    ctx.fillStyle=palette[ci];
+    ctx.beginPath();ctx.moveTo(x-cw*.5,cy-wheel*.45);ctx.lineTo(x-cw*.46,cy-ch*.62);ctx.quadraticCurveTo(x-cw*.4,cy-ch*.85,x-cw*.2,cy-ch*.86);ctx.lineTo(x+cw*.22,cy-ch*.86);ctx.quadraticCurveTo(x+cw*.39,cy-ch*.83,x+cw*.45,cy-ch*.55);ctx.lineTo(x+cw*.5,cy-wheel*.35);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#bfe7f5';ctx.beginPath();ctx.moveTo(x-cw*.25,cy-ch*.67);ctx.lineTo(x-cw*.16,cy-ch*.82);ctx.lineTo(x+cw*.12,cy-ch*.82);ctx.lineTo(x+cw*.22,cy-ch*.64);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#f5f2df';ctx.fillRect(x+cw*.42,cy-ch*.47,Math.max(1,scale*.09),Math.max(1,scale*.12));
+    ctx.fillStyle='#9d1d24';ctx.fillRect(x-cw*.49,cy-ch*.45,Math.max(1,scale*.09),Math.max(1,scale*.12));
+    ctx.restore();
+   }
+  }
   // Garde-corps supérieurs continus.
   const railA=Math.max(2,wa*.22),railB=Math.max(1,wb*.22);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);

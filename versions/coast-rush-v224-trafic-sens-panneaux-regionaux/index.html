@@ -719,19 +719,79 @@ const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc
 let cars=[];
 function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[id-100]:THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}segs.length=0;__crCarSegments.length=0;
  road(0,50,0,0,0);
- loopS=-1;for(let k=0;k<(MODE===5?14:22);k++){road(10+R()*9|0,48+R()*20|0,10+R()*9|0,R()<Math.max(.05,.16-.006*stage)?0:Math.round((R()-.5)*13.5*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0&&MODE!==5){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
+ // V225 : profil de route propre à chaque circuit, déterministe et progressif.
+ loopS=-1;loopE=-1;
+ const roadSections=MODE===5?14:18,profile=[];
+ let curveBias=0;
+ for(let k=0;k<roadSections;k++){
+  const length=9+(R()*15|0),entry=6+(R()*8|0),exit=6+(R()*8|0);
+  const turnRoll=R(),turn=turnRoll<.34?-1:turnRoll<.68?1:0;
+  const strength=turn===0?0:turn*(2.2+R()*10.5)*(th.cv||1)*dif;
+  const nextBias=Math.max(-13,Math.min(13,curveBias*.28+strength));
+  const elevation=(R()-.5)*105*(th.hl||1)*dif;
+  profile.push({length,entry,exit,curve:nextBias,elevation});
+  road(entry,length,exit,nextBias,Math.round(elevation));
+  curveBias=nextBias;
+  if(k===Math.floor(roadSections*.58)&&id%4!==0&&MODE!==5&&R()<.62){
+   road(0,18+R()*15|0,0,0,0);loopS=segs.length;
+   const loopCurve=(R()<.5?-1:1)*(3.5+R()*2.5);
+   road(18,32,18,loopCurve,38);road(18,32,18,-loopCurve,-38);
+   loopE=segs.length;road(0,10,0,0,0);
+  }
+ }
  road(15,20,15,0,-lastY()/segL);road(0,MODE===5?260:FORK+8,0,0,0);
  const N=segs.length;trackLen=N*segL;segs.forEach(s=>s.loop=loopS>=0&&s.i>=loopS&&s.i<loopE);
- const tunnelRanges=[];const tunnelCount=MODE===5?0:2+(R()<.72?1:0)+(stage>=5&&R()<.45?1:0);const maxTunnelLen=447;for(let ti=0;ti<tunnelCount;ti++){const span=Math.max(1,Math.floor((N-FORK-220)/tunnelCount)),min=100+ti*span,maxLen=Math.max(12,Math.min(Math.floor(maxTunnelLen/3),Math.floor((span-40)/3))),len=(12+(R()*(maxLen-11)|0))*3,max=Math.max(min+1,Math.min(N-FORK-len-40,min+span));let start=min+(R()*(max-min)|0);if(loopS>=0&&start<loopE+35&&start+len>loopS-35)start=loopE+40;if(start+len<N-FORK-25)tunnelRanges.push({start,len})}for(let ti=tunnelRanges.length-1;ti>=0;ti--){const q=tunnelRanges[ti];if((q.start<535&&q.start+q.len>420)||(q.start<285&&q.start+q.len>170)||(th.n==='ALPS'&&q.start<730&&q.start+q.len>600))tunnelRanges.splice(ti,1)}segs.forEach(s=>{const tr=tunnelRanges.find(q=>s.i>=q.start&&s.i<q.start+q.len);s.tun=!!tr;s.tS=tr?tr.start:-1;s.tEnd=tr?tr.start+tr.len:-1});
+ // Tunnels : positions tirées dans des fenêtres propres à ce tracé, sans recouvrir le looping.
+ const tunnelRanges=[],tunnelCount=MODE===5?0:2+(R()<.72?1:0)+(stage>=5&&R()<.45?1:0);
+ const tunnelSlots=[{a:90,b:Math.floor(N*.34)},{a:Math.floor(N*.30),b:Math.floor(N*.62)},{a:Math.floor(N*.56),b:N-FORK-45}];
+ for(let ti=0;ti<tunnelCount;ti++){
+  const slot=tunnelSlots[ti%tunnelSlots.length],len=36+(R()*105|0),lo=Math.max(80,slot.a),hi=Math.min(N-FORK-45,slot.b-len);
+  if(hi<=lo)continue;
+  let placed=false;
+  for(let attempt=0;attempt<60&&!placed;attempt++){
+   const start=lo+(R()*(hi-lo+1)|0),end=start+len;
+   const loopConflict=loopS>=0&&start<loopE+28&&end>loopS-28;
+   const otherConflict=tunnelRanges.some(q=>start<q.start+q.len+35&&end>q.start-35);
+   if(!loopConflict&&!otherConflict){tunnelRanges.push({start,len});placed=true}
+  }
+ }
+ segs.forEach(s=>{const tr=tunnelRanges.find(q=>s.i>=q.start&&s.i<q.start+q.len);s.tun=!!tr;s.tS=tr?tr.start:-1;s.tEnd=tr?tr.start+tr.len:-1});
 
- const bridgeTypes={COAST:'coast',ISLAND:'coast',SUNSET:'coast',RIO:'coast',SYDNEY:'coast',ALPS:'stone',PARIS:'urban',LONDRES:'urban',ROME:'urban',DESERT:'desert',MEADOW:'wood',CITY:'urban',NIGHT:'neon',CANYON:'suspension',AUTUMN:'wood',TOKYO:'neon','NEW YORK':'steel','LE CAIRE':'stone',MOSCOU:'steel','DUBAÏ':'modern',LILLE:'urban',BARCELONE:'coast',VENISE:'stone',SANTORIN:'coast',FJORDS:'steel',VEGAS:'neon',ISLANDE:'modern',AMAZONIE:'wood',PATAGONIE:'steel',MEXIQUE:'desert'};const brT=bridgeTypes[th.n]||'urban',brK={coast:['w'],stone:['w','r'],urban:['w','r','l'],desert:['r','l'],wood:['w'],neon:['r','l','w'],suspension:['g'],steel:['w','l'],modern:['w','r']}[brT]||['w'],brZ=MODE===5?[[430,535]]:[[170,285],[430,535]];if(th.n==='ALPS')brZ.push([610,730]);
-brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=['ALPS','CANYON','FJORDS','ISLANDE','PATAGONIE'].includes(th.n)?'l':(th.n==='COAST'?'l':(zi===0?'r':(R()<.5?'l':'r'))),ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
+ const bridgeTypes={COAST:'coast',ISLAND:'coast',SUNSET:'coast',RIO:'coast',SYDNEY:'coast',ALPS:'stone',PARIS:'urban',LONDRES:'urban',ROME:'urban',DESERT:'desert',MEADOW:'wood',CITY:'urban',NIGHT:'neon',CANYON:'suspension',AUTUMN:'wood',TOKYO:'neon','NEW YORK':'steel','LE CAIRE':'stone',MOSCOU:'steel','DUBAÏ':'modern',LILLE:'urban',BARCELONE:'coast',VENISE:'stone',SANTORIN:'coast',FJORDS:'steel',VEGAS:'neon',ISLANDE:'modern',AMAZONIE:'wood',PATAGONIE:'steel',MEXIQUE:'desert'};const brT=bridgeTypes[th.n]||'urban',brK={coast:['w'],stone:['w','r'],urban:['w','r','l'],desert:['r','l'],wood:['w'],neon:['r','l','w'],suspension:['g'],steel:['w','l'],modern:['w','r']}[brT]||['w'],const bridgeCount=MODE===5?1:2+(R()<.38?1:0),bridgeZones=[];
+ for(let bz=0;bz<bridgeCount;bz++){
+  const len=30+(R()*34|0),lo=90,hi=N-FORK-len-35;
+  let placed=false;
+  for(let attempt=0;attempt<100&&!placed;attempt++){
+   const start=lo+(R()*(hi-lo+1)|0),end=start+len;
+   const loopConflict=loopS>=0&&start<loopE+30&&end>loopS-30;
+   const tunnelConflict=tunnelRanges.some(q=>start<q.start+q.len+30&&end>q.start-30);
+   const otherConflict=bridgeZones.some(q=>start<q.start+q.len+55&&end>q.start-55);
+   if(!loopConflict&&!tunnelConflict&&!otherConflict){bridgeZones.push({start,len});placed=true}
+  }
+ }
+ bridgeZones.forEach((z,zi)=>{const k=brK[R()*brK.length|0],ov=k==='r'||k==='l',z0=z.start+(ov?Math.max(7,(z.len-12)>>1):4),z1=ov?z0+12:z.start+z.len-4,c=(z0+z1)>>1,hw=k==='r'?3:2;
+  for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}
+ });
 // V190 : véritables ponts en hauteur à franchir dessous, garantis sur chaque circuit.
-const overpassZones=[140,440];overpassZones.forEach((z,zi)=>{if(z>=N-FORK-20)return;let at=z;if(loopS>=0&&at>=loopS-10&&at<=loopE+10)at=loopE+24;if(at>=N-FORK-20)return;for(let j=-2;j<=2;j++){const q=segs[at+j];if(q&&!q.tun&&!q.loop)q.overpass=(j===0?1:2)}});
+// Ponts supérieurs : deux emplacements variables, distincts pour chaque circuit.
+const overpassZones=[];
+for(let oi=0;oi<(MODE===5?1:2);oi++){
+ let at=-1;
+ for(let attempt=0;attempt<100&&at<0;attempt++){
+  const candidate=100+(R()*(N-FORK-150)|0);
+  const blocked= Math.abs(candidate-loopS)<90&&loopS>=0 ||
+   tunnelRanges.some(q=>candidate>=q.start-55&&candidate<=q.start+q.len+55) ||
+   bridgeZones.some(q=>candidate>=q.start-45&&candidate<=q.start+q.len+45) ||
+   overpassZones.some(q=>Math.abs(candidate-q)<115) ||
+   Array.from({length:11},(_,j)=>segs[candidate-5+j]).some(q=>!q||q.tun||q.loop);
+  if(!blocked)at=candidate;
+ }
+ if(at>=0)overpassZones.push(at);
+}
+overpassZones.forEach(at=>{for(let j=-2;j<=2;j++){const q=segs[at+j];if(q&&!q.tun&&!q.loop)q.overpass=(j===0?1:2)}});
 // V214 : légère courbe de la chaussée principale autour des ponts.
 // Le profil est progressif et symétrique pour éviter tout coude dans la trajectoire.
-overpassZones.forEach((z)=>{
- let at=z;if(loopS>=0&&at>=loopS-10&&at<=loopE+10)at=loopE+24;
+overpassZones.forEach((at)=>{
  const radius=54,amplitude=1.65;
  for(let d=-radius;d<=radius;d++){
   const q=segs[at+d];if(!q||q.tun||q.loop)continue;

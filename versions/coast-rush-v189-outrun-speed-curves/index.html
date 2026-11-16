@@ -1128,7 +1128,7 @@ function drawChaseVictory(t){const g=ctx.createLinearGradient(0,0,0,150);g.addCo
  for(let i=0;i<5;i++)person(30+i*36+Math.min(t*18,60),214,'#222','#e8742a','#e8742a',0,0);person(150,214,'#3a2a1a','#1c3f8a','#14224a',0,3);
  ctx.restore();ctx.textAlign='center';ctx.font='bold 22px '+FT;ctx.fillStyle='#000';ctx.fillText('MISSION ACCOMPLIE !',W/2+1,41);ctx.fillStyle='#ffd400';ctx.fillText('MISSION ACCOMPLIE !',W/2,40);ctx.fillStyle='#ffd400';ctx.beginPath();ctx.arc(W/2,86,9,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff1a8';ctx.fillRect(W/2-3,94,6,12);ctx.fillStyle='#fff';ctx.font='bold 8px '+FT;ctx.fillText('MÉDAILLE & PROMOTION',W/2,113);if(MP){const standings=[{n:myName,h:chaseHits},...remotes.filter(r=>r.presence).map(r=>({n:r.presence.n||'POLICE',h:+r.presence.ch||0}))].sort((a,b)=>b.h-a.h);ctx.font='bold 9px '+FT;ctx.fillStyle='#fff';ctx.fillText('MEILLEUR POLICIER : '+(standings[0]?.n||myName)+' ('+(standings[0]?.h||0)+' COUPS)',W/2,55)}ctx.font='11px '+FT;ctx.fillStyle='#fff';ctx.fillText('Tous les bandits sont derrière les barreaux',W/2,128);drawFinishCelebration(t,'chase')}
 const VEH=['Sport','Coccinelle','Muscle car','Supercar','Pick-up','Fourgon','Cabriolet Duo','Rallye GT','Hypercar','Buggy','Monster Truck','Formule','Moto Sport','Chopper','Scooter','Moto Cross','Roadster','Side-car'],VW=[.18,.17,.2,.19,.22,.25,.24,.19,.2,.22,.26,.21,.16,.17,.15,.16,.16,.24],
-VP=[[1.0504,1.05,1.05],[.82,.95,1.15],[1.08,1.08,.88],[1.1312,1.1,1],[.9,.92,.95],[.84,.82,.86],[.96,1,1.08],[.97,1.1,1.18],[1.12,1.1,.92],[.9,1.12,1.1],[.85,.95,.88],[1.1514,1.16,1.06],[1.1312,1.15,1.08],[.95,.88,.9],[.78,1,1.12],[.92,1.14,1.2],[1.0302,1.05,1.1],[.88,.84,.84]],
+VP=[[1.0609,1.0605,1.0605],[.82,.95,1.15],[1.08,1.08,.88],[1.14251,1.111,1.01],[.9,.92,.95],[.84,.82,.86],[.96,1,1.08],[.97,1.1,1.18],[1.12,1.1,.92],[.9,1.12,1.1],[.85,.95,.88],[1.16291,1.1716,1.0706],[1.14251,1.1615,1.0908],[.95,.88,.9],[.78,1,1.12],[.92,1.14,1.2],[1.0405,1.0605,1.111],[.88,.84,.84]],
 __vp=()=>(MODE==2?[1,1,1]:VP[myV])||VP[0],__vst=x=>'★'.repeat(Math.max(1,Math.min(5,Math.round((x-.7)/.1)))),__vpTxt=()=>{const q=__vp();return 'VIT '+__vst(q[0])+'  ACC '+__vst(q[1])+'  TENUE '+__vst(q[2])},OPPV=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,12,15],NOHUD=['win','over','brief','arrest','escape','podium','mega','ttfinish'];let myV=0,MP=0,MODE0=0,RL=5,raceNo=1,raceT=0,rts=[],podT=0;
 let ttStartAt=0,ttFinishAt=0,ttFinishTime=0,ttFinishScore=0,ttFinishBest=0,ttFinishCircuit=0,ttFinishNewBest=false;
 try{myV=+localStorage.getItem('cr_veh')||0}catch(e){}
@@ -3109,7 +3109,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(braking&&!driftStart)speed-=MAX*(drift>.15?.10:.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));
-  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:__vp()[0])),speed));
+  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:Math.min(1,__vp()[0]))),speed));
   const sp2=speed/MAX,d=dt*2.1*sp2;
   // Direction progressive : la voiture prend de l'appui au lieu de se téléporter latéralement.
   const steerGain=(slip>0?.65:1)*(.85+.15*gripF)*(1+drift*.22)*__vp()[2];

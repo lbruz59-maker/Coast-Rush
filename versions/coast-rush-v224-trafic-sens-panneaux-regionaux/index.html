@@ -813,9 +813,22 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
    for(let ai=archStart;ai<archEnd;ai++){
     const g=segs[ai];
     g.sp=g.sp.filter(o=>o.t==='I');
-    if((ai-archStart)%archGap===0&&!g.bridge)g.sp.push({t:'A',o:0});
+    if((ai-archStart)%archGap===0)g.sp.push({t:'A',o:0});
    }
-  } segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
+  }
+ // V225 : priorité aux séries d'arches d'origine sur les ponts générés.
+ // Si une arche croise un pont, supprimer le pont entier, pas seulement le segment.
+ for(let bi=0;bi<segs.length;){
+  if(!segs[bi].bridge){bi++;continue}
+  let bj=bi+1;while(bj<segs.length&&segs[bj].bridge===segs[bi].bridge)bj++;
+  let hasOriginalArch=false;
+  for(let ai=bi;ai<bj;ai++)if(segs[ai].sp&&segs[ai].sp.some(o=>o.t==='A')){hasOriginalArch=true;break}
+  if(hasOriginalArch)for(let ai=bi;ai<bj;ai++){
+   const q=segs[ai];delete q.bridge;delete q.bk;delete q.bd;delete q.bcx;delete q.bc;
+  }
+  bi=bj;
+ }
+ segs.forEach(s=>{if(s.tun||s.bridge||s.loop||s.i>=N-FORK||s.i<80||s.sp.some(o=>o.t==='A'))return;const i=s.i;if(i%5==2)s.sp.push({t:'u',o:(i%2?-1:1)*(1.3+R()*(s.sea&&i%2?.2:.5)),c:HC2[R()*5|0]});if(s.sea&&i%27==7){s.sp.push({t:'W',o:-(3.2+R()*2.8),ph:R()*6});if(i%54==7)s.sp.push({t:'W',o:-(3.4+R()*2.4),ph:R()*6})}if(s.sea&&i%13==4)s.sp.push({t:'ws',o:-(2.8+((i*37)%30)/10),c:['#ff4d6d','#ffd400','#2ecc71','#4dd2ff','#ff8a3a'][i%5],ph:(i%7)});if(!s.sea&&i%(th.urb?31:97)==17)s.sp.push({t:UR[R()*UR.length|0],o:(R()<.5?-1:1)*(2.05+R()*.3),c:['#fff','#f5c76b','#6fc8e8'][R()*3|0],ph:R()*6});if(!s.sea&&th.n=='LE CAIRE'&&i%71==9)s.sp.push({t:'py',o:(R()<.5?-1:1)*(3+R()*2)});if(!s.sea&&th.n=='ROME'&&i%37==5)s.sp.push({t:'cl',o:(R()<.5?-1:1)*(1.9+R()*.4)})});
  // V186 : tous les monuments, bâtiments et décors locaux sont repoussés hors chaussée.
  // Les grandes empreintes de M/Z nécessitent un décalage supérieur aux petits sprites.
  const __crLocalRoadsideMin={M:8.2,Z:6.8,D:4.2,K:4.8};

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V189 – OutRun Speed & Long Curves</title>
+<html lang="fr"><head><meta charset="utf-8"><title>Coast Rush V190 – OutRun Grand Tour</title>
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>:root{--vw:1vw;--vh:1vh;--dvh:1dvh;--pw:100vw;--ph:100vh}html.crRot{--vw:1vh;--vh:1vw;--dvh:1dvw}
 html.crRot,html.crRot body{overflow:hidden!important}html.crRot body{position:fixed!important;top:0!important;left:var(--pw)!important;width:var(--ph)!important;height:var(--pw)!important;margin:0!important;transform:rotate(90deg)!important;transform-origin:0 0!important}
@@ -563,7 +563,7 @@ body.route-map-active .b,body.route-map-active #pauseBtn{display:none!important;
  background:transparent!important;box-shadow:none!important;
 }
 
-</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V189 – vitesse de base 293 km/h, tiers +1 %, adversaires plus rapides et longues courbes OutRun"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
+</style><link rel="manifest" href="./manifest.webmanifest"><meta name="theme-color" content="#080d18"><meta name="application-name" content="Coast Rush"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Coast Rush"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="coast-rush-version" content="V190 – 293 km/h hors bonus, circuits x2, checkpoints, scrolling OutRun et profondeur de vision augmentée"></head><body><div id="crPerfHud">FPS -- | RAF -- ms</div>
 <button id="pauseBtn" type="button" aria-label="Mettre le jeu en pause">Ⅱ</button><div id="pauseLayer" role="dialog" aria-modal="true" aria-label="Jeu en pause"><div id="pauseCard"><h2>PAUSE</h2><p>La course est arrêtée.</p><button id="resumeBtn" type="button">▶ REPRENDRE</button><button id="pauseMonitorBtn" type="button">TÉMOINS : OFF</button><button id="pauseMenuBtn" type="button">⌂ RETOUR AU MENU</button></div></div>
 <div id="w"><canvas id="c" width="320" height="224"></canvas></div>
 <div class="b drive-control" id="l" data-k="l">◀</div><div class="b drive-control" id="r" data-k="r">▶</div>
@@ -590,7 +590,7 @@ const __crBridgePalettes={stone:['#b7a58a','#65584a','#d1bea0','#a99c88'],urban:
 
 const SRC='<!DOCTYPE html>'+document.documentElement.outerHTML;const $=id=>document.getElementById(id),cv=$('c');let ctx=cv.getContext('2d',{alpha:false,desynchronized:true}),W=320,H=224;
 let drawN=150;const UA=navigator.userAgent||'',isTV=/AFT|FireTV|Fire TV|BRAVIA|SMART-TV|SmartTV|CrKey|Tizen|Web0S|Android TV|\bTV\b/i.test(UA)||(/Silk/.test(UA)&&!('ontouchstart' in window))||(/Android/i.test(UA)&&navigator.maxTouchPoints===0&&Math.max(screen.width||0,screen.height||0)>=1000),isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform=='MacIntel'&&navigator.maxTouchPoints>1);
-if(isTV)document.documentElement.classList.add('tv');
+if(isTV)document.documentElement.classList.add('tv');drawN=isTV?150:180;
 window.__coastRushNativePaused=false;
 window.__coastRushLifecycle=function(kind){
  if(kind==='pause'){window.__coastRushNativePaused=true;try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -600,7 +600,7 @@ window.__coastRushLifecycle=function(kind){
 let inputMode=isTV?'controller':(('ontouchstart' in window||navigator.maxTouchPoints>0)?'touch':'keyboard');
 function applyInputMode(){const touch=inputMode==='touch';document.querySelectorAll('.drive-control').forEach(el=>{el.classList.toggle('input-touch',touch);el.style.display=touch?'flex':'none'});[['ui-key','keyboard'],['ui-pad','controller'],['ui-touch','touch']].forEach(([id,m])=>{const el=document.getElementById(id);if(el)el.classList.toggle('sel',inputMode===m)});const hint=document.getElementById('input-hint');if(hint)hint.textContent=inputMode==='keyboard'?'Clavier : flèches / WASD':inputMode==='controller'?'Manette : stick gauche, gâchette / boutons':'Tactile : commandes affichées à l’écran'}
 
-window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=200,roadW=2000,camH=1000,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*60;
+window.addEventListener('error',e=>{try{let b=document.getElementById('errb');if(!b){b=document.createElement('div');b.id='errb';b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:50;background:#600d;color:#fff;font:11px monospace;padding:3px 6px;pointer-events:none';document.body.appendChild(b)}b.textContent='Erreur : '+(e.message||e)+' ('+(e.lineno||'?')+')'}catch(x){}});const segL=400,roadW=2000,camH=1000,camD=1/Math.tan(50*Math.PI/180),playerZ=camH*camD,MAX=segL*30;
 const lerp=(a,b,p)=>a+(b-a)*p,eIn=(a,b,p)=>a+(b-a)*p*p,eOut=(a,b,p)=>a+(b-a)*(1-(1-p)*(1-p)),eIO=(a,b,p)=>a+(b-a)*(-Math.cos(p*Math.PI)/2+.5);
 const segs=[];let trackLen;
 // Reuse only segments that actually received cars/objects this frame.
@@ -717,7 +717,7 @@ const SO_W=[1,2,3,4,5,6,7,8,9,10],SO_OFF=[0,1,3,6,10,15,21,28,36,45],orId=(s,k)=
 const FORK=125;let th=TH[0],cid=0,cposk=0;
 const cols=['#2255ff','#ffd400','#ffffff','#22cc66','#aa33ee','#ff8800','#00cccc'];
 let cars=[];
-function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[id-100]:THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}segs.length=0;__crCarSegments.length=0;
+function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[id-100]:THI[id]];const dif=Math.min(2,.8+.09*stage);setupWeather(id);if(MODE==4){msg=th.n;msgT=4}segs.length=0;__crCarSegments.length=0;crCheckpointIndex=0;
  road(0,50,0,0,0);
  loopS=-1;for(let k=0;k<(MODE===5?14:22);k++){road(10+R()*9|0,48+R()*20|0,10+R()*9|0,R()<Math.max(.05,.16-.006*stage)?0:Math.round((R()-.5)*13.5*(th.cv||1)*dif),Math.round((R()-.5)*60*(th.hl||1)*dif));if(k==14&&id%3!=0&&MODE!==5){road(0,45,0,0,0);loopS=segs.length;road(25,40,25,5,55);road(25,40,25,-5,-55);loopE=segs.length;road(0,12,0,0,0)}}
  road(15,20,15,0,-lastY()/segL);road(0,MODE===5?260:FORK+8,0,0,0);
@@ -728,7 +728,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[
 brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=brK[(id*5+zi*3+stage)%brK.length],ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
 // V190 : véritables ponts en hauteur à franchir dessous, garantis sur chaque circuit.
 const overpassZones=[70,370];overpassZones.forEach((z,zi)=>{if(z>=N-FORK-20)return;let at=z;if(loopS>=0&&at>=loopS-10&&at<=loopE+10)at=loopE+24;if(at>=N-FORK-20)return;for(let j=-2;j<=2;j++){const q=segs[at+j];if(q&&!q.tun&&!q.loop)q.overpass=(j===0?1:2)}});
-segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8;if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==24)s.sp.push({t:'F',o:-.55});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.14+R()*.1)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.13+R()*.17),c:cols[R()*7|0],ph:R()*6})}
+const cpSegments=[1,2,3].map(n=>Math.floor((N-FORK)*n/4));segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8,cpNo=cpSegments.indexOf(i);if(cpNo>=0){s.sp.push({t:'S',o:-1.3,txt:'CHECK '+(cpNo+1),bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK '+(cpNo+1),bg:'#ffd400'})}if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==24)s.sp.push({t:'F',o:-.55});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.14+R()*.1)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.13+R()*.17),c:cols[R()*7|0],ph:R()*6})}
   if(s.loop&&i%10==0)s.sp.push({t:'R',o:0});if(i==loopS-40){s.sp.push({t:'S',o:-1.3,txt:'LOOP',bg:'#2a6aff'});s.sp.push({t:'S',o:1.3,txt:'LOOP',bg:'#2a6aff'})}
   if((useItems||MODE===5)&&i%(DF[dfi].b*3)==((DF[dfi].b*3)>>1)&&!f&&!s.loop)s.sp.push({t:'I',o:[-.5,0,.5][R()*3|0],k:MODE===5?BRIT[R()*BRIT.length|0]:(R()<.22?0:(()=>{const q=1+(R()*11|0);return q>=8?q+2:q})())});
   if(i%(th.d=='h'?4:7)==0&&!f&&!s.loop){s.shd=.5+R()*.6;/* Les immeubles restent hors chaussée : grands gratte-ciel écartés, Paris décalé vers l'extérieur. */const buildingOffset=th.d==='sk'?4.6:th.n==='PARIS'?3.0:1.5;s.sp.push({t:th.d,o:-buildingOffset-R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2});s.sp.push({t:th.d,o:buildingOffset+R()*.3,c:(th.hc||HC)[R()*(th.hc||HC).length|0],hh:1+R()*2})}
@@ -820,14 +820,14 @@ segs.forEach(s=>{if(s.tun){s.sp=[{t:'T',o:0,port:s.i==s.tS||s.i==s.tEnd-1,k:s.i}
   if(i%43===17)seg.sp.push({t:'P',o:(i%86<43?-1:1)*1.42});
   if(i%29===9)seg.sp.push({t:'C',o:(i%58<29?1:-1)*1.45,c:cols[(i*3)%cols.length],ph:i%5});
  });
- if(MODE===5)__crCloseLoop(N);cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<(MODE===5?0:DF[dfi].k+stage*2);i++){const T=i%5==4,v=T?undefined:OPPV[(i*7+id)%OPPV.length],aiSpeed=[0,8,11,15,16].includes(v)?1.12:[2,3,12].includes(v)?1.07:1;cars.push({ai:1,item:0,aiUseCd:2+R()*3,z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(T?.26+R()*.12:.42+R()*.3)*aiSpeed,c:cols[T?i%7:v%7],v})}cars.forEach(c=>c.lane=c.o);if(MODE===5)brSetup(R);if(MODE==2){
+ if(MODE===5)__crCloseLoop(N);cars=[];objs.length=0;for(const k in prox)delete prox[k];for(let i=0;i<(MODE===5?0:DF[dfi].k+stage*2);i++){const T=i%5==4,v=T?undefined:OPPV[(i*7+id)%OPPV.length],aiSpeed=[0,8,11,15,16].includes(v)?1.12:[2,3,12].includes(v)?1.07:1;cars.push({ai:1,item:0,aiUseCd:2+R()*3,z:1500+R()*(trackLen-(FORK+60)*segL),o:[-.55,0,.55][i%3]+(R()-.5)*.1,T,w:T?.3:.18,sp:MAX*(.60+R()*.37),c:cols[T?i%7:v%7],v})}cars.forEach(c=>c.lane=c.o);if(MODE===5)brSetup(R);if(MODE==2){
   // Chase HQ : le même suspect reste en fuite pendant les deux circuits.
   // On ne crée un nouveau bandit qu'après l'arrestation du précédent.
   if(!bnd||bnd.hp<=0){const vt=(stage-1)%5,mx=3+stage+(vt==1?2:0)+chaseRank*2;bnd={z:playerZ+segL*25,o:0,lane:0,w:[.2,.26,.22,.2,.24][vt],sp:MAX*(.6+.025*stage),c:['#1a1a28','#ececf0','#c8501e','#7a2ae0','#5a6a2a'][vt],vt,mx,b:1,hp:mx,cool:0,ph:R()*6};chaseCircuitsDone=0;}
   else {bnd.z=playerZ+segL*25;bnd.o=0;bnd.lane=0;bnd.cool=0;bnd.hit=0;bnd.vo=0;}
   cars.push(bnd);arrestT=0;
  }}
-let chaseCircuitsDone=0;let pos=0,px=0,pxVel=0,carTurn=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,flash=0,msg='',msgT=0,tr=0;
+let chaseCircuitsDone=0;let pos=0,px=0,pxVel=0,carTurn=0,speed=0,gear=0,state='menu',time=60,score=0,stage=1,crash=0,ang=0,skyOff=0,flash=0,msg='',msgT=0,tr=0,crCheckpointIndex=0;
 let crManualPaused=false;
 function crClearDriveInput(){for(const k in inp)inp[k]=0;document.querySelectorAll('[data-k]').forEach(b=>b.classList.remove('on'));}
 function crPauseGame(){if(crManualPaused||state==='menu'||state==='over'||state==='win'||state==='podium'||state==='mega')return;crManualPaused=true;crClearDriveInput();$('pauseLayer').style.display='flex';$('pauseBtn').style.display='none';try{if(ac&&ac.state==='running')ac.suspend()}catch(e){}}
@@ -2982,7 +2982,7 @@ const verWarn={};function netTick(dt){if(!NET())return;for(const r of remotes){c
    if(state=='play'&&crash<=0&&star<=0&&Math.abs(b[0]-(pos+playerZ))<segL*.8&&Math.abs(px-b[1])<(kind==='y'?.3:kind==='o'?.28:.2)){if(kind==='o'){if(slip<=0){crDamageFlash();slip=1.6;squeal();shake=.2}}else if(kind==='y'){ate[k]=1;eatQ.push(b[2]);crDamageFlash();glueT=.85;speed=0;msg='GLUE ! ARRÊT';msgT=1.2}else{ate[k]=1;eatQ.push(b[2]);crash=.9;bang();voice();shake=.3}}}}}
 const ICE={iceServers:[{urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:global.stun.twilio.com:3478']},{urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}]},myId='P'+Math.random().toString(36).slice(2,7),pst={},links=[];let p2p=null,pend=null,bc=null,tk=0,tkOpen=0,lsOn=0,curRoom='';myPeer=myId;
 const NET=()=>rm||bc||p2p||links.length>0||chans.length>0||!!window.DUEL,setStat=t=>{$('ps').textContent=t};
-const VER='v189';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
+const VER='v190';function netSend(p){p.id=myId;p.sq=++sq;p.ver=VER;if(rm)try{rm.presence(p)}catch(e){}const m=JSON.stringify({t:'s',id:myId,p});for(const c of links)if(c.dc&&c.dc.readyState=='open')try{c.dc.send(m)}catch(e){}for(const c of chans)try{c.send(m)}catch(e){}if(bc)try{bc.postMessage({t:'s',id:myId,p})}catch(e){}if(window.DUEL)try{parent.postMessage({t:'duelnet',m:{t:'s',id:myId,p}},'*')}catch(e){}if(curRoom)try{localStorage.setItem('cr-'+curRoom,JSON.stringify({t:'s',id:myId,p}))}catch(e){}}
 // V61 — réutilise les entrées distantes au lieu de recréer un tableau et
 // un objet par joueur à chaque rafraîchissement réseau.
 const __crRemoteRecords=new Map();
@@ -3109,7 +3109,7 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
   if(braking&&!driftStart)speed-=MAX*(drift>.15?.10:.9)*(.5+.5*gripF)*dt;
   if(offRoad()&&speed>MAX*.25)speed-=MAX*.7*dt;
   if(boost>0||star>0)speed=Math.max(speed,MAX*(boost>0?1.25:1.1));
-  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:Math.min(1,__vp()[0]))),speed));
+  speed=Math.max(0,Math.min(MAX*(mini>0?.6:(boost>0||star>0?1.3:1)),speed));
   const sp2=speed/MAX,d=dt*2.1*sp2;
   // Direction progressive : la voiture prend de l'appui au lieu de se téléporter latéralement.
   const steerGain=(slip>0?.65:1)*(.85+.15*gripF)*(1+drift*.22)*__vp()[2];
@@ -3126,15 +3126,15 @@ function update(dt){const N=segs.length,ps=segs[Math.floor((pos+playerZ)/segL)%N
     if(ac&&Math.random()<dt*2)squeal();
    }
   if(drift>.025){
-   if(accelerating)speed=Math.min(MAX*1.10,speed+MAX*.025*drift*dt);
+   if(accelerating)speed=Math.min(MAX,speed+MAX*.025*drift*dt);
    driftMarkClock+=dt;if(driftMarkClock>.045){driftMarkClock=0;const tx=W/2+driftSide*drift*12,ty=H-16;for(const wheel of [-1,1])__crEmitDrift(tx+wheel*8,ty,driftSide);if(Math.random()<dt*14){__crEmitSmoke(W/2+driftSide*sw*.28,ty-10,driftSide*18+(Math.random()-.5)*8);__crEmitSmoke(W/2-driftSide*sw*.28,ty-10,-driftSide*18+(Math.random()-.5)*8)}}
   }
   if(slip>0)speed-=MAX*.06*dt;if(tapT>0){tapT-=dt;if(tapT<=0)tapAx=0}
   if(px>2.4){px=2.4;pxVel=Math.min(0,pxVel)}else if(px< -2.4){px=-2.4;pxVel=Math.max(0,pxVel)}
   {const N3=segs.length,i3=Math.floor((pos+playerZ)/segL);let lim=2.4;if(ps.tun||ps.bridge)lim=.97;else for(let q=1;q<=10;q++){const sg=segs[(i3+q)%N3];if(sg&&(sg.tun||sg.bridge)){lim=.97+(q-1)*.45;break}}
    if(px>lim){px=lim;pxVel=Math.min(0,pxVel)}else if(px<-lim){px=-lim;pxVel=Math.max(0,pxVel)}}}
- const old=pos;pos+=speed*dt;score+=speed*dt/segL*5;
- skyOff+=ps.curve*speed*dt*.0003*60*.1;if(Math.floor((pos+playerZ)/segL)>=N-4&&state=='play')endCourse();
+ const old=pos;pos+=speed*dt;score+=speed*dt/segL*5;if(state==='play'&&MODE!==5&&crCheckpointIndex<3&&Math.floor((pos+playerZ)/segL)>=Math.floor((N-FORK)*(crCheckpointIndex+1)/4)){crCheckpointIndex++;msg='CHECKPOINT '+crCheckpointIndex+'/3';msgT=2;say('Checkpoint '+crCheckpointIndex,1.1,1.05)}
+ skyOff+=ps.curve*speed*dt*.0009*60*.1;if(Math.floor((pos+playerZ)/segL)>=N-4&&state=='play')endCourse();
  __crClearActiveCarSegments();
  if(MODE==2&&state=='play'){sirT-=dt;if(sirT<=0&&ac){sirT=.45;sirF^=1;tone(sirF?960:720,ac.currentTime,.4,'sawtooth',.035)}}
  netTick(dt);

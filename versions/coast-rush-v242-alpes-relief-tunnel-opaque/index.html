@@ -1848,8 +1848,14 @@ else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx
    drawReliefGroup();
    ctx.restore();
   }
-  ctx.restore();}else{ctx.beginPath();ctx.rect(x-w*7,y-w*6.4,w*14,w*6.42);ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();ctx.fillStyle=(sp.k%4<2)?'#2c2f3a':'#252833';ctx.fill('evenodd')}
+  ctx.restore();}else{return;}
  if(sp.port){
+  // L'intérieur du tunnel n'est peint qu'à l'intérieur de l'arche visible.
+  // Aucune plaque rectangulaire noire ne peut apparaître avant l'ouverture.
+  ctx.save();ctx.beginPath();__arch();
+  const tunnelShade=ctx.createLinearGradient(x,y-hh,x,y);
+  tunnelShade.addColorStop(0,'#101522');tunnelShade.addColorStop(.62,'#182235');tunnelShade.addColorStop(1,'#25384d');
+  ctx.fillStyle=tunnelShade;ctx.fill();ctx.restore();
   ctx.strokeStyle='#b9ad98';ctx.lineWidth=Math.max(1,w*.13);ctx.beginPath();ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.stroke();
   ctx.strokeStyle='#eee4cf';ctx.lineWidth=Math.max(.8,w*.045);ctx.beginPath();ctx.moveTo(x-k*.91,y);ctx.lineTo(x-k*.91,y-hh);ctx.arc(x,y-hh,k*.91,Math.PI,0);ctx.lineTo(x+k*.91,y);ctx.stroke();
   // Alternating safety blocks at the two feet of the portal.
@@ -2152,7 +2158,7 @@ function __crDrawSkyMountains(){
   }finally{ctx.restore();ctx=live}
   __crSkyLayerKey=key;
  }
- ctx.drawImage(__crSkyLayer,0,0);
+ ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';ctx.drawImage(__crSkyLayer,0,0);ctx.restore();
 }
 function renderBackdrop(){
  const skyKey=W+'x'+H+'|'+curSky[0]+'|'+curSky[1];if(skyKey!==__crSkyGradKey){__crSkyGradKey=skyKey;__crSkyGrad=ctx.createLinearGradient(0,0,0,H/2);__crSkyGrad.addColorStop(0,curSky[0]);__crSkyGrad.addColorStop(1,curSky[1])}ctx.fillStyle=__crSkyGrad;ctx.fillRect(0,0,W,H/2+1);
@@ -2182,15 +2188,15 @@ function __crDrawTunnelApproachMountains(){
  // à l'horizon, sans jamais créer de sprite sur la chaussée.
  if(ahead>25||ahead<0)return;
  const progress=Math.max(0,Math.min(1,(25-ahead)/25));
- const scale=.34+progress*.72,base=H*.505,center=W*.5;
+ const scale=.72+progress*.58,base=H*.505,center=W*.5;
  const peaks=[
-  {x:-.16,h:.18,w:.25,c:'#65798c'},
-  {x:.08,h:.29,w:.22,c:'#7b8fa2'},
-  {x:.31,h:.21,w:.25,c:'#687d91'},
-  {x:.55,h:.31,w:.24,c:'#71869a'},
-  {x:.79,h:.20,w:.25,c:'#62778b'},
-  {x:1.02,h:.27,w:.23,c:'#788da0'},
-  {x:1.20,h:.17,w:.22,c:'#667b8f'}
+  {x:-.20,h:.25,w:.27,c:'#65798c'},
+  {x:.02,h:.34,w:.25,c:'#7b8fa2'},
+  {x:.24,h:.28,w:.28,c:'#687d91'},
+  {x:.47,h:.39,w:.27,c:'#71869a'},
+  {x:.70,h:.30,w:.28,c:'#62778b'},
+  {x:.94,h:.36,w:.27,c:'#788da0'},
+  {x:1.17,h:.26,w:.26,c:'#667b8f'}
  ];
  ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
  for(const p of peaks){

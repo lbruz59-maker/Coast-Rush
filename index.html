@@ -1260,6 +1260,9 @@ function __crDrawDecoGroup(seg,baseX,baseY,sc){
  if(qsc<=0){for(const sp of sprites)deco(sp,baseX+sc*sp.o*roadW*160,baseY,sc);return}
  const stat=[],live=[];
  for(const sp of sprites){
+  // V243 : les portails alpins sont composés après les parois du tunnel.
+  // Leur relief doit rester opaque et au premier plan.
+  if(sp.t==='T'&&sp.port)continue;
   if(__crDecoCacheable.has(sp.t)&&!__crDecoDynamic.has(sp.t))stat.push(sp);
   else live.push(sp);
  }
@@ -1383,7 +1386,9 @@ function render(){
    for(let m=0;m<=nB;m++){const P=pt(m),X=P.x+P.w*(cO-hwO(m)),Y=P.y;if(m===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y)}
    for(let m=nB;m>=0;m--){const P=pt(m);ctx.lineTo(P.x+P.w*(cO+hwO(m)),P.y)}
    ctx.closePath();ctx.fill()}ctx.restore()}}
+const tunnelPortals=[];
 for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
+  for(const sp of(s.sp||[]))if(sp.t==='T'&&sp.port)tunnelPortals.push({sp,x:a.x+s.a.sc*sp.o*roadW*160,y:a.y,sc:a.sc});
   ctx.globalAlpha=1-s.ft*.6;const clip=s.clip<H;
   // Les décors latéraux ne sont plus coupés par le masque de recouvrement de la chaussée.
   // Leur position reste calculée depuis la projection originale du segment.
@@ -1392,9 +1397,19 @@ for(let n=vis.length-1;n>=0;n--){const s=vis[n],a=s.a,b=s.b;
    const bo=blocked*(.5+.9*ff),bx0=a.x+a.sc*bo*roadW*160;
    deco(__crForkBlockSprite,bx0,a.y,a.sc);
   }
+  ctx.globalAlpha=1}
+ // V243 : couche dédiée aux portails alpins, après les parois de tunnel.
+ // Source-over + alpha 1 empêchent les montagnes grises de devenir translucides.
+ ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+ for(const p of tunnelPortals)decoRaster(p.sp,p.x,p.y,p.sc);
+ ctx.restore();
+ // Les véhicules sont dessinés après les portails : ils restent toujours au premier plan.
+ for(let n=vis.length-1;n>=0;n--){
+  const s=vis[n],a=s.a,b=s.b,clip=s.clip<H;
   if(clip){ctx.save();ctx.beginPath();ctx.rect(0,0,W,s.clip);ctx.clip()}
   for(const c of s.cars){const pct=(c.z%segL)/segL,sc=lerp(a.sc,b.sc,pct),cxs=lerp(a.x,b.x,pct)+sc*c.o*roadW*160,sy=lerp(a.y,b.y,pct),cw=sc*roadW*160*c.w*(c.shr>0?.6:1);if(s.tun&&cw>2){const s2=segs[s.i+1],fb=(s2&&s2.v&&s2.b)?s2.b:b;if(fb.y<sy-1){const ow=c.w||.2;ctx.save();ctx.globalCompositeOperation='lighter';for(const sd of[-1,1]){const nx=cxs+sd*cw*.3,hn=cw*.1,fx=fb.x+fb.w*(c.o+sd*ow*.3),hf=fb.w*(ow*.1+.07);const g=ctx.createLinearGradient(0,sy,0,fb.y);g.addColorStop(0,'rgba(255,230,160,.26)');g.addColorStop(1,'rgba(255,220,140,0)');ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(nx-hn,sy);ctx.lineTo(fx-hf,fb.y);ctx.lineTo(fx+hf,fb.y);ctx.lineTo(nx+hn,sy);ctx.closePath();ctx.fill()}ctx.restore()}}drawObj(c,cxs,sy,cw)}
-  if(clip)ctx.restore();ctx.globalAlpha=1}
+  if(clip)ctx.restore();
+ }
  // joueur
  ctx.save();const cxp=W/2,cyp=H-6,sw=320*(MODE==2?.18:VW[myV])*1.2*(mini>0?.62:1);
  if(crash>0){ctx.translate(cxp,cyp-15);ctx.rotate(ang);ctx.translate(-cxp,-(cyp-15))}

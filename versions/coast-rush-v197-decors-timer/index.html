@@ -1985,7 +1985,31 @@ function __crDrawSkyMountains(){
    // Les étoiles nocturnes sont statiques par pas de défilement : elles rejoignent
    // la couche de ciel pré-rendue au lieu de générer 45 rectangles à chaque frame.
    if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
-   for(let L=0;L<(th.bg?0:2);L++){const base=H/2,depth=(L?13:22)*(th.n=='ALPS'?2.5:1),shift=off*(L?1.6:1)+L*90;const shade=L?'#46566a':'#34465b',grad=ctx.createLinearGradient(0,base-depth-12,0,base);grad.addColorStop(0,shade);grad.addColorStop(1,th.m[L]||shade);ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,base);for(let x=0;x<=W;x+=4){const u=(x+shift)*.012,peak=Math.pow(Math.max(0,Math.sin(u*1.7)+.28*Math.sin(u*3.1)),1.35);ctx.lineTo(x,base-depth*(.25+peak*.75)-Math.abs(Math.sin(u*.55))*4)}ctx.lineTo(W,base);ctx.closePath();ctx.fill()}
+   // Chaîne de montagnes renforcée : elle descend légèrement sur le bloc sombre
+   // et se prolonge sur les côtés avec des reliefs secondaires décroissants.
+   for(let L=0;L<(th.bg?0:3);L++){
+    const base=H/2+9,depth=(L===0?36:L===1?25:15)*(th.n==='ALPS'?2.1:1),
+      shift=off*(L?1.6:1)+L*90,shade=L===0?'#34465b':L===1?'#46566a':'#587084',
+      grad=ctx.createLinearGradient(0,base-depth-12,0,base);
+    grad.addColorStop(0,shade);grad.addColorStop(1,th.m[Math.min(L,1)]||shade);
+    ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,base);
+    for(let x=0;x<=W;x+=4){
+     const u=(x+shift)*.012,peak=Math.pow(Math.max(0,Math.sin(u*1.7)+.28*Math.sin(u*3.1)),1.35);
+     const edge=Math.min(1,x/(W*.24),(W-x)/(W*.24));
+     const sideTaper=.48+.52*Math.max(0,edge);
+     ctx.lineTo(x,base-depth*sideTaper*(.25+peak*.75)-Math.abs(Math.sin(u*.55))*4);
+    }
+    ctx.lineTo(W,base);ctx.closePath();ctx.fill();
+   }
+   // Sommets latéraux étagés, plus hauts à l'extérieur et de plus en plus petits vers le centre.
+   for(const side of [-1,1]){
+    for(let j=0;j<5;j++){
+     const scale=1-j*.16,cx=side<0?W*(.035+j*.075):W*(.965-j*.075),
+       peakY=H/2+9-(25*scale),half=W*(.075*scale);
+     ctx.fillStyle=j%2?(th.m[0]||'#587084'):'#526b7e';
+     ctx.beginPath();ctx.moveTo(cx-half,H/2+9);ctx.lineTo(cx,H/2+9-(39*scale));ctx.lineTo(cx+half,H/2+9);ctx.closePath();ctx.fill();
+    }
+   }
   }finally{ctx=live}
   __crSkyLayerKey=key;
  }

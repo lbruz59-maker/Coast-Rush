@@ -2222,7 +2222,7 @@ function __crDrawOverpasses(vis){
     ctx.save();
     for(let car=0;car<count;car++){
      const x=head+car*carLen,w=carLen;
-     const baseY=lerp(yA,yB,Math.max(0,Math.min(1,(x+w*.5-leftA)/Math.max(1,rightA-leftA))));
+     const deckY=lerp(yA,yB,Math.max(0,Math.min(1,(x+w*.5-leftA)/Math.max(1,rightA-leftA)))),wheelR=Math.max(1.5,trainH*.11),baseY=deckY-wheelR;
      ctx.fillStyle='#10182088';ctx.fillRect(x,baseY-trainH*.08,w+1,trainH*.18);
      ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,baseY-trainH*.2,w+1,trainH*.2);
      if(car===0){

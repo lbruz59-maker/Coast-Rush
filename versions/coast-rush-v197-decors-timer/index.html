@@ -725,7 +725,7 @@ function buildCourse(id){pickTrack();const R=rng(id*7919+13);th=TH[id>=100?BRTH[
  const tunnelRanges=[];const tunnelCount=MODE===5?0:2+(R()<.72?1:0)+(stage>=5&&R()<.45?1:0);const maxTunnelLen=447;for(let ti=0;ti<tunnelCount;ti++){const span=Math.max(1,Math.floor((N-FORK-220)/tunnelCount)),min=100+ti*span,maxLen=Math.max(12,Math.min(Math.floor(maxTunnelLen/3),Math.floor((span-40)/3))),len=(12+(R()*(maxLen-11)|0))*3,max=Math.max(min+1,Math.min(N-FORK-len-40,min+span));let start=min+(R()*(max-min)|0);if(loopS>=0&&start<loopE+35&&start+len>loopS-35)start=loopE+40;if(start+len<N-FORK-25)tunnelRanges.push({start,len})}for(let ti=tunnelRanges.length-1;ti>=0;ti--){const q=tunnelRanges[ti];if((q.start<535&&q.start+q.len>420)||(q.start<285&&q.start+q.len>170)||(th.n==='ALPS'&&q.start<730&&q.start+q.len>600))tunnelRanges.splice(ti,1)}segs.forEach(s=>{const tr=tunnelRanges.find(q=>s.i>=q.start&&s.i<q.start+q.len);s.tun=!!tr;s.tS=tr?tr.start:-1;s.tEnd=tr?tr.start+tr.len:-1});
 
  const bridgeTypes={COAST:'coast',ISLAND:'coast',SUNSET:'coast',RIO:'coast',SYDNEY:'coast',ALPS:'stone',PARIS:'urban',LONDRES:'urban',ROME:'urban',DESERT:'desert',MEADOW:'wood',CITY:'urban',NIGHT:'neon',CANYON:'suspension',AUTUMN:'wood',TOKYO:'neon','NEW YORK':'steel','LE CAIRE':'stone',MOSCOU:'steel','DUBAÏ':'modern',LILLE:'urban',BARCELONE:'coast',VENISE:'stone',SANTORIN:'coast',FJORDS:'steel',VEGAS:'neon',ISLANDE:'modern',AMAZONIE:'wood',PATAGONIE:'steel',MEXIQUE:'desert'};const brT=bridgeTypes[th.n]||'urban',brK={coast:['w'],stone:['w','r'],urban:['w','r','l'],desert:['r','l'],wood:['w'],neon:['r','l','w'],suspension:['g'],steel:['w','l'],modern:['w','r']}[brT]||['w'],brZ=MODE===5?[[430,535]]:[[170,285],[430,535]];if(th.n==='ALPS')brZ.push([610,730]);
-brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=brK[(id*5+zi*3+stage)%brK.length],ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
+brZ.forEach((z,zi)=>{if(!brT||z[1]>N-FORK-30||(loopS>=0&&z[0]<loopE+12&&z[1]>loopS-12))return;const k=zi===0?'r':(R()<.5?'l':'r'),ov=k==='r'||k==='l',z0=ov?z[0]+40:z[0]+8,z1=ov?z[0]+76:z[1]-8,c=(z0+z1)>>1,hw=k==='r'?3:2;for(let i=z0;i<z1;i++){const s=segs[i];if(!s||s.tun||s.loop)continue;s.bridge=brT;s.bk=k;s.bd=k==='g'?7000:ov?2600:3800;s.bcx=c;if(ov&&Math.abs(i-c)<=hw)s.bc=Math.abs(i-c)===hw?1:2}});
 // V190 : véritables ponts en hauteur à franchir dessous, garantis sur chaque circuit.
 const overpassZones=[70,370];overpassZones.forEach((z,zi)=>{if(z>=N-FORK-20)return;let at=z;if(loopS>=0&&at>=loopS-10&&at<=loopE+10)at=loopE+24;if(at>=N-FORK-20)return;for(let j=-2;j<=2;j++){const q=segs[at+j];if(q&&!q.tun&&!q.loop)q.overpass=(j===0?1:2)}});
 const cpSegments=[1,2,3].map(n=>Math.floor((N-FORK)*n/4));segs.forEach(s=>{s.sea=th.w&&((s.i/400|0)%3!=2);const i=s.i,f=i>=N-FORK-8,cpNo=cpSegments.indexOf(i);if(cpNo>=0){s.sp.push({t:'S',o:-1.3,txt:'CHECK '+(cpNo+1),bg:'#ffd400'});s.sp.push({t:'S',o:1.3,txt:'CHECK '+(cpNo+1),bg:'#ffd400'})}if(stage==1&&i<72){if(i==26)s.sp.push({t:'G',o:0});if(i==24)s.sp.push({t:'F',o:-.55});if(i>8&&i%11==5)s.sp.push({t:'P',o:(i%2?-1:1)*(1.14+R()*.1)});if(i>=3&&i%2==0)for(let k=0;k<3;k++)s.sp.push({t:'C',o:(k==1?1:-1)*(1.13+R()*.17),c:cols[R()*7|0],ph:R()*6})}
@@ -2030,7 +2030,7 @@ function __crUnderTraffic(a,yb,ya,k,ft){
  const ux=a.sc*160,uy=a.sc*H/2,h=ya-yb,wrap=(v,m)=>((v%m)+m)%m,T=flash;
  const sideCar=(x,y,w,color,dir)=>{
   if(w<3)return;
-  const hh=Math.max(2,w*.34),wheel=Math.max(1,w*.105);
+  const hh=Math.max(3,w*.43),wheel=Math.max(1.4,w*.12);
   ctx.save();ctx.globalAlpha*=Math.max(.25,1-ft*.55);
   // Ombre et carrosserie en profil, orientée dans le sens du déplacement.
   ctx.fillStyle='#10182088';ctx.fillRect(x-w*.48,y-hh*.08,w*.96,hh*.22);
@@ -2045,18 +2045,18 @@ function __crUnderTraffic(a,yb,ya,k,ft){
  };
  if(k==='l'){
   // Un train complet, avec locomotrice et wagons, qui traverse le pont.
-  const trainW=Math.max(ux*2600,Math.min(W*.9,ux*4200)),trainH=Math.max(uy*210,4);
+  const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
   const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600;
   const baseY=yb+h*.56;
   if(head>W||head+trainW<0)return;
   ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
-  const count=4,carW=trainW/count;
+  const count=5,carW=trainW/count;
   for(let i=0;i<count;i++){
    const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0);
    ctx.fillStyle=fg(i===0?'#b9c6d0':'#43566a',ft);
    ctx.beginPath();ctx.moveTo(x,y-trainH*.78);ctx.lineTo(x+w*.12,y-trainH);ctx.lineTo(x+w*.88,y-trainH);ctx.lineTo(x+w,y-trainH*.78);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
    ctx.fillStyle=fg(i===0?'#dce5eb':'#9ec6d8',ft);
-   for(let q=0;q<4;q++){const wx=x+w*(.16+q*.19);ctx.fillRect(wx,y-trainH*.78,Math.max(1,w*.105),trainH*.28)}
+   for(let q=0;q<5;q++){const wx=x+w*(.12+q*.17);ctx.fillRect(wx,y-trainH*.78,Math.max(1,w*.12),trainH*.34)}
    ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
    ctx.fillStyle=fg('#e8c45a',ft);ctx.fillRect(x+w*.04,y-trainH*.24,Math.max(1,w*.035),trainH*.12);
   }
@@ -2093,7 +2093,6 @@ function __crBridges(vis,bs){
     if(rail){ctx.fillStyle=fg('#c9ced6',ft);const th2=Math.max(1,h*.12);if(s.bc===2&&s.i!==s.bcx){ctx.fillRect(0,yb+h*.5-th2/2,W,th2)}else if(s.i===s.bcx){ctx.fillRect(0,yb+h*.3,W,th2);ctx.fillRect(0,yb+h*.7,W,th2)}ctx.fillStyle=fg('#4a4237',ft);const st=Math.max(5,a.sc*160*260);for(let xx=(s.i*37)%st;xx<W;xx+=st)ctx.fillRect(xx,yb,Math.max(1,st*.22),h)}
     else{ctx.fillStyle=fg('#ffffff',ft);if(s.bc===1)ctx.fillRect(0,yb+h*.5,W,Math.max(1,h*.08));else if(s.i===s.bcx){const st=Math.max(8,a.sc*160*500);for(let xx=0;xx<W;xx+=st)ctx.fillRect(xx,yb+h*.45,st*.5,Math.max(1,h*.1))}}}
    else __crPoly4(fg(wc[s.i&1],ft),0,yb,W,yb,W,ya,0,ya);
-   if(s.bc&&s.i===s.bcx&&!window.__CR_LITE)__crUnderTraffic(a,yb,ya,k,ft);
    if(q===r.length-1){const nx=segs[s.i+1];if(!nx||!nx.bridge){__crPoly4(fg(f.bridge==='stone'||f.bridge==='desert'?'#8a7a64':'#8d939a',ft),0,b.y,W,b.y,W,yb,0,yb);ctx.fillStyle=fg('#00000040',ft);ctx.fillRect(0,yb-Math.max(1,(yb-b.y)*.08),W,Math.max(1,(yb-b.y)*.08))}}
    // piles
    if((s.bc?s.bc===1:s.i%8===2)){for(const e of[-1,1]){const x=a.x+e*aw*1.12,cw=aw*.16;ctx.fillStyle=fg(pal[1],ft);ctx.fillRect(x-cw,a.y,cw*2,ya-a.y);ctx.fillStyle=fg(pal[0],ft);ctx.fillRect(x-cw,a.y,cw*.7,ya-a.y);if(k==='w'){ctx.fillStyle='#ffffff90';ctx.fillRect(x-cw*1.6,ya-cw*.2,cw*3.2,Math.max(1,cw*.3))}}}
@@ -2116,6 +2115,7 @@ function __crBridges(vis,bs){
     else{bar(.45,.45,pal[0]);bar(1,.1,pal[2]);bar(.72,.06,pal[2]);if(s.i%4===0){post(0,pal[1]);post(.5,pal[1])}}
     if(s.i%14===0&&T!=='steel'&&T!=='suspension'&&T!=='wood'&&T!=='stone'&&T!=='desert'){const x=lerp(xa,xb,.5),y=lerp(a.y,b.y,.5),hh=lerp(ha,hb,.5);ctx.fillStyle=fg(pal[1],ft);ctx.fillRect(x-hh*.05,y-hh*3.4,Math.max(1,hh*.1),hh*3.4);ctx.fillRect(x-e*hh*.45,y-hh*3.4,Math.max(1,hh*.5),Math.max(1,hh*.08));if(night||T==='neon'){ctx.globalCompositeOperation='lighter';ctx.fillStyle='rgba(255,236,170,.55)';ctx.beginPath();ctx.arc(x-e*hh*.4,y-hh*3.3,Math.max(1.5,hh*.35),0,7);ctx.fill();ctx.globalCompositeOperation='source-over'}}
    }
+   if(s.bc&&s.i===s.bcx&&!window.__CR_LITE)__crUnderTraffic(a,yb,ya,k,ft);
   }
   ctx.restore();
  }
@@ -2128,8 +2128,8 @@ function __crDrawOverpasses(vis){
   const a=s.a,b=s.b,ft=s.ft||0,wa=Math.max(2,a.w),wb=Math.max(1,b.w);
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
   // V203 : tablier plus épais vers le dessous, sans relever la chaussée.
-  const hA=Math.max(6.2,wa*1.42),hB=Math.max(3.1,wb*1.42);
-  const fasciaA=Math.max(4.8,wa*.58),fasciaB=Math.max(2.4,wb*.58);
+  const hA=Math.max(8.5,wa*1.8),hB=Math.max(4.2,wb*1.8);
+  const fasciaA=Math.max(7,wa*.82),fasciaB=Math.max(3.5,wb*.82);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);
@@ -2164,7 +2164,7 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
   // Garde-corps supérieurs continus.
-  const railA=Math.max(2.8,wa*.29),railB=Math.max(1.4,wb*.29);
+  const railA=Math.max(3.8,wa*.38),railB=Math.max(1.9,wb*.38);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);
   __crPoly4(fg('#68737c',ft),leftA,deckTopA-railA*.28,rightA,deckTopA-railA*.28,rightB,deckTopB-railB*.28,leftB,deckTopB-railB*.28);
   ctx.strokeStyle=fg('#59636b',ft);ctx.lineWidth=Math.max(1,wa*.022);

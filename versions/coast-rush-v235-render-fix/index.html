@@ -2213,6 +2213,270 @@ function drawWeather(){
  else{ctx.fillStyle='#fff';for(let i=0;i<80;i++){const x=(((i*89+Math.sin(flash+i)*14)%W)+W)%W,y=((i*53+flash*45)%(H+10))-5;ctx.fillRect(x,y,1.6,1.6)}}
  ctx.restore();
 }
+function drawFinishCelebration(t,theme){
+ const ox=(W-320)/2;ctx.save();ctx.translate(ox,0);
+ // Bannière tendue au-dessus de la ligne d'arrivée.
+ ctx.fillStyle='#28384b';ctx.fillRect(20,126,4,49);ctx.fillRect(296,126,4,49);
+ ctx.fillStyle='#f4f0df';ctx.fillRect(22,130,276,22);
+ ctx.strokeStyle='#25364b';ctx.lineWidth=1;ctx.strokeRect(22,130,276,22);
+ ctx.fillStyle='#d92735';ctx.font='bold 13px '+FT;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('FINISH',160,141);
+ // Drapeau à damier sur le poteau droit.
+ ctx.fillStyle='#d9e5ef';ctx.fillRect(296,120,2,55);
+ for(let y=121;y<145;y+=8)for(let x=298;x<314;x+=8){ctx.fillStyle=((x-298)/8+(y-49)/8)%2?'#fff':'#182232';ctx.fillRect(x,y,8,8)}
+ // Public des deux côtés de la route, animé et varié.
+ const palette=theme==='chase'?['#e8edf4','#254c82','#d84b4b','#e4b64e']:['#f4d3a5','#e85b54','#4c8eb5','#f0e7d2','#72a66b'];
+ for(let side=0;side<2;side++)for(let i=0;i<13;i++){
+  const x=side?174+i*12:18+i*12,base=163+(i%3)*3;
+  const bob=Math.sin(t*5+i*1.7)*1.8;
+  ctx.save();ctx.translate(x,base+25);ctx.scale(1.38,1.38);ctx.translate(-x,-(base+25));ctx.strokeStyle='#202b3b';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,base+17);ctx.lineTo(x-2,base+25);ctx.moveTo(x,base+17);ctx.lineTo(x+3,base+25);ctx.stroke();
+  ctx.fillStyle=palette[(i+side*2)%palette.length];ctx.fillRect(x-4,base+7+bob,8,12);
+  ctx.fillStyle=['#eac39e','#d9a77e','#f0d2b6'][i%3];ctx.beginPath();ctx.arc(x,base+3+bob,4,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle=palette[(i+2)%palette.length];ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(x-2,base+9+bob);ctx.lineTo(x-7,base+2+bob+Math.sin(t*6+i)*2);ctx.moveTo(x+2,base+9+bob);ctx.lineTo(x+7,base+1+bob+Math.cos(t*6+i)*2);ctx.stroke();ctx.restore();
+ }
+ ctx.restore();
+}
+function drawOutrunVictoryCine(t){
+ // The ending must match the actual fifth OutRun route node reached by the player.
+ const endId=Math.max(10,Math.min(14,Number.isInteger(cid)?cid:10));
+ const thm=TH[THI[endId]]||TH[10];
+ const skyPair=Array.isArray(thm.sky)&&thm.sky.length>1?thm.sky:TH[10].sky;
+ const mountainPair=Array.isArray(thm.m)&&thm.m.length>1?thm.m:TH[10].m;
+ const city=({
+  10:{name:'PARIS',sub:'LA VILLE LUMIERE',kind:'paris'},
+  11:{name:'LONDRES',sub:'THE CITY NEVER SLEEPS',kind:'london'},
+  12:{name:'TOKYO',sub:'NEONS SUR LA METROPOLE',kind:'tokyo'},
+  13:{name:'NEW YORK',sub:'THE CITY THAT NEVER SLEEPS',kind:'newyork'},
+  14:{name:'ROME',sub:'LA GRANDE FINALE',kind:'rome'}
+ })[endId]||{name:thm.n,sub:'VOYAGE ACCOMPLI',kind:'city'};
+ const pulse=(Math.sin(t*2.2)+1)/2;
+ const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,skyPair[0]);sky.addColorStop(1,skyPair[1]);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ // Sunset glow and city silhouette use the selected circuit's own theme palette.
+ ctx.fillStyle='#fff0bd';ctx.beginPath();ctx.arc(W*.78,H*.32,10+pulse*2,0,Math.PI*2);ctx.fill();
+ const horizon=H*.66;ctx.fillStyle=mountainPair[1]||'#39465b';ctx.fillRect(0,horizon,W,H-horizon);
+ for(let i=0;i<24;i++){
+  const bw=7+(i*13%13),bh=12+(i*19%31),x=i*W/24;
+  ctx.fillStyle=i%3===0?(mountainPair[0]||'#526078'):(mountainPair[1]||'#303d52');
+  ctx.fillRect(x,horizon-bh,bw,bh);
+  if(endId>=12){ctx.fillStyle='#ffe4a0';for(let yy=horizon-bh+4;yy<horizon-3;yy+=6)ctx.fillRect(x+2,yy,1.5,1.5)}
+ }
+ // Distinctive skyline landmark for the actual route destination.
+ const lx=W*.72,base=horizon;
+ ctx.save();ctx.translate(lx,base);ctx.strokeStyle='#e9e1ce';ctx.fillStyle='#e9e1ce';ctx.lineWidth=2;
+ if(endId===10){ // Eiffel Tower
+  ctx.beginPath();ctx.moveTo(0,-43);ctx.lineTo(-12,0);ctx.moveTo(0,-43);ctx.lineTo(12,0);ctx.moveTo(-8,-14);ctx.lineTo(8,-14);ctx.moveTo(-5,-25);ctx.lineTo(5,-25);ctx.stroke();ctx.fillRect(-2,-47,4,4);
+ }else if(endId===11){ // Big Ben
+  ctx.fillRect(-5,-32,10,32);ctx.fillRect(-7,-35,14,4);ctx.beginPath();ctx.moveTo(-5,-35);ctx.lineTo(0,-42);ctx.lineTo(5,-35);ctx.fill();ctx.fillStyle='#26364a';ctx.beginPath();ctx.arc(0,-25,3,0,Math.PI*2);ctx.fill();
+ }else if(endId===12){ // Tokyo tower / pagoda
+  ctx.fillRect(-2,-35,4,35);ctx.fillRect(-8,-25,16,2);ctx.fillRect(-6,-18,12,2);ctx.fillRect(-4,-11,8,2);ctx.beginPath();ctx.moveTo(-4,-35);ctx.lineTo(0,-44);ctx.lineTo(4,-35);ctx.fill();
+ }else if(endId===13){ // New York skyscraper
+  ctx.fillRect(-8,-30,16,30);ctx.fillRect(-5,-38,10,8);ctx.fillRect(-2,-47,4,9);ctx.fillRect(-.7,-55,1.4,8);
+ }else{ // Roman Colosseum
+  ctx.beginPath();ctx.arc(0,0,14,Math.PI,0);ctx.lineTo(14,0);ctx.lineTo(-14,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle=mountainPair[1]||'#303d52';for(let x=-10;x<=10;x+=5)ctx.fillRect(x,-7,2,7);
+ }
+ ctx.restore();
+ // Road and player's car remain consistent across all five possible endings.
+ ctx.fillStyle='#293744';ctx.beginPath();ctx.moveTo(W*.34,H);ctx.lineTo(W*.46,H*.69);ctx.lineTo(W*.54,H*.69);ctx.lineTo(W*.66,H);ctx.fill();
+ ctx.strokeStyle='#fff1c6';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(W*.5,H*.99);ctx.lineTo(W*.5,H*.72);ctx.stroke();ctx.setLineDash([]);
+ const carX=W*.5+Math.sin(t*1.4)*3,carY=H*.82;
+ ctx.fillStyle='#111c2b';ctx.beginPath();ctx.ellipse(carX,carY+5,15,5,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#e34e43';ctx.beginPath();ctx.moveTo(carX-12,carY+2);ctx.lineTo(carX-8,carY-7);ctx.lineTo(carX+7,carY-7);ctx.lineTo(carX+13,carY+2);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#bfe4f2';ctx.fillRect(carX-5,carY-6,9,4);
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#10243a';ctx.font='bold 13px '+FT;ctx.fillText('COAST RUSH',W/2,H*.13);
+ ctx.fillStyle='#fff';ctx.font='bold 9px '+FT;ctx.fillText('VICTOIRE !',W/2,H*.23);
+ ctx.font='bold 7px '+FT;ctx.fillText(city.name,W/2,H*.31);
+ ctx.font='6px '+FT;ctx.fillText(city.sub,W/2,H*.39);
+ drawFinishCelebration(t,'outrun');
+ ctx.fillStyle='#ffffffaa';ctx.font='5px '+FT;ctx.fillText('DERNIER CIRCUIT : '+city.name,W/2,H*.96);
+}
+function drawCoastRushRouteBackdrop(){
+ const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#10243a');g.addColorStop(.58,'#173d55');g.addColorStop(1,'#34566a');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // Mer à gauche et côte découpée.
+ ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W*.34,0);ctx.bezierCurveTo(W*.25,H*.18,W*.43,H*.27,W*.29,H*.42);ctx.bezierCurveTo(W*.18,H*.57,W*.39,H*.68,W*.25,H*.82);ctx.bezierCurveTo(W*.19,H*.91,W*.27,H*.96,W*.22,H);ctx.lineTo(0,H);ctx.closePath();
+ const sea=ctx.createLinearGradient(0,0,W*.35,H);sea.addColorStop(0,'#123652');sea.addColorStop(1,'#1b6275');ctx.fillStyle=sea;ctx.fill();
+ // Reflets marins discrets.
+ ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle='#a7e5e7';ctx.lineWidth=1;
+ for(let i=0;i<11;i++){const y=9+i*17,x=8+(i%3)*9;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(W*.12,y-4,W*.25,y+2);ctx.stroke()}
+ ctx.restore();
+ // Relief terrestre en aplats et courbes topographiques.
+ ctx.beginPath();ctx.moveTo(W*.34,0);ctx.bezierCurveTo(W*.25,H*.18,W*.43,H*.27,W*.29,H*.42);ctx.bezierCurveTo(W*.18,H*.57,W*.39,H*.68,W*.25,H*.82);ctx.bezierCurveTo(W*.19,H*.91,W*.27,H*.96,W*.22,H);ctx.lineTo(W,H);ctx.lineTo(W,0);ctx.closePath();
+ const land=ctx.createLinearGradient(W*.25,0,W,H);land.addColorStop(0,'#3d6658');land.addColorStop(.48,'#63745a');land.addColorStop(1,'#8a7259');ctx.fillStyle=land;ctx.fill();
+ ctx.save();ctx.globalAlpha=.22;ctx.strokeStyle='#e7d69a';ctx.lineWidth=1;
+ for(let i=0;i<8;i++){ctx.beginPath();ctx.ellipse(W*(.56+(i%3)*.13),H*(.12+Math.floor(i/3)*.28),W*(.12+i*.008),H*(.08+i*.006),-.25,0,Math.PI*2);ctx.stroke()}
+ ctx.restore();
+ // Petites zones urbaines et points de repère originaux.
+ const towns=[[.48,.19,'COAST'],[.76,.32,'SUNSET'],[.55,.58,'PALM BAY'],[.83,.76,'FINISH']];
+ towns.forEach((a,i)=>{const x=W*a[0],y=H*a[1];ctx.fillStyle='#18283a';ctx.fillRect(x-3,y-3,7,7);ctx.fillStyle='#ffe8ad';ctx.font='bold 6px '+FT;ctx.textAlign='left';ctx.fillText(a[2],x+6,y+2)});
+ // Liseré de côte.
+ ctx.beginPath();ctx.moveTo(W*.34,0);ctx.bezierCurveTo(W*.25,H*.18,W*.43,H*.27,W*.29,H*.42);ctx.bezierCurveTo(W*.18,H*.57,W*.39,H*.68,W*.25,H*.82);ctx.bezierCurveTo(W*.19,H*.91,W*.27,H*.96,W*.22,H);ctx.strokeStyle='#b8d4a0';ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#ffffff';ctx.font='bold 8px '+FT;ctx.textAlign='left';ctx.fillText('COAST RUSH',8,13);
+ ctx.fillStyle='#d6e9d8';ctx.font='6px '+FT;ctx.fillText('ROAD TRIP • YOUR ROUTE',8,22);
+}
+function drawOutrunMap(t){
+ drawCoastRushRouteBackdrop();
+ const visited=new Set(outrunVisited),currentId=stage*(stage-1)/2+cposk;
+ const currentProgress=Math.max(0,Math.min(1,(pos+playerZ)/(trackLen||1)));
+ const completed=state==='win';
+ const cardW=42,cardH=18,top=48,bottom=138;
+ const colX=s=>W*.06+(s-1)*(W*.22); // V108: spread all five route stages across the adaptive canvas width
+ const node=(s,k)=>({id:s*(s-1)/2+k,x:colX(s),y:s===1?(top+bottom)/2:top+k*(bottom-top)/(s-1)});
+ const themeFor=id=>TH[THI[id]]||TH[0];
+
+ // Miniature paysagère basée sur les vraies palettes et le thème du circuit.
+ function drawThemeMini(x,y,w,h,id){
+   const thm=themeFor(id),name=thm.n;const skyPair=Array.isArray(thm.sky)?thm.sky:['#426b91','#d7e5ef'];const groundPair=Array.isArray(thm.g)?thm.g:['#71866a','#5e755c'];const mountainPair=Array.isArray(thm.m)?thm.m:['#64758a','#46566d'];
+   ctx.save();
+   ctx.beginPath();ctx.roundRect(x,y,w,h,2);ctx.clip();
+   const sky=ctx.createLinearGradient(0,y,0,y+h);
+   sky.addColorStop(0,skyPair[0]);sky.addColorStop(1,skyPair[1]);
+   ctx.fillStyle=sky;ctx.fillRect(x,y,w,h);
+   // Soleil / lune et étoiles.
+   if(name==='NIGHT'){
+     ctx.fillStyle='#fff4c4';ctx.beginPath();ctx.arc(x+w*.78,y+h*.25,2.2,0,Math.PI*2);ctx.fill();
+     for(let q=0;q<9;q++){ctx.fillStyle='#fff';ctx.fillRect(x+3+(q*17)% (w-6),y+2+(q*7)%(h*.42),.7,.7)}
+   }else{
+     ctx.fillStyle=name==='SUNSET'?'#ffcf78':'#fff2c0';
+     ctx.beginPath();ctx.arc(x+w*.78,y+h*.27,name==='SUNSET'?4:2.5,0,Math.PI*2);ctx.fill();
+   }
+   const groundY=y+h*.70;
+   // Relief ou skyline lointaine.
+   ctx.fillStyle=mountainPair[0];
+   ctx.beginPath();ctx.moveTo(x,groundY);
+   for(let q=0;q<=8;q++){const px=x+q*w/8,py=groundY-(2+((q*13+id*7)%8));ctx.lineTo(px,py)}
+   ctx.lineTo(x+w,groundY);ctx.closePath();ctx.fill();
+   ctx.fillStyle=groundPair[0];ctx.fillRect(x,groundY,w,h*.3);
+   // Identité paysagère propre à chaque décor principal.
+   const cx=x+w*.5,base=groundY+1;
+   function mountain(px,py,mw,mh,col){
+     ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(px-mw/2,py+mh);ctx.lineTo(px,py);ctx.lineTo(px+mw/2,py+mh);ctx.closePath();ctx.fill();
+   }
+   function tree(px,py,scale,col){
+     ctx.fillStyle='#55412d';ctx.fillRect(px-0.6,py,1.2,4*scale);
+     ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(px,py-5*scale);ctx.lineTo(px-3*scale,py+1);ctx.lineTo(px+3*scale,py+1);ctx.closePath();ctx.fill();
+   }
+   if(name==='COAST'||name==='ISLAND'){
+     ctx.fillStyle='#1687a4';ctx.fillRect(x,groundY+2,w,h*.28);
+     ctx.fillStyle='#f3dfaa';ctx.fillRect(x,groundY+1,w,h*.06);
+     for(let q=0;q<3;q++){ctx.strokeStyle='#b8eff0';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x+q*17,groundY+4+q%2*2);ctx.lineTo(x+q*17+9,groundY+4+q%2*2);ctx.stroke()}
+     if(name==='ISLAND'){tree(x+w*.27,groundY+1,.9,'#26774b');tree(x+w*.62,groundY+2,.75,'#26774b')}
+   }else if(name==='DESERT'||name==='LE CAIRE'){
+     ctx.fillStyle='#d79b56';ctx.beginPath();ctx.moveTo(x,groundY+3);ctx.quadraticCurveTo(cx,y+h*.53,x+w,groundY+2);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.fill();
+     if(name==='LE CAIRE'){mountain(x+w*.35,groundY-1,13,9,'#bd874f');mountain(x+w*.68,groundY+1,10,7,'#a96f43')}
+   }else if(name==='ALPS'||name==='MOSCOU'){
+     mountain(x+w*.27,groundY-1,18,17,mountainPair[0]);mountain(x+w*.64,groundY-1,22,20,mountainPair[1]);
+     ctx.fillStyle='#f7fbff';ctx.beginPath();ctx.moveTo(x+w*.27,groundY-1);ctx.lineTo(x+w*.27-3,groundY+5);ctx.lineTo(x+w*.27+3,groundY+5);ctx.fill();
+     ctx.beginPath();ctx.moveTo(x+w*.64,groundY-1);ctx.lineTo(x+w*.64-4,groundY+6);ctx.lineTo(x+w*.64+4,groundY+6);ctx.fill();
+     if(name==='ALPS'){
+       // Petit chalet et câble de télésiège pour distinguer les Alpes de Moscou.
+       ctx.strokeStyle='#596b7b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+w*.12,y+h*.25);ctx.lineTo(x+w*.82,y+h*.12);ctx.stroke();
+       ctx.fillStyle='#8b5638';ctx.fillRect(x+w*.43,groundY-7,10,7);
+       ctx.fillStyle='#5d3c2b';ctx.beginPath();ctx.moveTo(x+w*.41,groundY-7);ctx.lineTo(x+w*.48,groundY-13);ctx.lineTo(x+w*.55,groundY-7);ctx.closePath();ctx.fill();
+       ctx.fillStyle='#f4f7fb';ctx.fillRect(x+w*.44,groundY-11,8,1.5);
+       ctx.fillStyle='#d94b42';ctx.fillRect(x+w*.72,groundY-10,4,4);ctx.fillStyle='#bfe2f2';ctx.fillRect(x+w*.73,groundY-9,2,2);
+     }
+   }else if(name==='CANYON'){
+     ctx.fillStyle='#9b4d32';ctx.fillRect(x+3,groundY-8,8,10);ctx.fillRect(x+w-13,groundY-11,10,13);
+     ctx.fillStyle='#c66b3b';ctx.fillRect(x+5,groundY-10,5,3);ctx.fillRect(x+w-11,groundY-13,6,3);
+   }else if(name==='MEADOW'){
+     // Prairie vallonnée, haies basses et petite ferme : pas de forêt dense.
+     ctx.fillStyle='#75b85a';ctx.beginPath();ctx.moveTo(x,groundY+5);ctx.quadraticCurveTo(cx,y+h*.67,x+w,groundY+4);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.fill();
+     for(let q=0;q<5;q++){const gx=x+4+q*12;ctx.strokeStyle='#d9e6a0';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(gx,groundY+4);ctx.lineTo(gx+1,groundY+1-(q%2));ctx.stroke()}
+     ctx.fillStyle='#e8dfc8';ctx.fillRect(x+w*.72,groundY-5,7,6);ctx.fillStyle='#9a4938';ctx.beginPath();ctx.moveTo(x+w*.70,groundY-5);ctx.lineTo(x+w*.755,groundY-9);ctx.lineTo(x+w*.80,groundY-5);ctx.fill();
+     tree(x+w*.2,groundY+2,.45,'#347c45');tree(x+w*.34,groundY+2,.4,'#347c45');
+   }else if(name==='AUTUMN'){
+     // Lisière de feuillus aux couleurs de récolte, avec tapis de feuilles.
+     ctx.fillStyle='#b87936';ctx.fillRect(x,groundY+3,w,h*.27);
+     for(let q=0;q<6;q++){const tx=x+4+q*9,ty=groundY+1;ctx.fillStyle=['#b85b2c','#d28a35','#9d4b2c'][q%3];ctx.fillRect(tx-.55,ty-4,1.1,5);ctx.beginPath();ctx.arc(tx,ty-5,3.1,0,Math.PI*2);ctx.fill()}
+     for(let q=0;q<8;q++){ctx.fillStyle=q%2?'#e4a34a':'#a94c2c';ctx.fillRect(x+3+q*7,groundY+5+(q%2),1.5,1)}
+   }else if(name==='SUNSET'){
+     ctx.fillStyle='#7e4260';ctx.beginPath();ctx.moveTo(x,groundY+2);ctx.quadraticCurveTo(cx,y+h*.48,x+w,groundY+2);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.fill();
+   }else{
+     // Silhouettes urbaines distinctes des villes présentes dans TH.
+     ctx.fillStyle=mountainPair[1];
+     for(let q=0;q<8;q++){const bw=3+(q%3),bh=5+((q*7+id*3)%11);ctx.fillRect(x+2+q*6,groundY-bh,bw,bh)}
+     if(name==='PARIS'){
+       ctx.strokeStyle='#efe2c4';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx,groundY-2);ctx.lineTo(cx,groundY-17);ctx.lineTo(cx-4,groundY-7);ctx.moveTo(cx,groundY-17);ctx.lineTo(cx+4,groundY-7);ctx.stroke();
+     }else if(name==='LONDRES'){
+       ctx.fillStyle='#a8503a';ctx.fillRect(cx-2,groundY-13,4,13);ctx.beginPath();ctx.moveTo(cx-3,groundY-13);ctx.lineTo(cx,groundY-17);ctx.lineTo(cx+3,groundY-13);ctx.fill();
+     }else if(name==='TOKYO'){
+       ctx.fillStyle='#d85a64';ctx.fillRect(cx-5,groundY-8,10,2);ctx.fillRect(cx-3,groundY-12,6,2);ctx.fillRect(cx-1,groundY-15,2,3);
+     }else if(name==='NEW YORK'){
+       ctx.fillStyle='#d8e8f6';ctx.fillRect(cx-1,groundY-19,2,19);ctx.fillRect(cx-4,groundY-12,8,2);
+     }else if(name==='ROME'){
+       ctx.strokeStyle='#e3c58e';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,groundY,7,Math.PI,0);ctx.stroke();
+     }else if(name==='RIO'){
+       ctx.strokeStyle='#f5e6c9';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,groundY-14);ctx.lineTo(cx,groundY-5);ctx.moveTo(cx-4,groundY-11);ctx.lineTo(cx+4,groundY-11);ctx.stroke();
+     }else if(name==='SYDNEY'){
+       for(let q=0;q<3;q++){const ex=x+5+q*9;ctx.strokeStyle='#77766a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ex,groundY+1);ctx.lineTo(ex,groundY-10-(q%2)*2);ctx.stroke();ctx.fillStyle='#718f83';ctx.beginPath();ctx.ellipse(ex-2,groundY-8-(q%2)*2,3,1.7,-.3,0,Math.PI*2);ctx.ellipse(ex+2,groundY-11-(q%2)*2,3,1.7,.3,0,Math.PI*2);ctx.fill()}
+       ctx.fillStyle='#f4f0df';for(let q=0;q<3;q++){ctx.beginPath();ctx.arc(cx-4+q*4,groundY-4,4,Math.PI,0);ctx.fill()}
+     }else if(name==='DUBAÏ'){
+       ctx.fillStyle='#e8d2a4';ctx.beginPath();ctx.moveTo(cx,groundY-20);ctx.lineTo(cx-2,groundY);ctx.lineTo(cx+2,groundY);ctx.fill();
+     }
+   }
+   // Route miniature au premier plan : une bande d'asphalte sur le paysage.
+   ctx.strokeStyle='#f3f0df';ctx.lineWidth=4;ctx.lineCap='round';
+   ctx.beginPath();ctx.moveTo(x+w*.12,y+h*.91);ctx.bezierCurveTo(x+w*.38,y+h*.72,x+w*.56,y+h*.98,x+w*.88,y+h*.79);ctx.stroke();
+   ctx.strokeStyle='#303b46';ctx.lineWidth=2.8;ctx.beginPath();ctx.moveTo(x+w*.12,y+h*.91);ctx.bezierCurveTo(x+w*.38,y+h*.72,x+w*.56,y+h*.98,x+w*.88,y+h*.79);ctx.stroke();
+   ctx.restore();
+ }
+
+ // Panneau de synthèse et en-têtes.
+ ctx.save();ctx.fillStyle='#06182beF';ctx.fillRect(3,28,W-6,117);ctx.strokeStyle='#9bc5df55';ctx.lineWidth=1;ctx.strokeRect(3.5,28.5,W-7,116);
+ ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 7px '+FT;ctx.fillStyle='#d9f1ff';
+ for(let s=1;s<=5;s++)ctx.fillText('ÉTAPE '+s,colX(s),30);
+
+ // Arborescence routière : uniquement segments horizontaux et verticaux à angle droit.
+ ctx.lineCap='square';ctx.lineJoin='miter';
+ for(let s=1;s<5;s++)for(let k=0;k<s;k++){
+   const p=node(s,k),children=[node(s+1,k),node(s+1,k+1)];
+   children.forEach((q,turn)=>{
+     const x1=p.x+cardW/2+1,x2=q.x-cardW/2-1,mid=(x1+x2)/2;
+     const chosen=outrunTurnChoices[s-1]===turn&&visited.has(p.id)&&(visited.has(q.id)||q.id===currentId);
+     ctx.strokeStyle=chosen?'#ffe052':'#9db8c966';ctx.lineWidth=chosen?2.5:1.35;
+     ctx.beginPath();ctx.moveTo(x1,p.y);ctx.lineTo(mid,p.y);ctx.lineTo(mid,q.y);ctx.lineTo(x2,q.y);ctx.stroke();
+   });
+ }
+
+ // Quinze circuits : miniatures paysagères rasterisées une seule fois puis réutilisées.
+ const thumbW=cardW-4,thumbH=cardH-7;
+ if(!window.__crRouteThumbs)window.__crRouteThumbs=new Map();
+ function getRouteThumb(id){
+   let c=window.__crRouteThumbs.get(id);
+   if(c)return c;
+   c=document.createElement('canvas');c.width=thumbW*2;c.height=thumbH*2;
+   const liveCtx=ctx;ctx=c.getContext('2d');
+   try{drawThemeMini(0,0,c.width,c.height,id)}finally{ctx=liveCtx}
+   window.__crRouteThumbs.set(id,c);
+   return c;
+ }
+ // Quinze circuits : miniature de leur décor principal, dérivée de leur thème réel.
+ for(let s=1;s<=5;s++)for(let k=0;k<s;k++){
+   const p=node(s,k),id=p.id,thm=themeFor(id),isVisited=visited.has(id),isCurrent=id===currentId;
+   ctx.fillStyle='#0b1728';ctx.beginPath();ctx.roundRect(p.x-cardW/2,p.y-cardH/2,cardW,cardH,3);ctx.fill();
+   ctx.drawImage(getRouteThumb(id),p.x-cardW/2+2,p.y-cardH/2+1,cardW-4,cardH-7);
+   ctx.strokeStyle=isCurrent?'#ffe47b':isVisited?'#70edac':'#91abc4';ctx.lineWidth=isCurrent?2:1;
+   ctx.beginPath();ctx.roundRect(p.x-cardW/2,p.y-cardH/2,cardW,cardH,3);ctx.stroke();
+   ctx.fillStyle=isCurrent?'#fff0b2':isVisited?'#caffdf':'#e2edf7';
+   ctx.font='bold 4.8px '+FT;ctx.textAlign='center';ctx.textBaseline='middle';
+   ctx.fillText(thm.n,p.x,p.y+cardH/2-2.2);
+   if(isCurrent){
+     ctx.fillStyle='#fff5ca';ctx.beginPath();ctx.arc(p.x,p.y-cardH/2-2.5,2,0,Math.PI*2);ctx.fill();
+   }
+ }
+ ctx.restore();
+
+ // Bandeau bas : progression précise, y compris si la partie s'arrête avant le dernier circuit.
+ ctx.fillStyle='#06182bf5';ctx.fillRect(3,158,W-6,21);ctx.strokeStyle='#9bc5df55';ctx.strokeRect(3.5,158.5,W-7,20);
+ ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.font='bold 6.3px '+FT;ctx.fillStyle='#ffe078';
+ ctx.fillText('COAST RUSH  •  15 CIRCUITS',8,166);
+ ctx.font='5.5px '+FT;ctx.fillStyle='#d9e9f2';
+ ctx.fillText('VERT : PARCOURU   JAUNE : EN COURS   BLEU : À DÉCOUVRIR',8,174);
+ const pct=completed?100:Math.round(currentProgress*100);
+ ctx.fillStyle='#20364a';ctx.fillRect(8,176,W-16,2);
+ ctx.fillStyle=completed?'#43e58a':'#ffd447';ctx.fillRect(8,176,(W-16)*pct/100,2);
+ ctx.textAlign='right';ctx.font='bold 5.8px '+FT;ctx.fillStyle='#fff';
+ ctx.fillText(completed?'TERMINÉ':('ÉTAPE '+stage+'/5 · '+pct+'%'),W-8,175);
+}
 function renderScene(){
  const st=state;
  if(NOHUD.includes(st)){

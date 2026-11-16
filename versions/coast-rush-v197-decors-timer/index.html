@@ -1710,14 +1710,15 @@ else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx
  else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;const __arch=()=>{ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath()};if(sp.port){const mw=w*8,rg=(pf,col,snow)=>{const n=pf.length-1;ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<=n;i++)ctx.lineTo(x-mw+mw*2*i/n,y-w*pf[i]);ctx.lineTo(x+mw,y);ctx.closePath();__arch();ctx.fillStyle=col;ctx.fill('evenodd');if(snow){ctx.fillStyle='#f2f6fa';for(let i=1;i<n;i+=2){const qx=x-mw+mw*2*i/n,qy=y-w*pf[i];ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(qx-w*.8,qy+w*.9);ctx.lineTo(qx-w*.3,qy+w*.62);ctx.lineTo(qx,qy+w*.95);ctx.lineTo(qx+w*.25,qy+w*.6);ctx.lineTo(qx+w*.8,qy+w*.9);ctx.closePath();ctx.fill()}}};const drawReliefGroup=()=>{rg([4.5,7.8,5.2,9.0,5.7,8.2,5.0,7.4,4.2],'#8197ad',1);rg([3.4,5.4,3.7,6.1,4.0,5.6,3.5,4.9,3.1],'#5f6f55',0);rg([2.6,3.3,2.8,3.8,3.0,3.6,2.7,3.2,2.5],'#46563a',0)};
   // Découpe stricte autour de l'ouverture : aucune pointe ni neige ne doit
   // être dessinée dans le vide de l'arche du tunnel.
-  ctx.save();ctx.beginPath();ctx.rect(x-k*8,y-hh-k*5,k*16,hh+k*5);
+  ctx.save();ctx.beginPath();ctx.rect(x-k*30,y-w*22,k*60,w*22);
   ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();
   ctx.clip('evenodd');
-  // Le groupe central garde sa taille ; on en dessine deux copies réduites sur les côtés.
-  drawReliefGroup();
-  for(const side of [-1,1]){
+  // Relief principal agrandi x2 ; l'ouverture du tunnel reste strictement dégagée.
+  ctx.save();ctx.translate(x,y);ctx.scale(2,2);ctx.translate(-x,-y);drawReliefGroup();ctx.restore();
+  // Deux petites montagnes de chaque côté du grand ensemble.
+  for(const side of [-1,1])for(const offset of [2.05,2.65]){
    ctx.save();
-   const scale=.42,shift=side*k*2.05;
+   const scale=.42,shift=side*mw*offset;
    ctx.translate(x+shift,y);ctx.scale(scale,scale);ctx.translate(-x,-y);
    drawReliefGroup();
    ctx.restore();

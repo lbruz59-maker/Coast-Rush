@@ -44,6 +44,15 @@ try {
   await desktop.locator('#crMenuHotspots button.play').click();
   await desktop.waitForTimeout(5000);
   await assertNoRuntimeError(desktop, 'après JOUER');
+  const outroRenderers = await desktop.evaluate(() => {
+    drawOutrunMap(1);
+    drawOutrunVictoryCine(1);
+    return {
+      mapRenderer: typeof drawOutrunMap === 'function',
+      victoryRenderer: typeof drawOutrunVictoryCine === 'function'
+    };
+  });
+  await assertNoRuntimeError(desktop, 'rendu de la carte et de la victoire OutRun');
   const playing = await desktop.evaluate(() => ({
     menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
     pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none',

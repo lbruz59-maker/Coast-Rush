@@ -2032,21 +2032,17 @@ function __crUnderTraffic(a,yb,ya,k,ft){
   if(w<3)return;
   const hh=Math.max(3,w*.43),wheel=Math.max(1.4,w*.12);
   ctx.save();ctx.globalAlpha*=Math.max(.25,1-ft*.55);
-  // Ombre et carrosserie en profil, orientée dans le sens du déplacement.
   ctx.fillStyle='#10182088';ctx.fillRect(x-w*.48,y-hh*.08,w*.96,hh*.22);
   ctx.fillStyle=fg(shade(color,-.18),ft);ctx.beginPath();
   ctx.moveTo(x-w*.5,y-hh*.22);ctx.lineTo(x-w*.43,y-hh*.72);ctx.lineTo(x-w*.22,y-hh);ctx.lineTo(x+w*.25,y-hh);ctx.lineTo(x+w*.43,y-hh*.66);ctx.lineTo(x+w*.5,y-hh*.22);ctx.closePath();ctx.fill();
   ctx.fillStyle=fg(color,ft);ctx.fillRect(x-w*.48,y-hh*.52,w*.94,hh*.42);
   ctx.fillStyle=fg('#b9d9e8',ft);ctx.beginPath();ctx.moveTo(x-w*.29,y-hh*.72);ctx.lineTo(x-w*.18,y-hh*.94);ctx.lineTo(x+w*.17,y-hh*.94);ctx.lineTo(x+w*.31,y-hh*.68);ctx.closePath();ctx.fill();
-  ctx.fillStyle=fg('#18232c',ft);ctx.fillRect(x-w*.035,y-hh*.92,Math.max(1,w*.018),hh*.22);
-  ctx.fillStyle=fg('#ffe8a0',ft);ctx.fillRect(dir>0?x+w*.43:x-w*.48,y-hh*.48,Math.max(1,w*.045),hh*.12);
-  ctx.fillStyle='#17191d';for(const q of[-.3,.3]){ctx.beginPath();ctx.arc(x+w*q,y, wheel,0,Math.PI*2);ctx.fill();ctx.fillStyle='#aeb8bf';ctx.beginPath();ctx.arc(x+w*q,y,wheel*.42,0,Math.PI*2);ctx.fill();ctx.fillStyle='#17191d'}
+  ctx.fillStyle='#17191d';for(const q of[-.3,.3]){ctx.beginPath();ctx.arc(x+w*q,y,wheel,0,Math.PI*2);ctx.fill()}
   ctx.restore();
  };
  if(k==='l'){
   const mountainRoute=['ALPS','CANYON','FJORDS','ISLANDE','PATAGONIE'].includes(th.n);
   if(mountainRoute){
-   // Téléphérique réservé aux circuits de montagne : câble continu et cabines suspendues.
    const cableY=yb+h*.24,span=W+ux*6200,travel=wrap(T*520+W*.18,span),cabinW=Math.max(10,ux*1050),cabinH=Math.max(13,uy*250);
    ctx.save();ctx.globalAlpha*=Math.max(.35,1-ft*.5);
    ctx.strokeStyle=fg('#303943',ft);ctx.lineWidth=Math.max(1.5,ux*95);ctx.beginPath();ctx.moveTo(-cabinW,cableY-cabinH*.9);ctx.lineTo(W+cabinW,cableY-cabinH*.9);ctx.stroke();
@@ -2057,73 +2053,35 @@ function __crUnderTraffic(a,yb,ya,k,ft){
     ctx.fillStyle=fg(i%2?'#d94b43':'#e8bd45',ft);ctx.beginPath();ctx.moveTo(x,y-cabinH*.78);ctx.lineTo(x+cabinW*.12,y-cabinH);ctx.lineTo(x+cabinW*.88,y-cabinH);ctx.lineTo(x+cabinW,y-cabinH*.78);ctx.lineTo(x+cabinW*.94,y);ctx.lineTo(x+cabinW*.06,y);ctx.closePath();ctx.fill();
     ctx.fillStyle=fg('#a9d6e8',ft);ctx.fillRect(x+cabinW*.16,y-cabinH*.82,cabinW*.68,cabinH*.42);
     ctx.fillStyle=fg('#f2f4f5',ft);ctx.fillRect(x+cabinW*.46,y-cabinH*.82,cabinW*.07,cabinH*.42);
-    ctx.fillStyle=fg('#343b42',ft);ctx.fillRect(x+cabinW*.12,y-cabinH*.04,cabinW*.76,Math.max(1,cabinH*.06));
    }
    ctx.restore();
   }else{
-  // Un train complet, avec locomotrice et wagons, qui traverse le pont.
-  const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
-  const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600;
-  const baseY=yb+h*.56;
-  if(head>W||head+trainW<0)return;
-  ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
-  const count=5,carW=trainW/count;
-  for(let i=0;i<count;i++){
-   const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0),isEngine=i===0;
-   // Attelage visible entre chaque élément : les wagons restent reliés à la locomotive.
-   if(i>0){ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x-carW*.075,baseY-trainH*.2,carW*.15,Math.max(2,trainH*.12));}
-   if(isEngine){
-    // Locomotive avec nez avant, cabine, cheminée et phare.
-    ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.52);ctx.lineTo(x+w*.13,y-trainH*.88);ctx.lineTo(x+w*.68,y-trainH*.88);ctx.lineTo(x+w*.82,y-trainH*.66);ctx.lineTo(x+w,y-trainH*.48);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
-    ctx.fillStyle=fg('#e0edf4',ft);ctx.fillRect(x+w*.55,y-trainH*1.03,w*.13,trainH*.19);
-    ctx.fillStyle=fg('#d5e4ec',ft);ctx.fillRect(x+w*.72,y-trainH*.66,w*.17,trainH*.28);
-    ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.42,Math.max(2,w*.045),Math.max(2,trainH*.12));
-    ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.75,w*.23,trainH*.3);
-   }else{
-    // Wagons voyageurs fermés, caisse uniforme avec fenêtres régulières.
-    ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.82,w,trainH*.82);
-    ctx.fillStyle=fg('#9ec6d8',ft);for(let q=0;q<5;q++){const wx=x+w*(.1+q*.17);ctx.fillRect(wx,y-trainH*.7,Math.max(1,w*.105),trainH*.27)}
+   const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
+   const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600,baseY=yb+h*.56;
+   if(head>W||head+trainW<0)return;
+   ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
+   const count=5,carW=trainW/count;
+   for(let i=0;i<count;i++){
+    const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0);
+    if(i>0){ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x-carW*.075,baseY-trainH*.2,carW*.15,Math.max(2,trainH*.12))}
+    if(i===0){
+     ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.52);ctx.lineTo(x+w*.13,y-trainH*.88);ctx.lineTo(x+w*.68,y-trainH*.88);ctx.lineTo(x+w*.82,y-trainH*.66);ctx.lineTo(x+w,y-trainH*.48);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
+     ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.75,w*.23,trainH*.3);
+     ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.42,Math.max(2,w*.045),Math.max(2,trainH*.12));
+    }else{
+     ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.82,w,trainH*.82);
+     ctx.fillStyle=fg('#9ec6d8',ft);for(let q=0;q<5;q++){const wx=x+w*(.1+q*.17);ctx.fillRect(wx,y-trainH*.7,Math.max(1,w*.105),trainH*.27)}
+    }
+    ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
    }
-   ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
-   ctx.fillStyle=fg('#e8c45a',ft);ctx.fillRect(x+w*.04,y-trainH*.24,Math.max(1,w*.035),trainH*.12);
+   ctx.restore();
   }
-  ctx.fillStyle=fg('#252b31',ft);ctx.fillRect(head,baseY+1,trainW,Math.max(1,trainH*.08));
-  ctx.restore();  }
- }
-  // Un train complet, avec locomotrice et wagons, qui traverse le pont.
-  const trainW=Math.max(ux*3400,Math.min(W*1.05,ux*5200)),trainH=Math.max(uy*310,6);
-  const span=W+trainW+1200,head=wrap(T*1450+W*.22,span)-trainW-600;
-  const baseY=yb+h*.56;
-  if(head>W||head+trainW<0)return;
-  ctx.save();ctx.globalAlpha*=Math.max(.3,1-ft*.55);
-  const count=5,carW=trainW/count;
-  for(let i=0;i<count;i++){
-   const x=head+i*carW,w=carW*.94,y=baseY-(i===0?trainH*.08:0),isEngine=i===0;
-   // Attelage visible entre chaque élément : les wagons restent reliés à la locomotive.
-   if(i>0){ctx.fillStyle=fg('#202830',ft);ctx.fillRect(x-carW*.075,baseY-trainH*.2,carW*.15,Math.max(2,trainH*.12));}
-   if(isEngine){
-    // Locomotive avec nez avant, cabine, cheminée et phare.
-    ctx.fillStyle=fg('#b9c6d0',ft);ctx.beginPath();ctx.moveTo(x,y-trainH*.52);ctx.lineTo(x+w*.13,y-trainH*.88);ctx.lineTo(x+w*.68,y-trainH*.88);ctx.lineTo(x+w*.82,y-trainH*.66);ctx.lineTo(x+w,y-trainH*.48);ctx.lineTo(x+w,y);ctx.lineTo(x,y);ctx.closePath();ctx.fill();
-    ctx.fillStyle=fg('#e0edf4',ft);ctx.fillRect(x+w*.55,y-trainH*1.03,w*.13,trainH*.19);
-    ctx.fillStyle=fg('#d5e4ec',ft);ctx.fillRect(x+w*.72,y-trainH*.66,w*.17,trainH*.28);
-    ctx.fillStyle=fg('#fff2b5',ft);ctx.fillRect(x+w*.91,y-trainH*.42,Math.max(2,w*.045),Math.max(2,trainH*.12));
-    ctx.fillStyle=fg('#31475a',ft);ctx.fillRect(x+w*.19,y-trainH*.75,w*.23,trainH*.3);
-   }else{
-    // Wagons voyageurs fermés, caisse uniforme avec fenêtres régulières.
-    ctx.fillStyle=fg('#43566a',ft);ctx.fillRect(x,y-trainH*.82,w,trainH*.82);
-    ctx.fillStyle=fg('#9ec6d8',ft);for(let q=0;q<5;q++){const wx=x+w*(.1+q*.17);ctx.fillRect(wx,y-trainH*.7,Math.max(1,w*.105),trainH*.27)}
-   }
-   ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,y-trainH*.2,w,trainH*.12);
-   ctx.fillStyle=fg('#e8c45a',ft);ctx.fillRect(x+w*.04,y-trainH*.24,Math.max(1,w*.035),trainH*.12);
-  }
-  ctx.fillStyle=fg('#252b31',ft);ctx.fillRect(head,baseY+1,trainW,Math.max(1,trainH*.08));
-  ctx.restore();
  }else{
   const lanes=[{dir:1,y:.68,c:['#e84a4a','#f0c040','#40a8e8','#f2f2f2']},{dir:-1,y:.34,c:['#58c878','#f08040','#d7dce2','#7d8fe8']}];
   for(let lane=0;lane<lanes.length;lane++){
    const L=lanes[lane],count=4,spacing=2600,travel=wrap(T*L.dir*1250,spacing*count);
    for(let i=0;i<count;i++){
-    const wx=(i*spacing+travel*L.dir+lane*1300)%(spacing*count),x=a.x+(wx-spacing*count*.5)*ux,w=Math.max(4,520*ux),y=yb+h*L.y,scale=Math.max(.45,Math.min(1.5,uy*180));
+    const wx=(i*spacing+travel*L.dir+lane*1300)%(spacing*count),x=a.x+(wx-spacing*count*.5)*ux,w=Math.max(4,520*ux),y=yb+h*L.y;
     if(x>W+w||x+w<-w)continue;
     sideCar(x+w*.5,y,w,L.c[i],L.dir);
    }

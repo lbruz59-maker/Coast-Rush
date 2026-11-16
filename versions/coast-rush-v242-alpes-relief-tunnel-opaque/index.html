@@ -2160,10 +2160,45 @@ function renderBackdrop(){
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
  __crFireworks();
- __crDrawSkyMountains();
  __crFarLayer();
  if(th.bg)drawBgCached(th.bg);
  {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
+ // Dernière couche du décor céleste : aucun voile météo/horizon ne peut
+ // réappliquer de transparence sur les deux montagnes alpines.
+ __crDrawSkyMountains();
+ __crDrawTunnelApproachMountains();
+}
+function __crDrawTunnelApproachMountains(){
+ if(th.n!=='ALPS'||!segs.length)return;
+ const current=Math.floor(pos/segL);
+ let tunnelStart=-1;
+ for(let i=Math.max(0,current);i<segs.length;i++){
+  const q=segs[i];
+  if(q&&q.tun&&q.tS>=current){tunnelStart=q.tS;break;}
+ }
+ if(tunnelStart<0)return;
+ const ahead=tunnelStart-current;
+ // 25 segments = 10 km : la chaîne alpine se révèle progressivement
+ // à l'horizon, sans jamais créer de sprite sur la chaussée.
+ if(ahead>25||ahead<0)return;
+ const progress=Math.max(0,Math.min(1,(25-ahead)/25));
+ const scale=.34+progress*.72,base=H*.505,center=W*.5;
+ const peaks=[
+  {x:-.16,h:.18,w:.25,c:'#65798c'},
+  {x:.08,h:.29,w:.22,c:'#7b8fa2'},
+  {x:.31,h:.21,w:.25,c:'#687d91'},
+  {x:.55,h:.31,w:.24,c:'#71869a'},
+  {x:.79,h:.20,w:.25,c:'#62778b'},
+  {x:1.02,h:.27,w:.23,c:'#788da0'},
+  {x:1.20,h:.17,w:.22,c:'#667b8f'}
+ ];
+ ctx.save();ctx.globalAlpha=1;ctx.globalCompositeOperation='source-over';
+ for(const p of peaks){
+  const x=center+p.x*W,half=p.w*W*scale,top=base-p.h*H*scale;
+  ctx.fillStyle=p.c;ctx.beginPath();ctx.moveTo(x-half,base);ctx.lineTo(x-half*.46,top+half*.18);ctx.lineTo(x-half*.16,top+half*.34);ctx.lineTo(x,top);ctx.lineTo(x+half*.2,top+half*.31);ctx.lineTo(x+half*.55,top+half*.16);ctx.lineTo(x+half,base);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#f7f8fb';ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x-half*.16,top+half*.34);ctx.lineTo(x-half*.035,top+half*.29);ctx.lineTo(x+half*.08,top+half*.32);ctx.lineTo(x+half*.2,top+half*.31);ctx.closePath();ctx.fill();
+ }
+ ctx.restore();
 }
 // Projection caméra : les enregistrements de projection sont réutilisés par segment.
 function __crProjectPoint(out,wx,wy,z,cx,cy){const sc=camD/z;out.x=W/2+sc*(wx-cx)*160;out.y=H/2-sc*(wy-cy)*H/2;out.w=sc*roadW*160;out.sc=sc;return out}

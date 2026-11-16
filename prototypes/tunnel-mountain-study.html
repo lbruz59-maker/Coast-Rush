@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Coast Rush — étude du tunnel montagne</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif;background:#101725;color:#f4f6fa}
+*{box-sizing:border-box}body{margin:0;padding:22px;background:linear-gradient(145deg,#111827,#202b3d)}
+header{max-width:1200px;margin:0 auto 18px}h1{font-size:clamp(22px,4vw,34px);margin:0 0 7px}p{color:#c6d0df;margin:0;line-height:1.5}
+main{max-width:1200px;margin:auto;display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+article{background:#1b2636;border:1px solid #44536a;border-radius:16px;overflow:hidden;box-shadow:0 12px 30px #0005}
+h2{font-size:17px;margin:0;padding:13px 16px 5px}article p{font-size:13px;padding:0 16px 12px}
+svg{display:block;width:100%;height:auto;background:#91acd1}
+footer{max-width:1200px;margin:18px auto 0;color:#9eacc0;font-size:12px}
+</style></head>
+<body>
+<header><h1>Coast Rush — étude du tunnel dans la montagne</h1><p>Prototype visuel isolé : ouverture du tunnel conservée, relief extérieur élargi naturellement jusqu'aux deux bords, puis continuité vers la voûte intérieure.</p></header>
+<main>
+<article><h2>1. Vue de loin</h2><p>La chaîne de montagnes barre l'horizon sans former de mur rectangulaire. L'entrée reste lisible au centre.</p>
+<svg viewBox="0 0 800 450" role="img" aria-label="Vue de loin d'une chaîne de montagnes avec entrée de tunnel">
+<defs><linearGradient id="sky1" x2="0" y2="1"><stop stop-color="#7295c8"/><stop offset="1" stop-color="#e5edf7"/></linearGradient><linearGradient id="road1" x2="0" y2="1"><stop stop-color="#626a77"/><stop offset="1" stop-color="#303744"/></linearGradient><mask id="cut1"><rect width="800" height="450" fill="white"/><path d="M330 340V278A70 70 0 0 1 470 278V340Z" fill="black"/></mask></defs>
+<rect width="800" height="450" fill="url(#sky1)"/>
+<path d="M0 210L70 145 125 190 205 105 265 174 330 116 390 180 460 92 525 174 605 120 680 184 745 130 800 176V355H0Z" fill="#7188a7"/>
+<path d="M0 235L80 188 145 222 230 155 300 220 365 160 430 222 505 148 570 218 655 162 720 222 800 180V365H0Z" fill="#536b55"/>
+<path d="M0 268L65 236 120 257 190 207 255 260 330 218 390 258 460 205 520 260 590 220 660 260 735 216 800 250V375H0Z" fill="#354b3d" mask="url(#cut1)"/>
+<path d="M0 355L800 355L800 450H0Z" fill="#c3bba8"/>
+<path d="M330 355L470 355L800 450H0Z" fill="url(#road1)"/>
+<path d="M388 355L412 355L448 450H352Z" fill="#e9e6d8" opacity=".9"/>
+<path d="M0 210L70 145 125 190 205 105 265 174 330 116 390 180 460 92 525 174 605 120 680 184 745 130 800 176V355H0Z" fill="#607b9b" mask="url(#cut1)"/>
+<path d="M330 340V278A70 70 0 0 1 470 278V340" fill="none" stroke="#c8b995" stroke-width="12"/>
+<path d="M340 340V278A60 60 0 0 1 460 278V340" fill="none" stroke="#f0e7d3" stroke-width="3"/>
+<path d="M345 340V280A55 55 0 0 1 455 280V340Z" fill="#101827"/>
+<path d="M0 355L330 355M470 355L800 355" stroke="#e8e1d2" stroke-width="4"/>
+</svg></article>
+<article><h2>2. À l'approche</h2><p>Les pentes latérales restent naturelles et remplissent le champ. L'arche ne change pas de forme.</p>
+<svg viewBox="0 0 800 450" role="img" aria-label="Approche d'un tunnel dans une montagne continue">
+<defs><linearGradient id="sky2" x2="0" y2="1"><stop stop-color="#7898c8"/><stop offset="1" stop-color="#dbe5f2"/></linearGradient><linearGradient id="road2" x2="0" y2="1"><stop stop-color="#555e6b"/><stop offset="1" stop-color="#262e3a"/></linearGradient><mask id="cut2"><rect width="800" height="450" fill="white"/><path d="M285 380V245A115 115 0 0 1 515 245V380Z" fill="black"/></mask></defs>
+<rect width="800" height="450" fill="url(#sky2)"/>
+<path d="M0 85L100 145 185 65 265 142 335 48 410 125 495 35 575 120 660 55 730 130 800 70V390H0Z" fill="#7d91ac"/>
+<path d="M0 150L95 185 170 128 245 205 330 108 410 188 495 92 575 180 665 112 745 185 800 142V400H0Z" fill="#596f53"/>
+<path d="M0 190L80 235 160 172 245 260 320 165 400 245 480 155 560 245 640 172 720 250 800 195V400H0Z" fill="#354b3b" mask="url(#cut2)"/>
+<path d="M0 380H800V450H0Z" fill="#b9b09e"/>
+<path d="M285 380H515L800 450H0Z" fill="url(#road2)"/>
+<path d="M385 380H415L445 450H355Z" fill="#eee9d9"/>
+<path d="M285 380V245A115 115 0 0 1 515 245V380" fill="none" stroke="#bcae8f" stroke-width="17"/>
+<path d="M298 380V245A102 102 0 0 1 502 245V380" fill="none" stroke="#f1e7d1" stroke-width="4"/>
+<path d="M305 380V245A95 95 0 0 1 495 245V380Z" fill="#111827"/>
+<path d="M0 380L285 380M515 380L800 380" stroke="#f3e7cf" stroke-width="5"/>
+</svg></article>
+<article><h2>3. À l'intérieur</h2><p>On retrouve le tunnel validé : voûte arrondie, anneaux successifs et lumière au fond.</p>
+<svg viewBox="0 0 800 450" role="img" aria-label="Intérieur de tunnel avec voûte arrondie et lumières">
+<defs><linearGradient id="inside3" x2="0" y2="1"><stop stop-color="#30394c"/><stop offset="1" stop-color="#111827"/></linearGradient><linearGradient id="exit3" x2="0" y2="1"><stop stop-color="#9db9e1"/><stop offset="1" stop-color="#e2eaf4"/></linearGradient><radialGradient id="lamp3"><stop stop-color="#fff4bf" stop-opacity=".9"/><stop offset="1" stop-color="#fff4bf" stop-opacity="0"/></radialGradient></defs>
+<rect width="800" height="450" fill="url(#inside3)"/>
+<path d="M70 450V200A330 330 0 0 1 730 200V450Z" fill="#202a3b" stroke="#c4b495" stroke-width="18"/>
+<path d="M105 450V205A295 295 0 0 1 695 205V450" fill="none" stroke="#e8ddc5" stroke-width="5"/>
+<path d="M155 450V215A245 245 0 0 1 645 215V450" fill="none" stroke="#39445a" stroke-width="18"/>
+<path d="M210 450V225A190 190 0 0 1 590 225V450" fill="none" stroke="#48546b" stroke-width="12"/>
+<path d="M290 450V235A110 110 0 0 1 510 235V450" fill="none" stroke="#5a667d" stroke-width="8"/>
+<path d="M355 450V245A45 45 0 0 1 445 245V450Z" fill="url(#exit3)"/>
+<path d="M0 370L800 370V450H0Z" fill="#353d49"/>
+<path d="M0 420L800 420" stroke="#d7d2c4" stroke-width="5"/>
+<path d="M390 420L410 420L420 450H380Z" fill="#f2ead7"/>
+<circle cx="400" cy="112" r="44" fill="url(#lamp3)"/><circle cx="400" cy="112" r="6" fill="#fff2b4"/>
+<circle cx="320" cy="170" r="29" fill="url(#lamp3)"/><circle cx="320" cy="170" r="4" fill="#fff2b4"/>
+<circle cx="480" cy="170" r="29" fill="url(#lamp3)"/><circle cx="480" cy="170" r="4" fill="#fff2b4"/>
+</svg></article>
+</main>
+<footer>Étude de direction artistique uniquement — aucun fichier du jeu ni la version de référence n'a été modifié.</footer>
+</body></html>

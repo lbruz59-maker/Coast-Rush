@@ -1,4 +1,4 @@
-const CACHE_NAME="coast-rush-v197-outrun-v188-feel-bridge-traffic-render-fix-raised-bridge-traffic-v6-mountain-cablecars-coast-train";
+const CACHE_NAME="coast-rush-v197-outrun-v188-feel-bridge-traffic-render-fix-raised-bridge-traffic-v6-mountain-cablecars-coast-train-coast-train-v2";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon.svg","../../versions/coast-rush-v188-ponts/assets/menu-music.mp3","../../versions/coast-rush-v188-ponts/assets/sunset-racers.mp3","../../versions/coast-rush-v188-ponts/assets/endless-horizon.mp3"];
 self.addEventListener("install",event=>{
  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));

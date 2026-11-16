@@ -6,6 +6,10 @@ on:
     types: [completed]
     branches: [main]
 
+concurrency:
+  group: coast-rush-v235-smoke
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -13,7 +17,7 @@ jobs:
   browser-smoke:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
       - name: Checkout main
         uses: actions/checkout@v4

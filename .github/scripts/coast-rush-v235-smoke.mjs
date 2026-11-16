@@ -2,61 +2,133 @@ import { chromium } from 'playwright';
 
 const url = 'https://lbruz59-maker.github.io/Coast-Rush/versions/coast-rush-v235-render-fix/?smoke=1';
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
 const pageErrors = [];
 const consoleErrors = [];
-page.on('pageerror', error => pageErrors.push(error.stack || error.message));
-page.on('console', message => {
-  if (message.type() === 'error') consoleErrors.push(message.text());
-});
+
+function watch(page, tag) {
+  page.on('pageerror', error => pageErrors.push(tag + ': ' + (error.stack || error.message)));
+  page.on('console', message => {
+    if (message.type() === 'error') consoleErrors.push(tag + ': ' + message.text());
+  });
+}
+
+async function assertNoRuntimeError(page, tag) {
+  const banner = await page.locator('#errb').textContent().catch(() => '');
+  if (banner) throw new Error(tag + ' : ' + banner);
+  if (pageErrors.length) throw new Error(tag + ' : ' + pageErrors.join('\\n'));
+}
 
 try {
-  let loaded = false;
-  for (let attempt = 1; attempt <= 6 && !loaded; attempt++) {
-    try {
-      const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      loaded = !!response && response.ok();
-    } catch (error) {
-      if (attempt === 6) throw error;
-      await page.waitForTimeout(10000);
-    }
-  }
-  if (!loaded) throw new Error('La page V235 ne répond pas avec HTTP 200.');
+  const desktop = await browser.newPage({ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
+  watch(desktop, 'desktop');
+  const response = await desktop.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+  if (!response || !response.ok()) throw new Error('V235 ne répond pas en HTTP 200.');
+  await desktop.waitForSelector('#c', { timeout: 15000 });
+  await desktop.waitForTimeout(2500);
 
-  await page.waitForSelector('#c', { timeout: 15000 });
-  await page.waitForTimeout(6000);
-
-  const initial = await page.evaluate(() => ({
+  const initial = await desktop.evaluate(() => ({
     title: document.title,
+    version: document.querySelector('meta[name="coast-rush-version"]')?.content || '',
     canvas: !!document.querySelector('#c'),
-    menu: !!document.querySelector('#menu'),
-    menuVisible: !!document.querySelector('#menu') && getComputedStyle(document.querySelector('#menu')).display !== 'none',
+    menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
     hotspots: !!document.querySelector('#crMenuHotspots'),
-    errorBanner: document.querySelector('#errb')?.textContent || '',
-    version: document.querySelector('meta[name="coast-rush-version"]')?.content || ''
+    manifest: !!document.querySelector('link[rel="manifest"]'),
+    serviceWorkerSupported: 'serviceWorker' in navigator,
+    errorBanner: document.querySelector('#errb')?.textContent || ''
   }));
-
-  if (!initial.canvas || !initial.menu || !initial.menuVisible || !initial.hotspots) {
+  if (!initial.canvas || !initial.menuVisible || !initial.hotspots || !initial.manifest) {
     throw new Error('Échec du démarrage initial : ' + JSON.stringify(initial));
   }
-  if (initial.errorBanner) throw new Error('Erreur affichée dans le jeu : ' + initial.errorBanner);
-  if (pageErrors.length) throw new Error('Erreurs JavaScript au chargement : ' + pageErrors.join('\n'));
+  await assertNoRuntimeError(desktop, 'chargement desktop');
 
-  const playButton = page.locator('#crMenuHotspots button.play');
-  await playButton.waitFor({ state: 'visible', timeout: 10000 });
-  await playButton.click();
-  await page.waitForTimeout(2500);
-
-  const afterPlay = await page.evaluate(() => ({
-    errorBanner: document.querySelector('#errb')?.textContent || '',
+  await desktop.locator('#crMenuHotspots button.play').click();
+  await desktop.waitForTimeout(5000);
+  await assertNoRuntimeError(desktop, 'après JOUER');
+  const playing = await desktop.evaluate(() => ({
     menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
-    pauseButton: !!document.querySelector('#pauseBtn')
+    pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none',
+    pauseLayer: getComputedStyle(document.querySelector('#pauseLayer')).display
   }));
+  if (playing.menuVisible || !playing.pauseVisible) throw new Error('La course ne passe pas correctement en état de jeu : ' + JSON.stringify(playing));
 
-  if (afterPlay.errorBanner) throw new Error('Erreur après activation de JOUER : ' + afterPlay.errorBanner);
-  if (pageErrors.length) throw new Error('Erreurs JavaScript après activation de JOUER : ' + pageErrors.join('\n'));
+  await desktop.locator('#pauseBtn').click();
+  await desktop.waitForTimeout(350);
+  const paused = await desktop.evaluate(() => ({
+    visible: getComputedStyle(document.querySelector('#pauseLayer')).display !== 'none',
+    buttonHidden: getComputedStyle(document.querySelector('#pauseBtn')).display === 'none'
+  }));
+  if (!paused.visible || !paused.buttonHidden) throw new Error('La mise en pause ne fonctionne pas : ' + JSON.stringify(paused));
+  await desktop.locator('#resumeBtn').click();
+  await desktop.waitForTimeout(1200);
+  await assertNoRuntimeError(desktop, 'après reprise');
+  const resumed = await desktop.evaluate(() => ({
+    layerHidden: getComputedStyle(document.querySelector('#pauseLayer')).display === 'none',
+    pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none'
+  }));
+  if (!resumed.layerHidden || !resumed.pauseVisible) throw new Error('La reprise ne restaure pas les commandes : ' + JSON.stringify(resumed));
 
-  console.log(JSON.stringify({ result: 'PASS', url, initial, afterPlay, pageErrors, consoleErrors }, null, 2));
+  await desktop.locator('#pauseBtn').click();
+  await desktop.locator('#pauseMenuBtn').click();
+  await desktop.waitForTimeout(900);
+  await assertNoRuntimeError(desktop, 'retour menu');
+  const returned = await desktop.evaluate(() => ({
+    menuVisible: getComputedStyle(document.querySelector('#menu')).display !== 'none',
+    pauseHidden: getComputedStyle(document.querySelector('#pauseBtn')).display === 'none',
+    pauseLayerHidden: getComputedStyle(document.querySelector('#pauseLayer')).display === 'none'
+  }));
+  if (!returned.menuVisible || !returned.pauseHidden || !returned.pauseLayerHidden) {
+    throw new Error('Le retour au menu ne réinitialise pas correctement l’interface : ' + JSON.stringify(returned));
+  }
+
+  await desktop.locator('#crMenuHotspots button.play').click();
+  await desktop.waitForTimeout(8000);
+  await assertNoRuntimeError(desktop, 'après deuxième démarrage prolongé');
+
+  const mobile = await browser.newPage({
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 2,
+    isMobile: true,
+    hasTouch: true
+  });
+  watch(mobile, 'mobile');
+  const mobileResponse = await mobile.goto(url + '&mobile=1', { waitUntil: 'domcontentloaded', timeout: 45000 });
+  if (!mobileResponse || !mobileResponse.ok()) throw new Error('V235 ne répond pas en HTTP 200 sur le profil mobile.');
+  await mobile.waitForSelector('#crMenuHotspots button.play', { state: 'visible', timeout: 15000 });
+  const mobileLayout = await mobile.evaluate(() => ({
+    viewportWidth: innerWidth,
+    viewportHeight: innerHeight,
+    documentWidth: document.documentElement.scrollWidth,
+    documentHeight: document.documentElement.scrollHeight,
+    playVisible: !!document.querySelector('#crMenuHotspots button.play') &&
+      getComputedStyle(document.querySelector('#crMenuHotspots button.play')).display !== 'none'
+  }));
+  if (!mobileLayout.playVisible || mobileLayout.documentWidth > mobileLayout.viewportWidth + 2) {
+    throw new Error('Débordement ou bouton JOUER inaccessible sur mobile : ' + JSON.stringify(mobileLayout));
+  }
+  await mobile.locator('#crMenuHotspots button.play').click();
+  await mobile.waitForTimeout(5000);
+  await assertNoRuntimeError(mobile, 'jeu mobile');
+  const mobilePlaying = await mobile.evaluate(() => ({
+    menuHidden: getComputedStyle(document.querySelector('#menu')).display === 'none',
+    pauseVisible: getComputedStyle(document.querySelector('#pauseBtn')).display !== 'none'
+  }));
+  if (!mobilePlaying.menuHidden || !mobilePlaying.pauseVisible) {
+    throw new Error('Le démarrage mobile ne passe pas en course : ' + JSON.stringify(mobilePlaying));
+  }
+
+  console.log(JSON.stringify({
+    result: 'PASS',
+    url,
+    initial,
+    playing,
+    paused,
+    resumed,
+    returned,
+    mobileLayout,
+    mobilePlaying,
+    pageErrors,
+    consoleErrors
+  }, null, 2));
 } finally {
   await browser.close();
 }

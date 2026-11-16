@@ -2234,6 +2234,7 @@ cv.addEventListener('pointerdown',()=>{if(state==='ttfinish'){crContinueTimeTria
 
 let __crRouteMapClassState = null;
 let __crPauseButtonVisible = null;
+function crReadNativeFrames(){try{if(typeof CoastRushFrameStats!=='undefined'&&CoastRushFrameStats&&typeof CoastRushFrameStats.getStats==='function')crNativeStats=JSON.parse(CoastRushFrameStats.getStats()||'{}');else crNativeStats={bridge:'absent'}}catch(e){crNativeStats={bridge:'error',bridgeError:String(e&&e.message||e)}}}
 function loop(t){
  
 /* V104: one accessible, interactive hit layer over the menu artwork. */

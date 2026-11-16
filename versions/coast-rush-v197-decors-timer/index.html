@@ -2213,15 +2213,40 @@ function __crDrawOverpasses(vis){
     ctx.fillStyle='#17191d';ctx.fillRect(x-len*.34,y+ht*.28,len*.18,Math.max(1,ht*.16));ctx.fillRect(x+len*.16,y+ht*.28,len*.18,Math.max(1,ht*.16));
     ctx.restore();
    };
-   for(let lane=0;lane<2;lane++){
-    for(let car=0;car<3;car++){
-     const u=((car/3+(lane===0?phase:-phase)/travelW)%1+1)%1;
-     const x=-len+u*travelW;
-     const yA=rampY_A+fasciaA*(lane===0?.32:.58),yB=rampY_B+fasciaB*(lane===0?.32:.58);
-     drawDeckCar(x,lerp(yA,yB,u),(lane===0?['#e84a4a','#f0c040','#4ca7e8']:['#55bd78','#e78a45','#d7dce2'])[car],lane===0?1:-1);
+   if(th.n==='COAST'){
+    const count=5,carLen=len*1.55,trainLen=carLen*count,trainH=Math.max(7,ht*1.65);
+    const u=(((crBridgeTrafficClock||0)*10)%(W+trainLen+40))/(W+trainLen+40);
+    const head=-trainLen+u*(W+trainLen+40);
+    const yA=rampY_A+fasciaA*.32,yB=rampY_B+fasciaB*.32;
+    ctx.save();
+    for(let car=0;car<count;car++){
+     const x=head+car*carLen,w=carLen;
+     const baseY=lerp(yA,yB,Math.max(0,Math.min(1,(x+w*.5)/W)));
+     ctx.fillStyle='#10182088';ctx.fillRect(x,baseY-trainH*.08,w+1,trainH*.18);
+     ctx.fillStyle=fg('#273747',ft);ctx.fillRect(x,baseY-trainH*.2,w+1,trainH*.2);
+     if(car===0){
+      ctx.fillStyle=fg('#c5d0d7',ft);ctx.beginPath();ctx.moveTo(x,baseY-trainH*.2);ctx.lineTo(x+w*.13,baseY-trainH*.88);ctx.lineTo(x+w*.72,baseY-trainH*.88);ctx.lineTo(x+w*.9,baseY-trainH*.58);ctx.lineTo(x+w,baseY-trainH*.42);ctx.lineTo(x+w,baseY-trainH*.2);ctx.closePath();ctx.fill();
+      ctx.fillStyle=fg('#36566d',ft);ctx.fillRect(x+w*.2,baseY-trainH*.77,w*.3,trainH*.32);
+      ctx.fillStyle=fg('#fff0b0',ft);ctx.fillRect(x+w*.91,baseY-trainH*.4,Math.max(1.5,w*.05),Math.max(1.5,trainH*.12));
+     }else{
+      ctx.fillStyle=fg(car%2?'#526b7e':'#465d70',ft);ctx.fillRect(x,baseY-trainH*.82,w+1,trainH*.62);
+      ctx.fillStyle=fg('#b9d9e8',ft);
+      for(let q=0;q<4;q++)ctx.fillRect(x+w*(.1+q*.21),baseY-trainH*.7,Math.max(1,w*.12),trainH*.25);
+     }
+     ctx.fillStyle='#17191d';
+     for(const q of [.18,.82]){ctx.beginPath();ctx.arc(x+w*q,baseY,Math.max(1.5,trainH*.11),0,Math.PI*2);ctx.fill()}
+    }
+    ctx.restore();
+   }else{
+    for(let lane=0;lane<2;lane++){
+     for(let car=0;car<3;car++){
+      const u=((car/3+(lane===0?phase:-phase)/travelW)%1+1)%1;
+      const x=-len+u*travelW;
+      const yA=rampY_A+fasciaA*(lane===0?.32:.58),yB=rampY_B+fasciaB*(lane===0?.32:.58);
+      drawDeckCar(x,lerp(yA,yB,u),(lane===0?['#e84a4a','#f0c040','#4ca7e8']:['#55bd78','#e78a45','#d7dce2'])[car],lane===0?1:-1);
+     }
     }
    }
-  }
   }
   ctx.restore();
  }

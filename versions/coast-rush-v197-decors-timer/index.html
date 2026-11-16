@@ -2155,7 +2155,7 @@ function __crDrawOverpasses(vis){
   const leftA=a.x-wa*2.05,rightA=a.x+wa*2.05,leftB=b.x-wb*2.05,rightB=b.x+wb*2.05;
   // V203 : tablier plus épais vers le dessous, sans relever la chaussée.
   const hA=Math.max(8.5,wa*1.8),hB=Math.max(4.2,wb*1.8);
-  const fasciaA=Math.max(7,wa*.82),fasciaB=Math.max(3.5,wb*.82);
+  const fasciaA=Math.max(8,wa*.95),fasciaB=Math.max(4,wb*.95);
   const deckTopA=a.y-hA-fasciaA,deckTopB=b.y-hB-fasciaB;
   const underA=a.y-hA,underB=b.y-hB;
   ctx.save();ctx.globalAlpha=Math.max(.5,1-ft*.45);

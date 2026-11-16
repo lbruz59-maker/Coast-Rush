@@ -1707,7 +1707,7 @@ const s=sc*(t==='c'?317000:t==='l'?96000:t==='a'?118000:3200*H/2);if('ptacl'.inc
 else if(t=='F'){const h=sc*1350*H/2,wv=Math.sin(flash*(state=='count'?10:4));ctx.fillStyle='#223';ctx.fillRect(x-h*.07,y-h*.45,h*.14,h*.45);ctx.fillStyle='#e32636';ctx.fillRect(x-h*.09,y-h*.8,h*.18,h*.36);ctx.beginPath();ctx.ellipse(x,y-h*.56,h*.17,h*.15,0,0,7);ctx.fill();ctx.strokeStyle='#8f1420';ctx.lineWidth=Math.max(1,h*.012);ctx.beginPath();ctx.arc(x,y-h*.56,h*.17,.25,Math.PI-.25);ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(x-h*.17,y-h*.5,h*.34,h*.03);ctx.fillStyle='#ffd400';ctx.fillRect(x-h*.025,y-h*.505,h*.05,h*.04);ctx.fillStyle='#c91e2c';ctx.fillRect(x-h*.12,y-h*.77,h*.24,h*.09);ctx.fillStyle='#f1c19a';ctx.beginPath();ctx.arc(x,y-h*.88,h*.075,0,7);ctx.fill();ctx.fillStyle='#d51f32';ctx.beginPath();ctx.arc(x,y-h*.94,h*.082,Math.PI,0);ctx.fill();ctx.fillRect(x-h*.09,y-h*.94,h*.18,h*.025);
   const q=x+h*.1,pt=y-h*1.5;ctx.strokeStyle='#999';ctx.lineWidth=Math.max(1,h*.02);ctx.beginPath();ctx.moveTo(x+h*.09,y-h*.7);ctx.lineTo(q+wv*h*.08,pt);ctx.stroke();
   for(let i=0;i<5;i++)for(let j=0;j<4;j++){ctx.fillStyle=(i+j)%2?'#111':'#fff';ctx.fillRect(q+wv*h*.08+i*h*.105+Math.sin(flash*8+i)*h*.025,pt+j*h*.085,h*.105,h*.085)}}
- else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;const __arch=()=>{ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath()};if(sp.port){const mw=w*8,rg=(pf,col,snow)=>{const n=pf.length-1;ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<=n;i++)ctx.lineTo(x-mw+mw*2*i/n,y-w*pf[i]);ctx.lineTo(x+mw,y);ctx.closePath();__arch();ctx.fillStyle=col;ctx.fill('evenodd');if(snow){ctx.fillStyle='#f2f6fa';for(let i=1;i<n;i+=2){const qx=x-mw+mw*2*i/n,qy=y-w*pf[i];ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(qx-w*.8,qy+w*.9);ctx.lineTo(qx-w*.3,qy+w*.62);ctx.lineTo(qx,qy+w*.95);ctx.lineTo(qx+w*.25,qy+w*.6);ctx.lineTo(qx+w*.8,qy+w*.9);ctx.closePath();ctx.fill()}}};rg([3.6,6.2,4.2,7.2,4.6,6.6,4.0,6.0,3.4],'#8197ad',1);rg([2.9,4.4,3.1,4.9,3.4,4.5,3.0,4.0,2.7],'#5f6f55',0);rg([2.2,2.7,2.3,3.0,2.4,2.9,2.2,2.6,2.1],'#46563a',0)}else{ctx.beginPath();ctx.rect(x-w*7,y-w*7,w*14,w*7.02);ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();ctx.fillStyle=(sp.k%4<2)?'#2c2f3a':'#252833';ctx.fill('evenodd')}
+ else if(t=='T'){ctx.globalAlpha=1;const w=sc*roadW*160,k=w*1.12,hh=w*.78;const __arch=()=>{ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath()};if(sp.port){const mw=w*8,rg=(pf,col,snow)=>{const n=pf.length-1;ctx.beginPath();ctx.moveTo(x-mw,y);for(let i=0;i<=n;i++)ctx.lineTo(x-mw+mw*2*i/n,y-w*pf[i]);ctx.lineTo(x+mw,y);ctx.closePath();__arch();ctx.fillStyle=col;ctx.fill('evenodd');if(snow){ctx.fillStyle='#f2f6fa';for(let i=1;i<n;i+=2){const qx=x-mw+mw*2*i/n,qy=y-w*pf[i];ctx.beginPath();ctx.moveTo(qx,qy);ctx.lineTo(qx-w*.8,qy+w*.9);ctx.lineTo(qx-w*.3,qy+w*.62);ctx.lineTo(qx,qy+w*.95);ctx.lineTo(qx+w*.25,qy+w*.6);ctx.lineTo(qx+w*.8,qy+w*.9);ctx.closePath();ctx.fill()}}};rg([4.5,7.8,5.2,9.0,5.7,8.2,5.0,7.4,4.2],'#8197ad',1);rg([3.4,5.4,3.7,6.1,4.0,5.6,3.5,4.9,3.1],'#5f6f55',0);rg([2.6,3.3,2.8,3.8,3.0,3.6,2.7,3.2,2.5],'#46563a',0)}else{ctx.beginPath();ctx.rect(x-w*7,y-w*7,w*14,w*7.02);ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.closePath();ctx.fillStyle=(sp.k%4<2)?'#2c2f3a':'#252833';ctx.fill('evenodd')}
  if(sp.port){
   ctx.strokeStyle='#b9ad98';ctx.lineWidth=Math.max(1,w*.13);ctx.beginPath();ctx.moveTo(x-k,y);ctx.lineTo(x-k,y-hh);ctx.arc(x,y-hh,k,Math.PI,0);ctx.lineTo(x+k,y);ctx.stroke();
   ctx.strokeStyle='#eee4cf';ctx.lineWidth=Math.max(.8,w*.045);ctx.beginPath();ctx.moveTo(x-k*.91,y);ctx.lineTo(x-k*.91,y-hh);ctx.arc(x,y-hh,k*.91,Math.PI,0);ctx.lineTo(x+k*.91,y);ctx.stroke();
@@ -1987,34 +1987,7 @@ function __crDrawSkyMountains(){
    if(th.night){ctx.fillStyle='#fff';for(let i=0;i<45;i++)ctx.fillRect((i*83+off*.2)%W,(i*37)%(H/2-14),1,1)}
    // Chaîne de montagnes renforcée : elle descend légèrement sur le bloc sombre
    // et se prolonge sur les côtés avec des reliefs secondaires décroissants.
-   // Chaîne alpine nettement plus haute, qui recouvre le bord supérieur du bloc.
-   const base=H/2+12, alpine=th.n==='ALPS', palette=th.m||['#657b8e','#40556b'];
-   for(let L=0;L<3;L++){
-    const depth=(L===0?.62:L===1?.48:.34)*H*(alpine?1:.72),
-      shift=off*(L?1.6:1)+L*90,shade=L===0?'#34465b':L===1?'#46566a':'#587084',
-      grad=ctx.createLinearGradient(0,base-depth,0,base);
-    grad.addColorStop(0,shade);grad.addColorStop(1,palette[Math.min(L,1)]||shade);
-    ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,base);
-    for(let x=0;x<=W;x+=3){
-     const u=(x+shift)*.008,peak=Math.pow(Math.max(0,Math.sin(u*1.35)+.32*Math.sin(u*2.6)),1.25);
-     const edge=Math.min(1,x/(W*.22),(W-x)/(W*.22));
-     const taper=.58+.42*Math.max(0,edge);
-     ctx.lineTo(x,base-depth*taper*(.18+peak*.82));
-    }
-    ctx.lineTo(W,base);ctx.closePath();ctx.fill();
-   }
-   // Deux chaînes latérales en cascade : grands sommets à l'extérieur,
-   // puis des sommets de plus en plus bas en allant vers le centre.
-   for(const side of [-1,1]){
-    for(let j=0;j<7;j++){
-     const scale=1-j*.115,cx=side<0?W*(.015+j*.065):W*(.985-j*.065),
-       half=W*(.095*scale),peakY=base-H*(.66*scale);
-     ctx.fillStyle=j%2?(palette[0]||'#587084'):(palette[1]||'#40556b');
-     ctx.beginPath();ctx.moveTo(cx-half,base);ctx.lineTo(cx,peakY);ctx.lineTo(cx+half,base);ctx.closePath();ctx.fill();
-     // Neige alpine discrète sur les arêtes des sommets.
-     if(alpine){ctx.fillStyle='#eaf2f7';ctx.beginPath();ctx.moveTo(cx,peakY);ctx.lineTo(cx-half*.17,peakY+H*.09*scale);ctx.lineTo(cx-half*.04,peakY+H*.065*scale);ctx.lineTo(cx+half*.05,peakY+H*.07*scale);ctx.closePath();ctx.fill();}
-    }
-   }
+   for(let L=0;L<(th.bg?0:2);L++){const base=H/2,depth=(L?13:22)*(th.n=='ALPS'?2.5:1),shift=off*(L?1.6:1)+L*90;const shade=L?'#46566a':'#34465b',grad=ctx.createLinearGradient(0,base-depth-12,0,base);grad.addColorStop(0,shade);grad.addColorStop(1,th.m[L]||shade);ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(0,base);for(let x=0;x<=W;x+=4){const u=(x+shift)*.012,peak=Math.pow(Math.max(0,Math.sin(u*1.7)+.28*Math.sin(u*3.1)),1.35);ctx.lineTo(x,base-depth*(.25+peak*.75)-Math.abs(Math.sin(u*.55))*4)}ctx.lineTo(W,base);ctx.closePath();ctx.fill()}
   }finally{ctx=live}
   __crSkyLayerKey=key;
  }
@@ -2026,11 +1999,9 @@ function renderBackdrop(){
  }
  ctx.fillStyle=curG[0];ctx.fillRect(0,H/2,W,H/2);if(th.w){ctx.fillStyle='#1f8fe0';ctx.fillRect(0,H/2-7,W,7);for(let i=0;i<18;i++){ctx.fillStyle='#ffffffb0';ctx.fillRect((i*53+flash*14)%W,H/2-6+i%6,2.2,.7)}}
  __crFireworks();
+ __crDrawSkyMountains();
  __crFarLayer();
  if(th.bg)drawBgCached(th.bg);
- // Mountains are drawn last in the sky layer so their silhouettes hide
- // the remaining upper edge of the dark backdrop block.
- __crDrawSkyMountains();
  {const hzKey=W+'x'+H+'|'+curSky[1];if(hzKey!==__crHorizonGradKey){__crHorizonGradKey=hzKey;__crHorizonGrad=ctx.createLinearGradient(0,H/2-34,0,H/2);__crHorizonGrad.addColorStop(0,'#fff0');__crHorizonGrad.addColorStop(1,curSky[1]+'cc')}ctx.fillStyle=__crHorizonGrad;ctx.fillRect(0,H/2-34,W,34)}
 }
 // Projection caméra : les enregistrements de projection sont réutilisés par segment.

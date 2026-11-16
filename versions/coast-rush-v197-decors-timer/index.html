@@ -2165,6 +2165,27 @@ function __crDrawOverpasses(vis){
   __crPoly4(fg('#858d94',ft),leftA,deckTopA,rightA,deckTopA,rightB,deckTopB,leftB,deckTopB);
   __crPoly4(fg('#c0c6ca',ft),leftA,deckTopA,leftA,deckTopA+fasciaA*.18,leftB,deckTopB+fasciaB*.18,leftB,deckTopB);
   __crPoly4(fg('#454d55',ft),leftA,deckTopA+fasciaA*.72,rightA,deckTopA+fasciaA*.72,rightB,deckTopB+fasciaB*.72,leftB,deckTopB+fasciaB*.72);
+  // Trafic animé sur le tablier du pont surélevé : deux voies, sens opposés.
+  {
+   const spanA=rightA-leftA,spanB=rightB-leftB,phase=((flash||0)*520)%(Math.max(W,spanA)+wa*2);
+   const drawDeckCar=(x,y,len,ht,color,dir)=>{
+    ctx.save();ctx.fillStyle='#11182088';ctx.fillRect(x-len*.52,y-ht*.05,len*1.04,ht*.9);
+    ctx.fillStyle=fg(shade(color,-.2),ft);ctx.beginPath();ctx.moveTo(x-len*.5,y-ht*.38);ctx.lineTo(x-len*.38,y-ht*.9);ctx.lineTo(x+len*.34,y-ht*.9);ctx.lineTo(x+len*.5,y-ht*.38);ctx.lineTo(x+len*.5,y+ht*.38);ctx.lineTo(x-len*.5,y+ht*.38);ctx.closePath();ctx.fill();
+    ctx.fillStyle=fg('#b9d9e8',ft);ctx.fillRect(x-len*.25,y-ht*.68,len*.5,ht*.38);
+    ctx.fillStyle=fg('#fff0b0',ft);ctx.fillRect(dir>0?x+len*.39:x-len*.47,y-ht*.22,len*.08,ht*.18);
+    ctx.fillStyle='#17191d';ctx.fillRect(x-len*.34,y+ht*.28,len*.18,Math.max(1,ht*.16));ctx.fillRect(x+len*.16,y+ht*.28,len*.18,Math.max(1,ht*.16));
+    ctx.restore();
+   };
+   const len=Math.max(9,Math.min(wa*.34,34)),ht=Math.max(4,Math.min(fasciaA*.3,10));
+   for(let lane=0;lane<2;lane++){
+    const yA=deckTopA+fasciaA*(lane===0?.39:.58),yB=deckTopB+fasciaB*(lane===0?.39:.58);
+    for(let car=0;car<3;car++){
+     const u=((car/3+(lane===0?phase:-phase)/(Math.max(W,spanA)+wa*2))%1+1)%1;
+     const x=lerp(leftA+len,rightA-len,u),y=lerp(yA,yB,u);
+     drawDeckCar(x,y,len,ht,(lane===0?['#e84a4a','#f0c040','#4ca7e8']:['#55bd78','#e78a45','#d7dce2'])[car],lane===0?1:-1);
+    }
+   }
+  }
   // Garde-corps supérieurs continus.
   const railA=Math.max(3.8,wa*.38),railB=Math.max(1.9,wb*.38);
   __crPoly4(fg('#aeb8bf',ft),leftA,deckTopA-railA,rightA,deckTopA-railA,rightB,deckTopB-railB,leftB,deckTopB-railB);

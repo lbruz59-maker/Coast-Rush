@@ -1,4 +1,4 @@
-const { chromium } = require('playwright');
+import { chromium } from 'playwright';
 
 const url = 'https://lbruz59-maker.github.io/Coast-Rush/versions/coast-rush-v234-global-state/?smoke=1';
 const browser = await chromium.launch({ headless: true });
